@@ -91,3 +91,4 @@ Preferred communication style: Simple, everyday language.
 
 Changelog:
 - June 25, 2025. Initial setup
+- June 25, 2025. Fixed deployment configuration and production build issues
