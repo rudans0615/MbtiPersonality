@@ -1,6 +1,7 @@
 import { MBTIType } from "@/data/mbtiTypes";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { useToast } from "@/hooks/use-toast";
 
 interface ResultCardProps {
   mbtiType: MBTIType;
@@ -9,6 +10,69 @@ interface ResultCardProps {
 }
 
 export default function ResultCard({ mbtiType, onRestart, onShare }: ResultCardProps) {
+  const { toast } = useToast();
+
+  const handleShare = (platform: string) => {
+    const currentUrl = window.location.origin + '/';
+    const shareText = `나의 MBTI 성격유형은 ${mbtiType.code}(${mbtiType.title})입니다! 당신도 확인해보세요!`;
+    const encodedUrl = encodeURIComponent(currentUrl);
+    const encodedText = encodeURIComponent(shareText);
+
+    switch (platform) {
+      case 'facebook':
+        const facebookUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}&quote=${encodedText}`;
+        window.open(facebookUrl, '_blank', 'width=600,height=400');
+        break;
+      case 'twitter':
+        const twitterUrl = `https://twitter.com/intent/tweet?text=${encodedText}&url=${encodedUrl}`;
+        window.open(twitterUrl, '_blank', 'width=600,height=400');
+        break;
+      case 'copy':
+        const shareMessage = `${shareText}\n\n${currentUrl}`;
+        if (navigator.clipboard && window.isSecureContext) {
+          navigator.clipboard.writeText(shareMessage).then(() => {
+            toast({
+              title: "링크가 복사되었습니다!",
+              description: "친구들과 공유해보세요.",
+            });
+          }).catch(() => {
+            fallbackCopyTextToClipboard(shareMessage);
+          });
+        } else {
+          fallbackCopyTextToClipboard(shareMessage);
+        }
+        break;
+      default:
+        onShare(platform);
+        break;
+    }
+  };
+
+  const fallbackCopyTextToClipboard = (text: string) => {
+    const textArea = document.createElement("textarea");
+    textArea.value = text;
+    textArea.style.top = "0";
+    textArea.style.left = "0";
+    textArea.style.position = "fixed";
+    document.body.appendChild(textArea);
+    textArea.focus();
+    textArea.select();
+    try {
+      document.execCommand('copy');
+      toast({
+        title: "링크가 복사되었습니다!",
+        description: "친구들과 공유해보세요.",
+      });
+    } catch (err) {
+      toast({
+        title: "복사 실패",
+        description: "수동으로 링크를 복사해주세요.",
+        variant: "destructive"
+      });
+    }
+    document.body.removeChild(textArea);
+  };
+
   return (
     <Card className="bg-white rounded-3xl shadow-2xl p-8 md:p-12 -mt-16 relative z-10 animate-slide-up">
       <CardContent className="p-0">
@@ -88,19 +152,19 @@ export default function ResultCard({ mbtiType, onRestart, onShare }: ResultCardP
           <h3 className="text-xl font-semibold text-neutral-800">결과 공유하기</h3>
           <div className="flex justify-center space-x-4 flex-wrap gap-2">
             <Button
-              onClick={() => onShare('facebook')}
+              onClick={() => handleShare('facebook')}
               className="bg-blue-600 text-white px-6 py-3 rounded-xl hover:bg-blue-700 transition-colors"
             >
               <i className="fab fa-facebook-f mr-2"></i>페이스북
             </Button>
             <Button
-              onClick={() => onShare('twitter')}
+              onClick={() => handleShare('twitter')}
               className="bg-sky-500 text-white px-6 py-3 rounded-xl hover:bg-sky-600 transition-colors"
             >
               <i className="fab fa-twitter mr-2"></i>트위터
             </Button>
             <Button
-              onClick={() => onShare('copy')}
+              onClick={() => handleShare('copy')}
               className="bg-neutral-600 text-white px-6 py-3 rounded-xl hover:bg-neutral-700 transition-colors"
             >
               <i className="fas fa-link mr-2"></i>링크 복사

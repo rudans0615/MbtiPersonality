@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useLocation } from "wouter";
+import { useLocation, Link } from "wouter";
 import { mbtiTypes, getTypesByGroup } from "@/data/mbtiTypes";
 import { Card, CardContent } from "@/components/ui/card";
 import ResultCard from "@/components/ResultCard";
@@ -26,25 +26,63 @@ export default function Results() {
   };
 
   const handleShare = (platform: string) => {
-    const url = encodeURIComponent(window.location.href);
-    const text = encodeURIComponent(`나의 MBTI 성격유형은 ${mbtiResult}입니다! 당신도 확인해보세요!`);
+    const currentUrl = window.location.origin + '/';
+    const shareText = `나의 MBTI 성격유형은 ${mbtiResult}(${mbtiTypes[mbtiResult!]?.title})입니다! 당신도 확인해보세요!`;
+    const encodedUrl = encodeURIComponent(currentUrl);
+    const encodedText = encodeURIComponent(shareText);
 
     switch (platform) {
       case 'facebook':
-        window.open(`https://www.facebook.com/sharer/sharer.php?u=${url}&quote=${text}`, '_blank');
+        const facebookUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}&quote=${encodedText}`;
+        window.open(facebookUrl, '_blank', 'width=600,height=400');
         break;
       case 'twitter':
-        window.open(`https://twitter.com/intent/tweet?url=${url}&text=${text}`, '_blank');
+        const twitterUrl = `https://twitter.com/intent/tweet?text=${encodedText}&url=${encodedUrl}`;
+        window.open(twitterUrl, '_blank', 'width=600,height=400');
         break;
       case 'copy':
-        navigator.clipboard.writeText(window.location.href).then(() => {
-          toast({
-            title: "링크가 복사되었습니다!",
-            description: "친구들과 공유해보세요.",
+        const shareMessage = `${shareText}\n\n${currentUrl}`;
+        if (navigator.clipboard && window.isSecureContext) {
+          navigator.clipboard.writeText(shareMessage).then(() => {
+            toast({
+              title: "링크가 복사되었습니다!",
+              description: "친구들과 공유해보세요.",
+            });
+          }).catch(() => {
+            // Fallback for clipboard API failure
+            fallbackCopyTextToClipboard(shareMessage);
           });
-        });
+        } else {
+          // Fallback for older browsers
+          fallbackCopyTextToClipboard(shareMessage);
+        }
         break;
     }
+  };
+
+  const fallbackCopyTextToClipboard = (text: string) => {
+    const textArea = document.createElement("textarea");
+    textArea.value = text;
+    textArea.style.top = "0";
+    textArea.style.left = "0";
+    textArea.style.position = "fixed";
+    document.body.appendChild(textArea);
+    textArea.focus();
+    textArea.select();
+    try {
+      document.execCommand('copy');
+      toast({
+        title: "링크가 복사되었습니다!",
+        description: "친구들과 공유해보세요.",
+      });
+    } catch (err) {
+      toast({
+        title: "복사 실패",
+        description: "수동으로 링크를 복사해주세요.",
+        variant: "destructive"
+      });
+    }
+    document.body.removeChild(textArea);
   };
 
   const showTypeInfo = (type: string) => {
@@ -98,14 +136,12 @@ export default function Results() {
               <h4 className="text-lg font-semibold text-purple-600 mb-4">분석가 (NT)</h4>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 {typeGroups.analysts.map((type) => (
-                  <div
-                    key={type}
-                    onClick={() => showTypeInfo(type)}
-                    className="text-center p-4 rounded-xl border-2 border-purple-200 hover:border-purple-400 transition-colors card-hover cursor-pointer"
-                  >
-                    <div className="font-bold text-purple-600 mb-1">{type}</div>
-                    <div className="text-sm text-neutral-600">{mbtiTypes[type]?.title}</div>
-                  </div>
+                  <Link key={type} href={`/type/${type}`}>
+                    <div className="text-center p-4 rounded-xl border-2 border-purple-200 hover:border-purple-400 transition-colors card-hover cursor-pointer">
+                      <div className="font-bold text-purple-600 mb-1">{type}</div>
+                      <div className="text-sm text-neutral-600">{mbtiTypes[type]?.title}</div>
+                    </div>
+                  </Link>
                 ))}
               </div>
             </div>
@@ -115,14 +151,12 @@ export default function Results() {
               <h4 className="text-lg font-semibold text-green-600 mb-4">외교관 (NF)</h4>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 {typeGroups.diplomats.map((type) => (
-                  <div
-                    key={type}
-                    onClick={() => showTypeInfo(type)}
-                    className="text-center p-4 rounded-xl border-2 border-green-200 hover:border-green-400 transition-colors card-hover cursor-pointer"
-                  >
-                    <div className="font-bold text-green-600 mb-1">{type}</div>
-                    <div className="text-sm text-neutral-600">{mbtiTypes[type]?.title}</div>
-                  </div>
+                  <Link key={type} href={`/type/${type}`}>
+                    <div className="text-center p-4 rounded-xl border-2 border-green-200 hover:border-green-400 transition-colors card-hover cursor-pointer">
+                      <div className="font-bold text-green-600 mb-1">{type}</div>
+                      <div className="text-sm text-neutral-600">{mbtiTypes[type]?.title}</div>
+                    </div>
+                  </Link>
                 ))}
               </div>
             </div>
@@ -132,14 +166,12 @@ export default function Results() {
               <h4 className="text-lg font-semibold text-blue-600 mb-4">관리자 (SJ)</h4>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 {typeGroups.sentinels.map((type) => (
-                  <div
-                    key={type}
-                    onClick={() => showTypeInfo(type)}
-                    className="text-center p-4 rounded-xl border-2 border-blue-200 hover:border-blue-400 transition-colors card-hover cursor-pointer"
-                  >
-                    <div className="font-bold text-blue-600 mb-1">{type}</div>
-                    <div className="text-sm text-neutral-600">{mbtiTypes[type]?.title}</div>
-                  </div>
+                  <Link key={type} href={`/type/${type}`}>
+                    <div className="text-center p-4 rounded-xl border-2 border-blue-200 hover:border-blue-400 transition-colors card-hover cursor-pointer">
+                      <div className="font-bold text-blue-600 mb-1">{type}</div>
+                      <div className="text-sm text-neutral-600">{mbtiTypes[type]?.title}</div>
+                    </div>
+                  </Link>
                 ))}
               </div>
             </div>
@@ -149,14 +181,12 @@ export default function Results() {
               <h4 className="text-lg font-semibold text-orange-600 mb-4">탐험가 (SP)</h4>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 {typeGroups.explorers.map((type) => (
-                  <div
-                    key={type}
-                    onClick={() => showTypeInfo(type)}
-                    className="text-center p-4 rounded-xl border-2 border-orange-200 hover:border-orange-400 transition-colors card-hover cursor-pointer"
-                  >
-                    <div className="font-bold text-orange-600 mb-1">{type}</div>
-                    <div className="text-sm text-neutral-600">{mbtiTypes[type]?.title}</div>
-                  </div>
+                  <Link key={type} href={`/type/${type}`}>
+                    <div className="text-center p-4 rounded-xl border-2 border-orange-200 hover:border-orange-400 transition-colors card-hover cursor-pointer">
+                      <div className="font-bold text-orange-600 mb-1">{type}</div>
+                      <div className="text-sm text-neutral-600">{mbtiTypes[type]?.title}</div>
+                    </div>
+                  </Link>
                 ))}
               </div>
             </div>

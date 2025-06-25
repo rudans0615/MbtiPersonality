@@ -15,9 +15,9 @@ export default function Landing() {
           <span className="text-primary">MBTI</span> 검사
         </div>
         <div className="hidden md:flex space-x-6">
-          <a href="#" className="text-neutral-600 hover:text-primary transition-colors">소개</a>
-          <a href="#" className="text-neutral-600 hover:text-primary transition-colors">유형별 설명</a>
-          <a href="#" className="text-neutral-600 hover:text-primary transition-colors">블로그</a>
+          <Link href="/about" className="text-neutral-600 hover:text-primary transition-colors">소개</Link>
+          <Link href="/about" className="text-neutral-600 hover:text-primary transition-colors">유형별 설명</Link>
+          <Link href="/blog" className="text-neutral-600 hover:text-primary transition-colors">블로그</Link>
         </div>
       </nav>
 
