@@ -72,9 +72,11 @@ export default function Blog() {
                 <p className="text-neutral-600 text-lg leading-relaxed mb-6">
                   {post.excerpt}
                 </p>
-                <Button className="bg-primary text-white hover:bg-primary/90 transition-colors">
-                  읽어보기 <i className="fas fa-arrow-right ml-2"></i>
-                </Button>
+                <Link href={`/blog/${post.id}`}>
+                  <Button className="bg-primary text-white hover:bg-primary/90 transition-colors">
+                    읽어보기 <i className="fas fa-arrow-right ml-2"></i>
+                  </Button>
+                </Link>
               </CardContent>
             </Card>
           ))}
@@ -85,25 +87,7 @@ export default function Blog() {
             className="my-8"
           />
 
-          {/* Newsletter Signup */}
-          <Card className="bg-gradient-to-r from-primary to-secondary text-white rounded-3xl shadow-lg">
-            <CardContent className="p-8 text-center">
-              <h3 className="text-2xl font-bold mb-4">MBTI 뉴스레터 구독</h3>
-              <p className="text-lg opacity-90 mb-6">
-                새로운 성격유형 분석과 심리학 인사이트를 가장 먼저 받아보세요
-              </p>
-              <div className="flex flex-col md:flex-row gap-4 max-w-md mx-auto">
-                <input 
-                  type="email" 
-                  placeholder="이메일 주소를 입력하세요"
-                  className="flex-1 px-4 py-3 rounded-xl text-neutral-800 placeholder-neutral-500"
-                />
-                <Button className="bg-white text-primary hover:bg-neutral-100 transition-colors font-semibold px-6 py-3">
-                  구독하기
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
+
 
           {/* Related Links */}
           <div className="text-center space-y-4">
