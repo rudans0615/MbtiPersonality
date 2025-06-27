@@ -2,13 +2,12 @@ import { useState } from "react";
 import { Link, useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { Menu, Home, Brain, Heart, Zap, BookOpen, Info } from "lucide-react";
+import { Menu, Home, Brain, Zap, BookOpen, Info } from "lucide-react";
 
 const navigationItems = [
   { href: "/", label: "홈", icon: Home },
   { href: "/mbti", label: "MBTI 검사", icon: Brain },
-  { href: "/love", label: "연애유형 검사", icon: Heart },
-  { href: "/career", label: "직업적성 검사", icon: Zap },
+  { href: "/teto-egen-test", label: "테토 vs 에겐", icon: Zap },
   { href: "/blog", label: "블로그", icon: BookOpen },
   { href: "/about", label: "소개", icon: Info },
 ];
@@ -22,7 +21,8 @@ export default function Navigation() {
       {navigationItems.map((item) => {
         const Icon = item.icon;
         const isActive = location === item.href || 
-          (item.href === "/mbti" && (location === "/test" || location === "/results"));
+          (item.href === "/mbti" && (location === "/test" || location === "/results")) ||
+          (item.href === "/teto-egen-test" && location === "/teto-egen-results");
         
         return (
           <Link 
