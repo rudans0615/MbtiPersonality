@@ -93,3 +93,4 @@ Changelog:
 - June 25, 2025. Initial setup
 - June 25, 2025. Fixed deployment configuration and production build issues
 - June 27, 2025. Expanded to multi-test platform with mobile-friendly navigation
+- June 27, 2025. Added legal compliance pages (Terms of Service, Privacy Policy) and Google Analytics integration

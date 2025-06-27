@@ -252,8 +252,8 @@ export default function Landing() {
               <ul className="space-y-2 text-neutral-400">
                 <li><Link href="/about"><a className="hover:text-white transition-colors">소개</a></Link></li>
                 <li><Link href="/blog"><a className="hover:text-white transition-colors">블로그</a></Link></li>
-                <li><a href="#" className="hover:text-white transition-colors">이용약관</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">개인정보처리방침</a></li>
+                <li><Link href="/terms"><a className="hover:text-white transition-colors">이용약관</a></Link></li>
+                <li><Link href="/privacy"><a className="hover:text-white transition-colors">개인정보처리방침</a></Link></li>
               </ul>
             </div>
           </div>

@@ -93,8 +93,20 @@ export default function Navigation() {
                   </div>
                   
                   {/* Mobile Footer */}
-                  <div className="p-6 border-t border-neutral-200 text-center">
-                    <p className="text-sm text-neutral-500">
+                  <div className="p-6 border-t border-neutral-200">
+                    <div className="space-y-2">
+                      <Link href="/terms" onClick={() => setIsOpen(false)}>
+                        <div className="text-sm text-neutral-600 hover:text-primary py-1">
+                          이용약관
+                        </div>
+                      </Link>
+                      <Link href="/privacy" onClick={() => setIsOpen(false)}>
+                        <div className="text-sm text-neutral-600 hover:text-primary py-1">
+                          개인정보처리방침
+                        </div>
+                      </Link>
+                    </div>
+                    <p className="text-sm text-neutral-500 mt-4 text-center">
                       당신의 성격을 발견하세요
                     </p>
                   </div>
