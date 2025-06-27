@@ -8,6 +8,34 @@ import AdSense from "@/components/AdSense";
 import { useToast } from "@/hooks/use-toast";
 import { RotateCcw, Share2, Users, Heart, Sparkles } from "lucide-react";
 
+const getCoupangProducts = (type: string): string[] => {
+  const products = {
+    "TETO_F": [ // 테토녀
+      '<iframe src="https://coupa.ng/ciO7vz" width="120" height="240" frameborder="0" scrolling="no" referrerpolicy="unsafe-url" browsingtopics></iframe>',
+      '<iframe src="https://coupa.ng/ciO8B7" width="120" height="240" frameborder="0" scrolling="no" referrerpolicy="unsafe-url" browsingtopics></iframe>',
+      '<iframe src="https://coupa.ng/ciO8CP" width="120" height="240" frameborder="0" scrolling="no" referrerpolicy="unsafe-url" browsingtopics></iframe>'
+    ],
+    "TETO_M": [ // 테토남
+      '<iframe src="https://coupa.ng/ciO8Do" width="120" height="240" frameborder="0" scrolling="no" referrerpolicy="unsafe-url" browsingtopics></iframe>',
+      '<iframe src="https://coupa.ng/ciO8DQ" width="120" height="240" frameborder="0" scrolling="no" referrerpolicy="unsafe-url" browsingtopics></iframe>',
+      '<iframe src="https://coupa.ng/ciO8Mh" width="120" height="240" frameborder="0" scrolling="no" referrerpolicy="unsafe-url" browsingtopics></iframe>'
+    ],
+    "EGEN_F": [ // 에겐녀
+      '<iframe src="https://coupa.ng/ciO81b" width="120" height="240" frameborder="0" scrolling="no" referrerpolicy="unsafe-url" browsingtopics></iframe>',
+      '<iframe src="https://coupa.ng/ciO9e2" width="120" height="240" frameborder="0" scrolling="no" referrerpolicy="unsafe-url" browsingtopics></iframe>',
+      '<iframe src="https://coupa.ng/ciO9xR" width="120" height="240" frameborder="0" scrolling="no" referrerpolicy="unsafe-url" browsingtopics></iframe>',
+      '<iframe src="https://coupa.ng/ciO9qD" width="120" height="240" frameborder="0" scrolling="no" referrerpolicy="unsafe-url" browsingtopics></iframe>'
+    ],
+    "EGEN_M": [ // 에겐남
+      '<iframe src="https://coupa.ng/ciO9ww" width="120" height="240" frameborder="0" scrolling="no" referrerpolicy="unsafe-url" browsingtopics></iframe>',
+      '<iframe src="https://coupa.ng/ciO9wN" width="120" height="240" frameborder="0" scrolling="no" referrerpolicy="unsafe-url" browsingtopics></iframe>',
+      '<iframe src="https://coupa.ng/ciO9w2" width="120" height="240" frameborder="0" scrolling="no" referrerpolicy="unsafe-url" browsingtopics></iframe>'
+    ]
+  };
+  
+  return products[type as keyof typeof products] || [];
+};
+
 export default function TetoEgenResults() {
   const [, setLocation] = useLocation();
   const { toast } = useToast();
@@ -87,6 +115,8 @@ export default function TetoEgenResults() {
     }
     document.body.removeChild(textArea);
   };
+
+
 
   if (!testResult) {
     return <div>Loading...</div>;
@@ -212,6 +242,29 @@ export default function TetoEgenResults() {
                 </div>
               </div>
             )}
+
+            {/* Recommended Products */}
+            <div className="mb-8">
+              <h3 className="text-xl font-bold text-neutral-800 mb-4 flex items-center">
+                🛍️ {typeData.title} 맞춤 추천 상품
+              </h3>
+              <p className="text-sm text-neutral-600 mb-4">
+                당신의 성향에 맞는 엄선된 상품들을 추천해드려요!
+              </p>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                {getCoupangProducts(testResult.type).map((product, index) => (
+                  <div key={index} className="bg-neutral-50 rounded-lg p-2 flex justify-center">
+                    <div 
+                      dangerouslySetInnerHTML={{ __html: product }}
+                      className="coupang-product-iframe"
+                    />
+                  </div>
+                ))}
+              </div>
+              <p className="text-xs text-neutral-500 mt-2 text-center">
+                "이 포스팅은 쿠팡 파트너스 활동의 일환으로, 이에 따른 일정액의 수수료를 제공받습니다."
+              </p>
+            </div>
 
             {/* Action Buttons */}
             <div className="flex flex-col sm:flex-row gap-3">
