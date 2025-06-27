@@ -94,3 +94,4 @@ Changelog:
 - June 25, 2025. Fixed deployment configuration and production build issues
 - June 27, 2025. Expanded to multi-test platform with mobile-friendly navigation
 - June 27, 2025. Added legal compliance pages (Terms of Service, Privacy Policy) and Google Analytics integration
+- June 27, 2025. Implemented Teto vs Egen personality test with 4 types (테토남, 테토녀, 에겐남, 에겐녀) based on testosterone/estrogen characteristics

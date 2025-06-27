@@ -10,6 +10,8 @@ import About from "@/pages/about";
 import Blog from "@/pages/blog";
 import BlogPost from "@/pages/blog-post";
 import TypeDetail from "@/pages/type-detail";
+import TetoEgenTest from "@/pages/teto-egen-test";
+import TetoEgenResults from "@/pages/teto-egen-results";
 import Terms from "@/pages/terms";
 import Privacy from "@/pages/privacy";
 import NotFound from "@/pages/not-found";
@@ -25,6 +27,8 @@ function Router() {
       <Route path="/blog" component={Blog} />
       <Route path="/blog/:id" component={BlogPost} />
       <Route path="/type/:type" component={TypeDetail} />
+      <Route path="/teto-egen-test" component={TetoEgenTest} />
+      <Route path="/teto-egen-results" component={TetoEgenResults} />
       <Route path="/terms" component={Terms} />
       <Route path="/privacy" component={Privacy} />
       <Route component={NotFound} />
