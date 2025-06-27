@@ -1,11 +1,14 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Link } from "wouter";
+import Navigation from "@/components/Navigation";
 import AdSense from "@/components/AdSense";
 
 export default function About() {
   return (
     <div className="min-h-screen bg-neutral-50">
+      <Navigation />
+      
       {/* Header */}
       <div className="gradient-bg text-white py-16">
         <div className="max-w-4xl mx-auto px-6 text-center">

@@ -3,6 +3,7 @@ import { useLocation, Link } from "wouter";
 import { mbtiTypes, getTypesByGroup } from "@/data/mbtiTypes";
 import { Card, CardContent } from "@/components/ui/card";
 import ResultCard from "@/components/ResultCard";
+import Navigation from "@/components/Navigation";
 import AdSense from "@/components/AdSense";
 import { useToast } from "@/hooks/use-toast";
 
@@ -101,6 +102,8 @@ export default function Results() {
 
   return (
     <div className="min-h-screen bg-neutral-50">
+      <Navigation />
+      
       {/* Results Header */}
       <div className="gradient-bg text-white py-16">
         <div className="max-w-4xl mx-auto px-6 text-center">

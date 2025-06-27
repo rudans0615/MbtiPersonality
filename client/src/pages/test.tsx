@@ -3,6 +3,7 @@ import { useMBTITest } from "@/hooks/useMBTITest";
 import { mbtiTypes } from "@/data/mbtiTypes";
 import ProgressBar from "@/components/ProgressBar";
 import QuestionCard from "@/components/QuestionCard";
+import Navigation from "@/components/Navigation";
 import AdSense from "@/components/AdSense";
 
 export default function Test() {
@@ -39,6 +40,8 @@ export default function Test() {
 
   return (
     <div className="min-h-screen bg-neutral-50">
+      <Navigation />
+      
       {/* Progress Header */}
       <div className="bg-white shadow-sm sticky top-0 z-20">
         <div className="max-w-4xl mx-auto px-6 py-4">

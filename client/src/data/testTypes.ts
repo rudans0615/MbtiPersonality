@@ -1,0 +1,127 @@
+export interface TestType {
+  id: string;
+  title: string;
+  subtitle: string;
+  description: string;
+  emoji: string;
+  color: string;
+  duration: string;
+  questions: number;
+  href: string;
+  features: string[];
+  isAvailable: boolean;
+}
+
+export const testTypes: TestType[] = [
+  {
+    id: "mbti",
+    title: "MBTI 성격유형 검사",
+    subtitle: "나의 진짜 성격 찾기",
+    description: "과학적으로 검증된 MBTI 성격유형 검사로 당신의 숨겨진 성격과 잠재력을 발견하세요.",
+    emoji: "🧠",
+    color: "from-blue-500 to-purple-600",
+    duration: "10분",
+    questions: 60,
+    href: "/test",
+    features: [
+      "16가지 성격유형 분석",
+      "강점과 약점 파악",
+      "추천 직업군",
+      "궁합 분석"
+    ],
+    isAvailable: true
+  },
+  {
+    id: "love",
+    title: "연애유형 검사",
+    subtitle: "나의 사랑 스타일 알아보기",
+    description: "당신의 연애 스타일과 이상형, 연애에서 중요하게 생각하는 가치를 알아보세요.",
+    emoji: "💕",
+    color: "from-pink-500 to-rose-600",
+    duration: "7분",
+    questions: 40,
+    href: "/love-test",
+    features: [
+      "연애 스타일 분석",
+      "이상형 파악",
+      "사랑의 언어",
+      "연애 조언"
+    ],
+    isAvailable: false
+  },
+  {
+    id: "career",
+    title: "직업적성 검사",
+    subtitle: "나에게 맞는 직업 찾기",
+    description: "당신의 성향과 능력에 맞는 최적의 직업과 진로를 추천해드립니다.",
+    emoji: "🚀",
+    color: "from-green-500 to-emerald-600",
+    duration: "12분",
+    questions: 80,
+    href: "/career-test",
+    features: [
+      "적성 분야 분석",
+      "추천 직업군",
+      "역량 개발 방향",
+      "진로 로드맵"
+    ],
+    isAvailable: false
+  },
+  {
+    id: "stress",
+    title: "스트레스 유형 검사",
+    subtitle: "나만의 스트레스 해소법",
+    description: "당신이 스트레스를 받는 상황과 효과적인 해소 방법을 알아보세요.",
+    emoji: "🧘",
+    color: "from-indigo-500 to-blue-600",
+    duration: "8분",
+    questions: 50,
+    href: "/stress-test",
+    features: [
+      "스트레스 원인 분석",
+      "대처 방식 파악",
+      "맞춤 해소법",
+      "건강 관리 팁"
+    ],
+    isAvailable: false
+  },
+  {
+    id: "communication",
+    title: "소통 스타일 검사",
+    subtitle: "나의 대화법 알아보기",
+    description: "당신의 소통 스타일과 다른 사람과 더 잘 어울리는 방법을 알아보세요.",
+    emoji: "🗣️",
+    color: "from-orange-500 to-red-600",
+    duration: "9분",
+    questions: 45,
+    href: "/communication-test",
+    features: [
+      "소통 스타일 분석",
+      "경청 능력 측정",
+      "갈등 해결 방식",
+      "관계 개선 팁"
+    ],
+    isAvailable: false
+  },
+  {
+    id: "leadership",
+    title: "리더십 유형 검사",
+    subtitle: "나의 리더십 스타일",
+    description: "당신만의 리더십 스타일과 팀을 이끄는 방식을 알아보세요.",
+    emoji: "👑",
+    color: "from-yellow-500 to-orange-600",
+    duration: "11분",
+    questions: 55,
+    href: "/leadership-test",
+    features: [
+      "리더십 유형 분석",
+      "팀 운영 방식",
+      "의사결정 스타일",
+      "성장 방향"
+    ],
+    isAvailable: false
+  }
+];
+
+export const getAvailableTests = () => testTypes.filter(test => test.isAvailable);
+export const getComingSoonTests = () => testTypes.filter(test => !test.isAvailable);
