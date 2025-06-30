@@ -43,14 +43,32 @@
       gtag('config', 'G-D8R12Q412M');
     </script>
     
-    <!-- Google AdSense Auto Ads -->
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1176633482077881"
-            crossorigin="anonymous"></script>
+    <!-- Google AdSense Auto Ads - Production Only -->
     <script>
-      (adsbygoogle = window.adsbygoogle || []).push({
-        google_ad_client: "ca-pub-1176633482077881",
-        enable_page_level_ads: true
-      });
+      // Only load AdSense in production environment
+      if (window.location.hostname === 'mbtifinder.com' || 
+          (window.location.hostname.endsWith('.replit.app') && !window.location.hostname.includes('00-'))) {
+        
+        // Prevent duplicate loading
+        if (!window.adsenseLoaded) {
+          window.adsenseLoaded = true;
+          
+          const script = document.createElement('script');
+          script.async = true;
+          script.src = 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1176633482077881';
+          script.crossOrigin = 'anonymous';
+          script.onload = function() {
+            (adsbygoogle = window.adsbygoogle || []).push({
+              google_ad_client: "ca-pub-1176633482077881",
+              enable_page_level_ads: true
+            });
+          };
+          script.onerror = function() {
+            console.warn('AdSense failed to load');
+          };
+          document.head.appendChild(script);
+        }
+      }
     </script>
   </head>
   <body>
