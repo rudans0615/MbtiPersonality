@@ -68,6 +68,13 @@ export default function TetoEgenTest() {
                     e.preventDefault();
                     e.stopPropagation();
                     console.log('Button clicked:', answer.value);
+                    
+                    // Check if already selected to prevent double execution
+                    if (selectedAnswer === answer.value) {
+                      console.log('Already selected, skipping...');
+                      return;
+                    }
+                    
                     handleAnswerSelect(answer.value);
                     // Auto-advance after a short delay
                     setTimeout(() => {

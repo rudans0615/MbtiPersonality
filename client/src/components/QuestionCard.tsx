@@ -50,6 +50,13 @@ export default function QuestionCard({
                 e.preventDefault();
                 e.stopPropagation();
                 console.log('MBTI Button clicked:', option.value);
+                
+                // Check if already selected to prevent double execution
+                if (selectedAnswer === option.value) {
+                  console.log('Already selected, skipping...');
+                  return;
+                }
+                
                 onAnswerSelect(option.value);
                 // Auto-advance after a short delay
                 setTimeout(() => {
