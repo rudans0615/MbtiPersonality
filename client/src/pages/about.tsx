@@ -12,8 +12,8 @@ export default function About() {
       {/* Header */}
       <div className="gradient-bg text-white py-16">
         <div className="max-w-4xl mx-auto px-6 text-center">
-          <h1 className="text-4xl md:text-5xl font-bold mb-4">MBTI 성격유형 검사 소개</h1>
-          <p className="text-xl opacity-90">과학적으로 검증된 성격 분석 도구에 대해 알아보세요</p>
+          <h1 className="text-4xl md:text-5xl font-bold mb-4">성격유형 검사 소개</h1>
+          <p className="text-xl opacity-90">MBTI와 테토-에겐 성격유형에 대해 알아보세요</p>
         </div>
       </div>
 
@@ -29,17 +29,57 @@ export default function About() {
 
         {/* Main Content */}
         <div className="space-y-8">
+          {/* MBTI Section */}
           <Card className="bg-white rounded-3xl shadow-lg p-8">
             <CardContent className="p-0">
-              <h2 className="text-3xl font-bold text-neutral-800 mb-6">MBTI란 무엇인가요?</h2>
+              <div className="flex items-center mb-6">
+                <div className="text-4xl mr-4">🧠</div>
+                <h2 className="text-3xl font-bold text-neutral-800">MBTI 성격유형 검사</h2>
+              </div>
               <div className="prose prose-lg max-w-none text-neutral-700">
                 <p className="mb-4">
-                  MBTI(Myers-Briggs Type Indicator)는 카를 융의 심리유형론을 기반으로 캐서린 쿡 브릭스와 
-                  그의 딸 이사벨 브릭스 마이어스가 개발한 성격유형 검사입니다.
+                  MBTI(Myers-Briggs Type Indicator)는 칼 구스타프 융의 심리학적 유형론을 바탕으로 
+                  개발된 세계에서 가장 널리 사용되는 성격유형 검사입니다.
                 </p>
+                <p className="mb-6">
+                  개인의 인식과 판단에 대한 심리학적 선호도를 측정하여 
+                  16가지 성격유형 중 하나로 분류합니다.
+                </p>
+                <div className="text-center">
+                  <Link href="/test">
+                    <Button className="bg-primary text-white px-8 py-3 text-lg">
+                      MBTI 검사 시작하기
+                    </Button>
+                  </Link>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Teto-Egen Section */}
+          <Card className="bg-white rounded-3xl shadow-lg p-8">
+            <CardContent className="p-0">
+              <div className="flex items-center mb-6">
+                <div className="text-4xl mr-4">⚡</div>
+                <h2 className="text-3xl font-bold text-neutral-800">테토 vs 에겐 성격진단</h2>
+              </div>
+              <div className="prose prose-lg max-w-none text-neutral-700">
                 <p className="mb-4">
-                  이 검사는 개인의 선호도를 4가지 차원으로 분류하여 16가지 성격유형으로 구분합니다.
+                  테토-에겐 성격유형은 호르몬의 영향을 바탕으로 한 새로운 성격 분류 방법입니다. 
+                  테스토스테론과 에스트로겐이라는 주요 호르몬의 특성을 반영하여 
+                  4가지 유형으로 분류합니다.
                 </p>
+                <p className="mb-6">
+                  이 시스템은 기존의 MBTI와는 다른 관점에서 인간의 성격을 분석하며, 
+                  특히 연애와 인간관계에서 유용한 통찰을 제공합니다.
+                </p>
+                <div className="text-center">
+                  <Link href="/teto-egen-test">
+                    <Button className="bg-gradient-to-r from-blue-500 to-purple-500 text-white px-8 py-3 text-lg">
+                      테토-에겐 검사 시작하기
+                    </Button>
+                  </Link>
+                </div>
               </div>
             </CardContent>
           </Card>

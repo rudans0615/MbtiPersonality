@@ -274,21 +274,7 @@ export default function Blog() {
           className="mb-8"
         />
 
-        {/* Newsletter Signup */}
-        <Card className="bg-white p-8 text-center">
-          <h3 className="text-2xl font-bold mb-4">뉴스레터 구독</h3>
-          <p className="text-neutral-600 mb-6">
-            최신 MBTI와 테토-에겐 인사이트를 이메일로 받아보세요
-          </p>
-          <div className="flex max-w-md mx-auto gap-3">
-            <input 
-              type="email" 
-              placeholder="이메일 주소" 
-              className="flex-1 px-4 py-2 border border-neutral-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
-            />
-            <Button>구독하기</Button>
-          </div>
-        </Card>
+
       </div>
     </div>
   );
