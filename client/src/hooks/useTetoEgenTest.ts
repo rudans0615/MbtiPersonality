@@ -27,7 +27,11 @@ export function useTetoEgenTest() {
   };
 
   const goToNext = () => {
-    if (selectedAnswer === null) return;
+    console.log('goToNext called, selectedAnswer:', selectedAnswer);
+    if (selectedAnswer === null) {
+      console.log('selectedAnswer is null, returning');
+      return;
+    }
 
     // 답변 저장
     const newAnswer: TetoEgenAnswer = {
@@ -117,6 +121,9 @@ export function useTetoEgenTest() {
     restart,
     getAnswersForQuestion,
     canGoNext: selectedAnswer !== null,
-    canGoPrevious: !isFirstQuestion
+    canGoPrevious: !isFirstQuestion,
+    answers,
+    setCurrentQuestionIndex,
+    setSelectedAnswer
   };
 }
