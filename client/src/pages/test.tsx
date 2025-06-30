@@ -69,7 +69,7 @@ export default function Test() {
         {/* AdSense - Middle */}
         {(currentQuestion + 1) % 20 === 0 && (
           <AdSense 
-            adSlot="1234567891"
+            adSlot="9876543211"
             className="mt-8"
           />
         )}
