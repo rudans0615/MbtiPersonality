@@ -23,14 +23,15 @@ export default function Test() {
     currentQuestionData
   } = useMBTITest();
 
-  const handleNext = () => {
+  const handleNext = (answerValue?: number) => {
+    console.log('MBTI handleNext called with answerValue:', answerValue);
     if (isLastQuestion) {
       const result = calculateResults();
       // Store result in sessionStorage for results page
       sessionStorage.setItem('mbtiResult', result);
       setLocation('/results');
     } else {
-      nextQuestion();
+      nextQuestion(answerValue);
     }
   };
 
@@ -59,9 +60,9 @@ export default function Test() {
           question={currentQuestionData}
           selectedAnswer={selectedAnswer}
           onAnswerSelect={selectAnswer}
-          onNext={() => {
-            console.log('handleNext called in test.tsx');
-            handleNext();
+          onNext={(answerValue) => {
+            console.log('handleNext called in test.tsx with answerValue:', answerValue);
+            handleNext(answerValue);
           }}
           onPrevious={previousQuestion}
           canGoNext={canGoNext}

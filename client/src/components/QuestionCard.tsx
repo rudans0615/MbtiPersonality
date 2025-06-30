@@ -6,7 +6,7 @@ interface QuestionCardProps {
   question: MBTIQuestion;
   selectedAnswer: number | null;
   onAnswerSelect: (value: number) => void;
-  onNext: () => void;
+  onNext: (answerValue?: number) => void;
   onPrevious: () => void;
   canGoNext: boolean;
   canGoPrevious: boolean;
@@ -61,8 +61,8 @@ export default function QuestionCard({
                 // Auto-advance after a short delay
                 setTimeout(() => {
                   console.log('MBTI Auto-advancing...');
-                  console.log('Calling onNext function...');
-                  onNext();
+                  console.log('Calling onNext function with value:', option.value);
+                  onNext(option.value);
                   console.log('onNext called');
                 }, 200);
               }}

@@ -17,13 +17,19 @@ export function useMBTITest() {
     setSelectedAnswer(value);
   }, []);
 
-  const nextQuestion = useCallback(() => {
-    if (selectedAnswer === null) return;
+  const nextQuestion = useCallback((answerValue?: number) => {
+    const valueToUse = answerValue !== undefined ? answerValue : selectedAnswer;
+    console.log('MBTI nextQuestion called, valueToUse:', valueToUse, 'selectedAnswer:', selectedAnswer);
+    
+    if (valueToUse === null) {
+      console.log('MBTI valueToUse is null, returning');
+      return;
+    }
 
     const question = mbtiQuestions[currentQuestion];
     const newAnswer: Answer = {
       questionId: question.id,
-      value: selectedAnswer,
+      value: valueToUse,
       dimension: question.dimension
     };
 
