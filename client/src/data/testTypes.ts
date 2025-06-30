@@ -50,6 +50,24 @@ export const testTypes: TestType[] = [
     isAvailable: true
   },
   {
+    id: "drunk-test",
+    title: "나 술 취했나? 테스트",
+    subtitle: "지금 당신의 취함 정도를 유쾌하게 진단!",
+    description: "술자리에서 나의 현재 상태를 재미있고 위트있게 체크해보세요. Z세대 틱톡 스타일!",
+    emoji: "🍻",
+    color: "from-purple-500 to-pink-500",
+    duration: "약 3분",
+    questions: 10,
+    href: "/drunk-test",
+    features: [
+      "4가지 취함 레벨 진단",
+      "위트있는 밈 스타일 결과",
+      "재미있는 자가진단",
+      "SNS 공유 최적화"
+    ],
+    isAvailable: true
+  },
+  {
     id: "love",
     title: "연애유형 검사",
     subtitle: "나의 사랑 스타일 알아보기",

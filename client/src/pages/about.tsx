@@ -108,6 +108,33 @@ export default function About() {
             </CardContent>
           </Card>
 
+          {/* Drunk Test Section */}
+          <Card className="bg-white rounded-3xl shadow-lg p-8">
+            <CardContent className="p-0">
+              <div className="flex items-center mb-6">
+                <div className="text-4xl mr-4">🍻</div>
+                <h2 className="text-3xl font-bold text-neutral-800">나 술 취했나? 테스트</h2>
+              </div>
+              <div className="prose prose-lg max-w-none text-neutral-700">
+                <p className="mb-4">
+                  재미있고 유쾌한 자가진단 테스트로 현재 당신의 취함 정도를 체크해보세요. 
+                  Z세대 틱톡 스타일의 위트있는 질문들과 밈 요소가 가득한 엔터테인먼트 테스트입니다.
+                </p>
+                <p className="mb-6">
+                  "폰 화면이 2개로 보임ㅋㅋ", "ex한테 연락하고 싶은 충동" 등 현실적이면서도 
+                  재미있는 상황들을 통해 4가지 취함 레벨로 분류합니다.
+                </p>
+                <div className="text-center">
+                  <Link href="/drunk-test">
+                    <Button className="bg-gradient-to-r from-purple-500 to-pink-500 text-white px-8 py-3 text-lg">
+                      술취함 진단 시작하기
+                    </Button>
+                  </Link>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
           <AdSense 
             adSlot="1234567894"
             className="my-8"
