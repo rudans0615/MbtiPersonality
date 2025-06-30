@@ -22,7 +22,7 @@ export function useTetoEgenTest() {
     
     // 성별 질문인 경우 gender 상태 업데이트
     if (currentQuestion.type === 'gender') {
-      setGender(valueToUse as string);
+      setGender(value as string);
     }
   };
 
@@ -37,7 +37,7 @@ export function useTetoEgenTest() {
     // 답변 저장
     const newAnswer: TetoEgenAnswer = {
       questionId: currentQuestion.id,
-      value: valueToUse
+      value: valueToUse as number | string
     };
 
     const updatedAnswers = [...answers];
