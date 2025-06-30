@@ -98,3 +98,5 @@ Changelog:
 - June 30, 2025. Enhanced Teto-Egen test from 7 to 21 questions with sophisticated percentage-based scoring
 - June 30, 2025. Added comprehensive blog functionality with search, filtering, and pagination
 - June 30, 2025. Created "Am I Drunk?" test with Z-generation TikTok style humor and 4 witty result types
+- June 30, 2025. Completely redesigned navigation with scalable dropdown menu structure for all tests
+- June 30, 2025. Implemented comprehensive SEO optimization following Google SEO starter guide
