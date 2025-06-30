@@ -156,21 +156,20 @@ export const getCompatibilityDescription = (userType: string, partnerType: strin
 };
 
 export const getTetoEgenBalance = (answers: number[]): { teto: number; egen: number } => {
-  // 간단한 계산 로직 - 실제로는 더 복잡한 알고리즘 사용 가능
-  const tetoScore = answers.reduce((sum, answer, index) => {
-    // 홀수 인덱스 질문은 테토 성향, 짝수는 에겐 성향을 측정한다고 가정
-    if (index % 2 === 0) {
-      return sum + answer; // 테토 점수
-    }
-    return sum + (5 - answer); // 에겐 점수 (역산)
-  }, 0);
+  // 더 정교한 계산 로직 - 각 질문의 가중치를 고려
+  const totalScore = answers.reduce((sum, answer) => sum + answer, 0);
+  const maxPossibleScore = answers.length * 4; // 최대 점수 (각 문항 4점)
+  const minPossibleScore = answers.length * 1; // 최소 점수 (각 문항 1점)
   
-  const maxScore = answers.length * 4; // 최대 점수
-  const tetoPercentage = Math.round((tetoScore / maxScore) * 100);
+  // 점수를 0-100 범위로 정규화
+  const normalizedScore = ((totalScore - minPossibleScore) / (maxPossibleScore - minPossibleScore)) * 100;
+  
+  // 테토 성향 계산 (높은 점수 = 테토 성향)
+  const tetoPercentage = Math.round(Math.max(0, Math.min(100, normalizedScore)));
   const egenPercentage = 100 - tetoPercentage;
   
   return {
-    teto: Math.max(0, Math.min(100, tetoPercentage)),
-    egen: Math.max(0, Math.min(100, egenPercentage))
+    teto: tetoPercentage,
+    egen: egenPercentage
   };
 };

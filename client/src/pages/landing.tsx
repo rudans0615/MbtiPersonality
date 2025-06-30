@@ -240,10 +240,10 @@ export default function Landing() {
             <div>
               <h4 className="text-lg font-semibold mb-4">테스트</h4>
               <ul className="space-y-2 text-neutral-400">
-                <li><Link href="/test"><a className="hover:text-white transition-colors">MBTI 검사</a></Link></li>
+                <li><Link href="/test"><a className="hover:text-white transition-colors">MBTI 성격유형 검사</a></Link></li>
+                <li><Link href="/teto-egen-test"><a className="hover:text-white transition-colors">테토 vs 에겐 진단</a></Link></li>
                 <li><span className="text-neutral-500">연애유형 검사 (출시예정)</span></li>
                 <li><span className="text-neutral-500">직업적성 검사 (출시예정)</span></li>
-                <li><span className="text-neutral-500">스트레스 검사 (출시예정)</span></li>
               </ul>
             </div>
 

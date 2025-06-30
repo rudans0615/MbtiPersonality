@@ -38,12 +38,12 @@ export const testTypes: TestType[] = [
     description: "당신의 테스토스테론과 에스트로겐 성향을 4가지 유형으로 분석해보세요.",
     emoji: "⚡",
     color: "from-blue-400 to-purple-400",
-    duration: "5분",
-    questions: 7,
+    duration: "10분",
+    questions: 21,
     href: "/teto-egen-test",
     features: [
       "4가지 유형 분석",
-      "셀럽 예시 제공",
+      "정확한 비율 측정",
       "연애 궁합 분석",
       "호르몬 밸런스 표시"
     ],
