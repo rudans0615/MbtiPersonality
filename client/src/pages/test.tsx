@@ -66,13 +66,7 @@ export default function Test() {
           isLastQuestion={isLastQuestion}
         />
 
-        {/* AdSense - Middle */}
-        {(currentQuestion + 1) % 20 === 0 && (
-          <AdSense 
-            adSlot="9876543211"
-            className="mt-8"
-          />
-        )}
+
       </div>
     </div>
   );

@@ -122,11 +122,7 @@ export default function TypeDetail() {
               </div>
             </div>
 
-            {/* AdSense */}
-            <AdSense 
-              adSlot="1234567893"
-              className="my-8"
-            />
+
 
             <div className="text-center">
               <h3 className="text-xl font-semibold text-neutral-800 mb-4">다른 성격유형도 알아보세요</h3>

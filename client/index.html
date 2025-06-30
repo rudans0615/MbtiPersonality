@@ -43,7 +43,7 @@
       gtag('config', 'G-D8R12Q412M');
     </script>
     
-    <!-- AdSense Integration - Only load in production -->
+    <!-- Google AdSense Auto Ads - Only load in production -->
     <script>
       // Only load AdSense on production domains
       if (window.location.hostname === 'mbtifinder.com' || 
@@ -52,6 +52,8 @@
         script.async = true;
         script.src = 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1176633482077881';
         script.crossOrigin = 'anonymous';
+        script.setAttribute('data-ad-client', 'ca-pub-1176633482077881');
+        script.setAttribute('data-adbreak-test', 'on');
         script.onerror = function() {
           console.warn('AdSense script failed to load');
         };
