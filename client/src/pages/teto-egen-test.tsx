@@ -80,7 +80,12 @@ export default function TetoEgenTest() {
                     // Auto-advance after a short delay
                     setTimeout(() => {
                       console.log('Auto-advancing...');
-                      handleNext();
+                      const result = goToNext(answer.value);
+                      console.log('goToNext result:', result);
+                      if (result === 'COMPLETE') {
+                        console.log('Test completed, navigating to results...');
+                        setLocation('/teto-egen-results');
+                      }
                     }, 200);
                   }}
                   className={`w-full p-4 text-left rounded-xl border-2 transition-all duration-200 ${

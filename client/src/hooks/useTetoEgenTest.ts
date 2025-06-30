@@ -22,21 +22,22 @@ export function useTetoEgenTest() {
     
     // 성별 질문인 경우 gender 상태 업데이트
     if (currentQuestion.type === 'gender') {
-      setGender(value as string);
+      setGender(valueToUse as string);
     }
   };
 
-  const goToNext = () => {
-    console.log('goToNext called, selectedAnswer:', selectedAnswer);
-    if (selectedAnswer === null) {
-      console.log('selectedAnswer is null, returning');
+  const goToNext = (answerValue?: number | string) => {
+    const valueToUse = answerValue || selectedAnswer;
+    console.log('goToNext called, valueToUse:', valueToUse, 'selectedAnswer:', selectedAnswer);
+    if (valueToUse === null) {
+      console.log('valueToUse is null, returning');
       return;
     }
 
     // 답변 저장
     const newAnswer: TetoEgenAnswer = {
       questionId: currentQuestion.id,
-      value: selectedAnswer
+      value: valueToUse
     };
 
     const updatedAnswers = [...answers];
