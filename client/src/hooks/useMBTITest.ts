@@ -19,10 +19,8 @@ export function useMBTITest() {
 
   const nextQuestion = useCallback((answerValue?: number) => {
     const valueToUse = answerValue !== undefined ? answerValue : selectedAnswer;
-    console.log('MBTI nextQuestion called, valueToUse:', valueToUse, 'selectedAnswer:', selectedAnswer);
     
     if (valueToUse === null) {
-      console.log('MBTI valueToUse is null, returning');
       return;
     }
 

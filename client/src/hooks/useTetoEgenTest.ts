@@ -28,9 +28,7 @@ export function useTetoEgenTest() {
 
   const goToNext = (answerValue?: number | string) => {
     const valueToUse = answerValue || selectedAnswer;
-    console.log('goToNext called, valueToUse:', valueToUse, 'selectedAnswer:', selectedAnswer);
     if (valueToUse === null) {
-      console.log('valueToUse is null, returning');
       return;
     }
 

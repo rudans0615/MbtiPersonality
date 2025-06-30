@@ -67,11 +67,9 @@ export default function TetoEgenTest() {
                   onClick={(e) => {
                     e.preventDefault();
                     e.stopPropagation();
-                    console.log('Button clicked:', answer.value);
                     
                     // Check if already selected to prevent double execution
                     if (selectedAnswer === answer.value) {
-                      console.log('Already selected, skipping...');
                       return;
                     }
                     
@@ -79,11 +77,8 @@ export default function TetoEgenTest() {
                     
                     // Auto-advance after a short delay
                     setTimeout(() => {
-                      console.log('Auto-advancing...');
                       const result = goToNext(answer.value);
-                      console.log('goToNext result:', result);
                       if (result === 'COMPLETE') {
-                        console.log('Test completed, navigating to results...');
                         setLocation('/teto-egen-results');
                       }
                     }, 200);

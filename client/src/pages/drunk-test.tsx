@@ -220,22 +220,18 @@ export default function DrunkTest() {
                   onClick={(e) => {
                     e.preventDefault();
                     e.stopPropagation();
-                    console.log('Drunk Test Button clicked:', option.score);
                     
                     // Check if already selected to prevent double execution
                     if (currentAnswer?.score === option.score) {
-                      console.log('Already selected, skipping...');
                       return;
                     }
                     
                     selectAnswer(option.score);
                     // Auto-advance after a short delay to show selection
                     setTimeout(() => {
-                      console.log('Drunk Test Auto-advancing...');
                       if (isLastQuestion) {
                         // Complete the test
                         setTimeout(() => {
-                          // Use the existing completion logic from the hook
                           nextQuestion(); // This will set isCompleted to true
                         }, 200);
                       } else {

@@ -24,7 +24,6 @@ export default function Test() {
   } = useMBTITest();
 
   const handleNext = (answerValue?: number) => {
-    console.log('MBTI handleNext called with answerValue:', answerValue);
     if (isLastQuestion) {
       const result = calculateResults();
       // Store result in sessionStorage for results page
@@ -60,10 +59,7 @@ export default function Test() {
           question={currentQuestionData}
           selectedAnswer={selectedAnswer}
           onAnswerSelect={selectAnswer}
-          onNext={(answerValue) => {
-            console.log('handleNext called in test.tsx with answerValue:', answerValue);
-            handleNext(answerValue);
-          }}
+          onNext={handleNext}
           onPrevious={previousQuestion}
           canGoNext={canGoNext}
           canGoPrevious={canGoPrevious}

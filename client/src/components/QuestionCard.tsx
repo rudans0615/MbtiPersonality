@@ -49,21 +49,16 @@ export default function QuestionCard({
               onClick={(e) => {
                 e.preventDefault();
                 e.stopPropagation();
-                console.log('MBTI Button clicked:', option.value);
                 
                 // Check if already selected to prevent double execution
                 if (selectedAnswer === option.value) {
-                  console.log('Already selected, skipping...');
                   return;
                 }
                 
                 onAnswerSelect(option.value);
                 // Auto-advance after a short delay
                 setTimeout(() => {
-                  console.log('MBTI Auto-advancing...');
-                  console.log('Calling onNext function with value:', option.value);
                   onNext(option.value);
-                  console.log('onNext called');
                 }, 200);
               }}
               className={`w-full text-left p-6 rounded-2xl border-2 transition-all duration-300 ${
