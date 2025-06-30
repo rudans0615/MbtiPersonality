@@ -100,3 +100,4 @@ Changelog:
 - June 30, 2025. Created "Am I Drunk?" test with Z-generation TikTok style humor and 4 witty result types
 - June 30, 2025. Completely redesigned navigation with scalable dropdown menu structure for all tests
 - June 30, 2025. Implemented comprehensive SEO optimization following Google SEO starter guide
+- June 30, 2025. Enhanced UX by removing "Next" buttons - all tests now auto-advance when answer is selected

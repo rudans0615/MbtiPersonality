@@ -79,6 +79,7 @@ export function useDrunkTest() {
     restart,
     canGoNext,
     canGoPrevious,
-    isLastQuestion
+    isLastQuestion,
+    setIsCompleted
   };
 }

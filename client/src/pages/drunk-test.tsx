@@ -22,7 +22,8 @@ export default function DrunkTest() {
     restart,
     canGoNext,
     canGoPrevious,
-    isLastQuestion
+    isLastQuestion,
+    setIsCompleted
   } = useDrunkTest();
 
   if (isCompleted) {
@@ -216,7 +217,20 @@ export default function DrunkTest() {
               {currentQuestion.options.map((option, index) => (
                 <button
                   key={index}
-                  onClick={() => selectAnswer(option.score)}
+                  onClick={() => {
+                    selectAnswer(option.score);
+                    // Auto-advance after a short delay to show selection
+                    setTimeout(() => {
+                      if (isLastQuestion) {
+                        // Complete the test
+                        setTimeout(() => {
+                          setIsCompleted(true);
+                        }, 500);
+                      } else {
+                        nextQuestion();
+                      }
+                    }, 300);
+                  }}
                   className={`w-full p-4 rounded-xl border-2 transition-all duration-200 text-left ${
                     currentAnswer?.score === option.score
                       ? 'border-purple-500 bg-purple-50 shadow-md'
@@ -235,7 +249,7 @@ export default function DrunkTest() {
 
             <AdSense adSlot="1234567894" className="my-6" />
 
-            <div className="flex justify-between space-x-4">
+            <div className="flex justify-center space-x-4">
               <Button
                 onClick={previousQuestion}
                 disabled={!canGoPrevious}
@@ -245,14 +259,9 @@ export default function DrunkTest() {
                 <span className="mr-2">⬅️</span>이전
               </Button>
               
-              <Button
-                onClick={nextQuestion}
-                disabled={!canGoNext}
-                className="px-8 py-3 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white rounded-xl font-semibold"
-              >
-                {isLastQuestion ? '결과 보기' : '다음'}
-                <span className="ml-2">{isLastQuestion ? '🎉' : '➡️'}</span>
-              </Button>
+              <div className="text-center text-sm text-neutral-500 flex items-center">
+                답변을 선택하면 자동으로 다음 질문으로 넘어갑니다
+              </div>
             </div>
           </CardContent>
         </Card>
