@@ -4,7 +4,7 @@ import { mbtiTypes } from "@/data/mbtiTypes";
 import ProgressBar from "@/components/ProgressBar";
 import QuestionCard from "@/components/QuestionCard";
 import Navigation from "@/components/Navigation";
-import AdSense from "@/components/AdSense";
+
 
 export default function Test() {
   const [, setLocation] = useLocation();

@@ -4,7 +4,7 @@ import { tetoEgenTypes, getCompatibilityDescription } from "@/data/tetoEgenTypes
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import Navigation from "@/components/Navigation";
-import AdSense from "@/components/AdSense";
+
 import { useToast } from "@/hooks/use-toast";
 import { RotateCcw, Share2, Users, Heart, Sparkles } from "lucide-react";
 
@@ -305,11 +305,7 @@ export default function TetoEgenResults() {
           </CardContent>
         </Card>
 
-        {/* AdSense */}
-        <AdSense 
-          adSlot="1234567893"
-          className="mb-8"
-        />
+
 
         {/* All Types Overview */}
         <Card className="bg-white rounded-3xl shadow-lg p-8">

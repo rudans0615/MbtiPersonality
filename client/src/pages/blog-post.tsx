@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useLocation, Link } from "wouter";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import AdSense from "@/components/AdSense";
+
 
 interface BlogPost {
   id: number;
@@ -483,11 +483,7 @@ export default function BlogPost() {
           </CardContent>
         </Card>
 
-        {/* AdSense */}
-        <AdSense 
-          adSlot="1234567896"
-          className="my-8"
-        />
+
 
         {/* Related Posts */}
         <Card className="bg-white rounded-3xl shadow-lg">

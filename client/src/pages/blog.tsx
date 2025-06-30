@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import Navigation from "@/components/Navigation";
-import AdSense from "@/components/AdSense";
+
 import { Link } from "wouter";
 import { Calendar, Clock, ArrowRight, Search, ChevronLeft, ChevronRight } from "lucide-react";
 
@@ -268,11 +268,7 @@ export default function Blog() {
           </div>
         )}
 
-        {/* AdSense */}
-        <AdSense 
-          adSlot="1234567894"
-          className="mb-8"
-        />
+
 
 
       </div>

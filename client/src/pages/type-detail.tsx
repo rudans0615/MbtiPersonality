@@ -3,7 +3,7 @@ import { useLocation, Link } from "wouter";
 import { mbtiTypes } from "@/data/mbtiTypes";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import AdSense from "@/components/AdSense";
+
 
 export default function TypeDetail() {
   const [location] = useLocation();

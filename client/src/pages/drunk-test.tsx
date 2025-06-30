@@ -4,7 +4,7 @@ import { Progress } from "@/components/ui/progress";
 import { useDrunkTest } from "@/hooks/useDrunkTest";
 import { drunkTestResults } from "@/data/drunkTestTypes";
 import Navigation from "@/components/Navigation";
-import AdSense from "@/components/AdSense";
+
 import { Link } from "wouter";
 
 export default function DrunkTest() {
@@ -123,7 +123,7 @@ export default function DrunkTest() {
                   </div>
                 </div>
 
-                <AdSense adSlot="1234567894" className="my-6" />
+
 
                 <div className="bg-gradient-to-r from-pink-50 to-purple-50 rounded-xl p-6 text-center">
                   <h4 className="text-lg font-semibold text-neutral-800 mb-4">
@@ -255,7 +255,7 @@ export default function DrunkTest() {
               ))}
             </div>
 
-            <AdSense adSlot="1234567894" className="my-6" />
+
 
             <div className="flex justify-center space-x-4">
               <Button

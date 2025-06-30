@@ -2,7 +2,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Link } from "wouter";
 import Navigation from "@/components/Navigation";
-import AdSense from "@/components/AdSense";
+
 
 export default function About() {
   return (
@@ -135,10 +135,7 @@ export default function About() {
             </CardContent>
           </Card>
 
-          <AdSense 
-            adSlot="1234567894"
-            className="my-8"
-          />
+
 
           <Card className="bg-white rounded-3xl shadow-lg p-8">
             <CardContent className="p-0">

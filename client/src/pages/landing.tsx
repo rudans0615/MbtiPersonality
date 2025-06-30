@@ -2,7 +2,7 @@ import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import AdSense from "@/components/AdSense";
+
 import Navigation from "@/components/Navigation";
 import { testTypes, getAvailableTests, getComingSoonTests } from "@/data/testTypes";
 import { Clock, Users, ArrowRight, Star } from "lucide-react";
@@ -191,13 +191,7 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* AdSense Banner */}
-      <div className="flex justify-center py-8 bg-neutral-50">
-        <AdSense 
-          adSlot="1234567890"
-          style={{ display: 'inline-block', width: '728px', height: '90px' }}
-        />
-      </div>
+
 
       {/* CTA Section */}
       <section className="bg-gradient-to-r from-primary to-secondary py-16">

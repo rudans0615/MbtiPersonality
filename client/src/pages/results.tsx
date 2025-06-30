@@ -4,7 +4,7 @@ import { mbtiTypes, getTypesByGroup } from "@/data/mbtiTypes";
 import { Card, CardContent } from "@/components/ui/card";
 import ResultCard from "@/components/ResultCard";
 import Navigation from "@/components/Navigation";
-import AdSense from "@/components/AdSense";
+
 import { useToast } from "@/hooks/use-toast";
 
 export default function Results() {
@@ -123,11 +123,7 @@ export default function Results() {
           onShare={handleShare}
         />
 
-        {/* AdSense - Bottom */}
-        <AdSense 
-          adSlot="1234567892"
-          className="mt-8"
-        />
+
 
         {/* All MBTI Types Reference */}
         <Card className="bg-white rounded-3xl shadow-lg p-8 mt-8">
