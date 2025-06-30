@@ -64,10 +64,14 @@ export default function TetoEgenTest() {
               {answers.map((answer, index) => (
                 <button
                   key={index}
-                  onClick={() => {
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    console.log('Button clicked:', answer.value);
                     handleAnswerSelect(answer.value);
                     // Auto-advance after a short delay
                     setTimeout(() => {
+                      console.log('Auto-advancing...');
                       handleNext();
                     }, 200);
                   }}

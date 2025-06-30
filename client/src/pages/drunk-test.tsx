@@ -217,10 +217,14 @@ export default function DrunkTest() {
               {currentQuestion.options.map((option, index) => (
                 <button
                   key={index}
-                  onClick={() => {
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    console.log('Drunk Test Button clicked:', option.score);
                     selectAnswer(option.score);
                     // Auto-advance after a short delay to show selection
                     setTimeout(() => {
+                      console.log('Drunk Test Auto-advancing...');
                       if (isLastQuestion) {
                         // Complete the test
                         setTimeout(() => {

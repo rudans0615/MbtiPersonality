@@ -46,10 +46,14 @@ export default function QuestionCard({
           {answerOptions.map((option) => (
             <button
               key={option.value}
-              onClick={() => {
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                console.log('MBTI Button clicked:', option.value);
                 onAnswerSelect(option.value);
                 // Auto-advance after a short delay
                 setTimeout(() => {
+                  console.log('MBTI Auto-advancing...');
                   onNext();
                 }, 200);
               }}
