@@ -224,12 +224,13 @@ export default function DrunkTest() {
                       if (isLastQuestion) {
                         // Complete the test
                         setTimeout(() => {
-                          setIsCompleted(true);
-                        }, 500);
+                          // Use the existing completion logic from the hook
+                          nextQuestion(); // This will set isCompleted to true
+                        }, 200);
                       } else {
                         nextQuestion();
                       }
-                    }, 300);
+                    }, 500);
                   }}
                   className={`w-full p-4 rounded-xl border-2 transition-all duration-200 text-left ${
                     currentAnswer?.score === option.score
@@ -259,7 +260,7 @@ export default function DrunkTest() {
                 <span className="mr-2">⬅️</span>이전
               </Button>
               
-              <div className="text-center text-sm text-neutral-500 flex items-center">
+              <div className="text-center text-sm text-neutral-500 flex items-center px-4">
                 답변을 선택하면 자동으로 다음 질문으로 넘어갑니다
               </div>
             </div>
