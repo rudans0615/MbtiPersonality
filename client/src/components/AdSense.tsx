@@ -14,47 +14,37 @@ declare global {
 }
 
 export default function AdSense({ adSlot, adFormat = "auto", style, className }: AdSenseProps) {
-  const isDev = import.meta.env.DEV || window.location.hostname.includes('replit.dev');
-
   useEffect(() => {
-    // Skip AdSense in development environment
-    if (isDev) {
-      return;
-    }
-    
-    try {
-      if (typeof window !== 'undefined' && window.adsbygoogle) {
-        window.adsbygoogle.push({});
+    // Add a delay to ensure the ad container is properly sized
+    const timer = setTimeout(() => {
+      try {
+        if (typeof window !== 'undefined' && window.adsbygoogle) {
+          window.adsbygoogle.push({});
+        }
+      } catch (error) {
+        // Silently handle AdSense errors to prevent console spam
+        console.warn('AdSense initialization failed:', error.message);
       }
-    } catch (error) {
-      // Silently handle AdSense errors in development
-      if (!isDev) {
-        console.error('AdSense error:', error);
-      }
-    }
-  }, [isDev]);
+    }, 100);
 
-  // Show placeholder in development
-  if (isDev) {
-    return (
-      <div className={`flex justify-center py-4 ${className}`}>
-        <div className="bg-gray-100 border-2 border-dashed border-gray-300 rounded-lg p-4 text-center text-gray-500 text-sm">
-          <div>📊 AdSense 광고 영역</div>
-          <div className="text-xs mt-1">프로덕션에서만 표시됩니다</div>
-        </div>
-      </div>
-    );
-  }
+    return () => clearTimeout(timer);
+  }, []);
 
   return (
     <div className={`flex justify-center py-4 ${className}`}>
-      <div className="bg-white rounded-xl shadow-sm p-4">
+      <div className="bg-white rounded-xl shadow-sm p-4 min-h-[250px] w-full max-w-[728px]">
         <ins
           className="adsbygoogle"
-          style={style || { display: 'block' }}
+          style={{ 
+            display: 'block',
+            width: '100%',
+            height: '250px',
+            ...style 
+          }}
           data-ad-client="ca-pub-1176633482077881"
           data-ad-slot={adSlot}
           data-ad-format={adFormat}
+          data-full-width-responsive="true"
         />
       </div>
     </div>
