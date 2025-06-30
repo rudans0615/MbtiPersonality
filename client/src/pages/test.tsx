@@ -59,7 +59,10 @@ export default function Test() {
           question={currentQuestionData}
           selectedAnswer={selectedAnswer}
           onAnswerSelect={selectAnswer}
-          onNext={handleNext}
+          onNext={() => {
+            console.log('handleNext called in test.tsx');
+            handleNext();
+          }}
           onPrevious={previousQuestion}
           canGoNext={canGoNext}
           canGoPrevious={canGoPrevious}
