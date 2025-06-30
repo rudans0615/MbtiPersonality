@@ -102,3 +102,4 @@ Changelog:
 - June 30, 2025. Implemented comprehensive SEO optimization following Google SEO starter guide
 - June 30, 2025. Enhanced UX by removing "Next" buttons - all tests now auto-advance when answer is selected
 - June 30, 2025. Fixed React state timing issues in auto-advance functionality - all tests now work perfectly on first click
+- June 30, 2025. Temporarily disabled Google AdSense due to persistent 403 errors - requires Google account approval and site review before re-enabling

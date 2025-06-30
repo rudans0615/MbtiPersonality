@@ -1,0 +1,87 @@
+Request URL
+https://googleads.g.doubleclick.net/pagead/ads?client=ca-pub-1176633482077881&output=html&adk=1812271804&adf=3025194257&abgtt=6&lmt=1751298607&plat=1%3A8%2C2%3A8%2C3%3A65536%2C4%3A65536%2C9%3A32776%2C16%3A8388608%2C17%3A32%2C24%3A32%2C25%3A32%2C30%3A1048576%2C32%3A32%2C41%3A32%2C42%3A32&format=0x0&url=https%3A%2F%2Fmbtifinder.com%2Fdrunk-test&pra=5&wgl=1&aihb=0&asro=0&aifxl=29_18~30_19&aiapm=0.1542&aiapmd=0.15&aiapmi=0.16&aiapmid=0.16&aiact=0.5423&aiactd=0.7&aicct=0.6412392844479536&aicctd=0.7&ailct=0.523051879517762&ailctd=0.7&aimart=4&aimartd=8&uach=WyJtYWNPUyIsIjE1LjUuMCIsImFybSIsIiIsIjEzNy4wLjcxNTEuMTIyIixudWxsLDAsbnVsbCwiNjQiLFtbIkdvb2dsZSBDaHJvbWUiLCIxMzcuMC43MTUxLjEyMiJdLFsiQ2hyb21pdW0iLCIxMzcuMC43MTUxLjEyMiJdLFsiTm90L0EpQnJhbmQiLCIyNC4wLjAuMCJdXSwwXQ..&dt=1751298808052&bpp=18&bdt=35&idt=27&shv=r20250625&mjsv=m202506240101&ptt=9&saldr=aa&abxe=1&cookie_enabled=1&eoidce=1&nras=1&correlator=307220418184&frm=20&pv=2&u_tz=540&u_his=2&u_h=1080&u_w=1920&u_ah=965&u_aw=1920&u_cd=24&u_sd=2&dmc=8&adx=-12245933&ady=-12245933&biw=931&bih=844&scr_x=0&scr_y=0&eid=42531645%2C95332925%2C95353387%2C95362656%2C95363434%2C95365225%2C31093139%2C95344790%2C95359265%2C95364336%2C95365116%2C95340252%2C95340254&oid=2&pvsid=1416371724163833&tmod=1052327106&uas=0&nvt=2&fsapi=1&ref=https%3A%2F%2Freplit.com%2F&fc=1920&brdim=0%2C25%2C0%2C25%2C1920%2C25%2C1920%2C965%2C931%2C844&vis=1&rsz=%7C%7Cs%7C&abl=NS&fu=32768&bc=31&bz=2.06&td=1&tdf=2&psd=W251bGwsbnVsbCxudWxsLDNd&nt=1&ifi=1&uci=a!1&fsb=1&dtd=32
+Request Method
+GET
+Status Code
+403 Forbidden
+Remote Address
+142.250.198.98:443
+Referrer Policy
+strict-origin-when-cross-origin
+alt-svc
+h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+content-encoding
+br
+content-length
+46
+content-type
+text/html; charset=UTF-8
+cross-origin-resource-policy
+cross-origin
+date
+Mon, 30 Jun 2025 15:53:28 GMT
+p3p
+policyref="https://googleads.g.doubleclick.net/pagead/gcn_p3p_.xml", CP="CURa ADMa DEVa TAIo PSAo PSDo OUR IND UNI PUR INT DEM STA PRE COM NAV OTC NOI DSP COR"
+server
+cafe
+timing-allow-origin
+*
+x-content-type-options
+nosniff
+x-xss-protection
+0
+:authority
+googleads.g.doubleclick.net
+:method
+GET
+:path
+/pagead/ads?client=ca-pub-1176633482077881&output=html&adk=1812271804&adf=3025194257&abgtt=6&lmt=1751298607&plat=1%3A8%2C2%3A8%2C3%3A65536%2C4%3A65536%2C9%3A32776%2C16%3A8388608%2C17%3A32%2C24%3A32%2C25%3A32%2C30%3A1048576%2C32%3A32%2C41%3A32%2C42%3A32&format=0x0&url=https%3A%2F%2Fmbtifinder.com%2Fdrunk-test&pra=5&wgl=1&aihb=0&asro=0&aifxl=29_18~30_19&aiapm=0.1542&aiapmd=0.15&aiapmi=0.16&aiapmid=0.16&aiact=0.5423&aiactd=0.7&aicct=0.6412392844479536&aicctd=0.7&ailct=0.523051879517762&ailctd=0.7&aimart=4&aimartd=8&uach=WyJtYWNPUyIsIjE1LjUuMCIsImFybSIsIiIsIjEzNy4wLjcxNTEuMTIyIixudWxsLDAsbnVsbCwiNjQiLFtbIkdvb2dsZSBDaHJvbWUiLCIxMzcuMC43MTUxLjEyMiJdLFsiQ2hyb21pdW0iLCIxMzcuMC43MTUxLjEyMiJdLFsiTm90L0EpQnJhbmQiLCIyNC4wLjAuMCJdXSwwXQ..&dt=1751298808052&bpp=18&bdt=35&idt=27&shv=r20250625&mjsv=m202506240101&ptt=9&saldr=aa&abxe=1&cookie_enabled=1&eoidce=1&nras=1&correlator=307220418184&frm=20&pv=2&u_tz=540&u_his=2&u_h=1080&u_w=1920&u_ah=965&u_aw=1920&u_cd=24&u_sd=2&dmc=8&adx=-12245933&ady=-12245933&biw=931&bih=844&scr_x=0&scr_y=0&eid=42531645%2C95332925%2C95353387%2C95362656%2C95363434%2C95365225%2C31093139%2C95344790%2C95359265%2C95364336%2C95365116%2C95340252%2C95340254&oid=2&pvsid=1416371724163833&tmod=1052327106&uas=0&nvt=2&fsapi=1&ref=https%3A%2F%2Freplit.com%2F&fc=1920&brdim=0%2C25%2C0%2C25%2C1920%2C25%2C1920%2C965%2C931%2C844&vis=1&rsz=%7C%7Cs%7C&abl=NS&fu=32768&bc=31&bz=2.06&td=1&tdf=2&psd=W251bGwsbnVsbCxudWxsLDNd&nt=1&ifi=1&uci=a!1&fsb=1&dtd=32
+:scheme
+https
+accept
+text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7
+accept-encoding
+gzip, deflate, br, zstd
+accept-language
+ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7
+cookie
+ar_debug=1; IDE=AHWqTUm9iP8BCIdKN__LXBiSPSpsuJp0Igw09K_QTutvY8nW5h45f_gpdOfJDSRxAGE; DSID=AJ0u58u5tE0pYNXd_YYVq38EYARzTJfNi1qNr67TlmhxdtiNDLsp34sL16HFd4gnD5wG5XuLJwOMVp5MdHzhYiCWCJzzdh3hJJ-ndV0bZ-qmOWNu7UUF1DMRv9c1JF3HEzFEHTmgmEfqjk7iodAdulDJBaOpzN5Gq2wx1i_Toj1jcb7rpUJZsGMUlQgr2jQ4WNYe2TuSHT7fY6xQ7pVvlm72xNFHV7yzMNw_ytPR9PBi0fA-tf8t6Cq2uXPArSPnGnxMHwcRM-BNOHD8ezJz-LrtQqm1VKoxMUJFj2xcLsbahF38i29asgA
+priority
+u=0, i
+referer
+https://mbtifinder.com/
+sec-browsing-topics
+();p=P0000000000000000000000000000000
+sec-ch-ua
+"Google Chrome";v="137", "Chromium";v="137", "Not/A)Brand";v="24"
+sec-ch-ua-mobile
+?0
+sec-ch-ua-platform
+"macOS"
+sec-fetch-dest
+iframe
+sec-fetch-mode
+navigate
+sec-fetch-site
+cross-site
+sec-fetch-storage-access
+active
+upgrade-insecure-requests
+1
+user-agent
+Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36
+x-browser-channel
+stable
+x-browser-copyright
+Copyright 2025 Google LLC. All rights reserved.
+x-browser-validation
+jWhhuGepE5WyX9SzRfjQzPC9+KI=
+x-browser-year
+2025
+x-client-data
+CIa2yQEIpLbJAQipncoBCJzxygEIkqHLAQiSo8sBCIagzQEIpPLOAQiS9s4BCNn3zgE=
+Decoded:
+message ClientVariations {
+  // Active Google-visible variation IDs on this client. These are reported for analysis, but do not directly affect any server-side behavior.
+  repeated int32 variation_id = [3300102, 3300132, 3313321, 3324060, 3330194, 3330450, 3362822, 3389732, 3390226, 3390425];
+}
