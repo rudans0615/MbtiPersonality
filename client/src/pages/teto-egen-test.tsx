@@ -65,14 +65,11 @@ export default function TetoEgenTest() {
                 <button
                   key={index}
                   onClick={() => {
-                    // Only proceed if this isn't already selected
-                    if (selectedAnswer !== answer.value) {
-                      handleAnswerSelect(answer.value);
-                      // Auto-advance after a short delay
-                      setTimeout(() => {
-                        handleNext();
-                      }, 200);
-                    }
+                    handleAnswerSelect(answer.value);
+                    // Auto-advance after a short delay
+                    setTimeout(() => {
+                      handleNext();
+                    }, 200);
                   }}
                   className={`w-full p-4 text-left rounded-xl border-2 transition-all duration-200 ${
                     selectedAnswer === answer.value

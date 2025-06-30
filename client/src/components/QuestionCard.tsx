@@ -47,14 +47,11 @@ export default function QuestionCard({
             <button
               key={option.value}
               onClick={() => {
-                // Only proceed if this isn't already selected
-                if (selectedAnswer !== option.value) {
-                  onAnswerSelect(option.value);
-                  // Auto-advance after a short delay
-                  setTimeout(() => {
-                    onNext();
-                  }, 200);
-                }
+                onAnswerSelect(option.value);
+                // Auto-advance after a short delay
+                setTimeout(() => {
+                  onNext();
+                }, 200);
               }}
               className={`w-full text-left p-6 rounded-2xl border-2 transition-all duration-300 ${
                 selectedAnswer === option.value
