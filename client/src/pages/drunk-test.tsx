@@ -218,19 +218,22 @@ export default function DrunkTest() {
                 <button
                   key={index}
                   onClick={() => {
-                    selectAnswer(option.score);
-                    // Auto-advance after a short delay to show selection
-                    setTimeout(() => {
-                      if (isLastQuestion) {
-                        // Complete the test
-                        setTimeout(() => {
-                          // Use the existing completion logic from the hook
-                          nextQuestion(); // This will set isCompleted to true
-                        }, 200);
-                      } else {
-                        nextQuestion();
-                      }
-                    }, 200);
+                    // Only proceed if this isn't already selected
+                    if (currentAnswer?.score !== option.score) {
+                      selectAnswer(option.score);
+                      // Auto-advance after a short delay to show selection
+                      setTimeout(() => {
+                        if (isLastQuestion) {
+                          // Complete the test
+                          setTimeout(() => {
+                            // Use the existing completion logic from the hook
+                            nextQuestion(); // This will set isCompleted to true
+                          }, 200);
+                        } else {
+                          nextQuestion();
+                        }
+                      }, 200);
+                    }
                   }}
                   className={`w-full p-4 rounded-xl border-2 transition-all duration-200 text-left ${
                     currentAnswer?.score === option.score
