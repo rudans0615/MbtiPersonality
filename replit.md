@@ -95,3 +95,6 @@ Changelog:
 - June 27, 2025. Expanded to multi-test platform with mobile-friendly navigation
 - June 27, 2025. Added legal compliance pages (Terms of Service, Privacy Policy) and Google Analytics integration
 - June 27, 2025. Implemented Teto vs Egen personality test with 4 types (테토남, 테토녀, 에겐남, 에겐녀) based on testosterone/estrogen characteristics
+- June 30, 2025. Enhanced Teto-Egen test from 7 to 21 questions with sophisticated percentage-based scoring
+- June 30, 2025. Added comprehensive blog functionality with search, filtering, and pagination
+- June 30, 2025. Created "Am I Drunk?" test with Z-generation TikTok style humor and 4 witty result types
