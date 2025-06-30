@@ -43,8 +43,21 @@
       gtag('config', 'G-D8R12Q412M');
     </script>
     
-    <!-- AdSense Integration -->
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1176633482077881" crossorigin="anonymous"></script>
+    <!-- AdSense Integration - Only load in production -->
+    <script>
+      // Only load AdSense on production domains
+      if (window.location.hostname === 'mbtifinder.com' || 
+          (window.location.hostname.endsWith('.replit.app') && !window.location.hostname.includes('00-'))) {
+        const script = document.createElement('script');
+        script.async = true;
+        script.src = 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1176633482077881';
+        script.crossOrigin = 'anonymous';
+        script.onerror = function() {
+          console.warn('AdSense script failed to load');
+        };
+        document.head.appendChild(script);
+      }
+    </script>
   </head>
   <body>
     <div id="root"></div>
