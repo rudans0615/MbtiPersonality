@@ -230,7 +230,7 @@ export default function DrunkTest() {
                       } else {
                         nextQuestion();
                       }
-                    }, 500);
+                    }, 200);
                   }}
                   className={`w-full p-4 rounded-xl border-2 transition-all duration-200 text-left ${
                     currentAnswer?.score === option.score

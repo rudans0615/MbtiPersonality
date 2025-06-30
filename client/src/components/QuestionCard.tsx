@@ -46,7 +46,13 @@ export default function QuestionCard({
           {answerOptions.map((option) => (
             <button
               key={option.value}
-              onClick={() => onAnswerSelect(option.value)}
+              onClick={() => {
+                onAnswerSelect(option.value);
+                // Auto-advance after a short delay
+                setTimeout(() => {
+                  onNext();
+                }, 200);
+              }}
               className={`w-full text-left p-6 rounded-2xl border-2 transition-all duration-300 ${
                 selectedAnswer === option.value
                   ? "border-primary bg-primary/10"
@@ -67,7 +73,7 @@ export default function QuestionCard({
           ))}
         </div>
 
-        <div className="flex justify-between mt-12">
+        <div className="flex justify-center mt-12">
           <Button
             onClick={onPrevious}
             disabled={!canGoPrevious}
@@ -76,16 +82,10 @@ export default function QuestionCard({
           >
             <i className="fas fa-arrow-left mr-2"></i>이전
           </Button>
-          <Button
-            onClick={onNext}
-            disabled={!canGoNext}
-            className={`px-8 py-3 bg-primary text-white rounded-xl hover:bg-primary/90 transition-colors ${
-              !canGoNext ? "opacity-50 cursor-not-allowed" : ""
-            }`}
-          >
-            {isLastQuestion ? "결과 보기" : "다음"}
-            <i className="fas fa-arrow-right ml-2"></i>
-          </Button>
+          
+          <div className="text-center text-sm text-neutral-500 flex items-center px-8">
+            답변을 선택하면 자동으로 다음 질문으로 넘어갑니다
+          </div>
         </div>
       </CardContent>
     </Card>

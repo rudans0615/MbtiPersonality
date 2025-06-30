@@ -64,7 +64,13 @@ export default function TetoEgenTest() {
               {answers.map((answer, index) => (
                 <button
                   key={index}
-                  onClick={() => handleAnswerSelect(answer.value)}
+                  onClick={() => {
+                    handleAnswerSelect(answer.value);
+                    // Auto-advance after a short delay
+                    setTimeout(() => {
+                      handleNext();
+                    }, 200);
+                  }}
                   className={`w-full p-4 text-left rounded-xl border-2 transition-all duration-200 ${
                     selectedAnswer === answer.value
                       ? 'border-primary bg-primary/10 text-primary'
@@ -77,7 +83,7 @@ export default function TetoEgenTest() {
             </div>
 
             {/* Navigation */}
-            <div className="flex justify-between items-center mt-8 pt-6 border-t border-neutral-200">
+            <div className="flex justify-center items-center mt-8 pt-6 border-t border-neutral-200">
               <Button
                 variant="ghost"
                 onClick={goToPrevious}
@@ -88,18 +94,9 @@ export default function TetoEgenTest() {
                 <span>이전</span>
               </Button>
 
-              <Button
-                onClick={handleNext}
-                disabled={!canGoNext}
-                className={`flex items-center space-x-2 ${
-                  canGoNext
-                    ? 'bg-primary hover:bg-primary/90'
-                    : 'bg-neutral-300 cursor-not-allowed'
-                }`}
-              >
-                <span>{isLastQuestion ? '결과보기' : '다음'}</span>
-                <ArrowRight size={18} />
-              </Button>
+              <div className="text-center text-sm text-neutral-500 flex items-center px-8">
+                답변을 선택하면 자동으로 다음 질문으로 넘어갑니다
+              </div>
             </div>
           </CardContent>
         </Card>
