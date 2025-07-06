@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { drunkTestQuestions } from '@/data/drunkTestQuestions';
-import { calculateDrunkLevel } from '@/data/drunkTestTypes';
+import { calculateAwarenessLevel } from '@/data/drunkTestTypes';
 
 export interface DrunkTestAnswer {
   questionId: number;
@@ -50,7 +50,7 @@ export function useDrunkTest() {
 
   const getResult = (): string => {
     const totalScore = getTotalScore();
-    return calculateDrunkLevel(totalScore);
+    return calculateAwarenessLevel(totalScore);
   };
 
   const restart = () => {

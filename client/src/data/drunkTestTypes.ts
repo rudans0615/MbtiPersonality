@@ -1,4 +1,4 @@
-export interface DrunkTestResult {
+export interface SelfAwarenessResult {
   code: string;
   title: string;
   subtitle: string;
@@ -11,29 +11,29 @@ export interface DrunkTestResult {
   funnyQuote: string;
 }
 
-export const drunkTestResults: Record<string, DrunkTestResult> = {
+export const selfAwarenessResults: Record<string, SelfAwarenessResult> = {
   SOBER: {
     code: "SOBER",
-    title: "취한 거 아냐, 너는 원래 그래",
-    subtitle: "완전 멀쩡함 인증 완료",
-    description: "축하해요! 당신은 완전히 정신이 멀쩡한 상태입니다. 혹시 물을 마신 건 아닌가요? 아니면 원래 이렇게 재미있는 사람인가요? 어쨌든 당신은 지금 완벽하게 의식이 있고, 판단력도 정상입니다.",
+    title: "완전 멀쩡한 상태",
+    subtitle: "정신이 또렷또렷",
+    description: "축하해요! 당신은 완전히 정신이 멀쩡한 상태입니다. 판단력도 정상이고 컨디션이 최고네요! 지금 이 상태를 유지하는 것이 좋겠어요.",
     characteristics: [
       "걸음걸이 완벽",
       "말하기 정상",  
       "기억력 100%",
       "판단력 정상",
-      "폰 조작 가능"
+      "컨디션 최고"
     ],
     advice: [
-      "더 마셔도 될 것 같은데?",
-      "친구들 케어 부탁해",
-      "오늘 DD(대리운전) 각",
-      "영수증 잘 챙겨"
+      "현재 상태를 유지하세요",
+      "주변 사람들을 도와주세요",
+      "안전 운전 가능",
+      "중요한 일 처리 가능"
     ],
     emoji: "😐",
     color: "bg-green-500",
-    memeText: "물 마신거 맞죠?",
-    funnyQuote: "어? 나 안 취했는데? (진짜로)"
+    memeText: "완전 멀쩡한 상태입니다",
+    funnyQuote: "지금이 가장 좋은 컨디션이에요"
   },
   TIPSY: {
     code: "TIPSY",
@@ -106,13 +106,13 @@ export const drunkTestResults: Record<string, DrunkTestResult> = {
   }
 };
 
-export const calculateDrunkLevel = (totalScore: number): string => {
+export const calculateAwarenessLevel = (totalScore: number): string => {
   if (totalScore <= 7) return "SOBER";
   if (totalScore <= 15) return "TIPSY";
   if (totalScore <= 23) return "DRUNK";
   return "WASTED";
 };
 
-export const getDrunkTestShareText = (result: DrunkTestResult): string => {
-  return `나의 술 취함 레벨: ${result.title}\n${result.memeText}\n\n#술취함테스트 #자가진단 #위트테스트`;
+export const getSelfAwarenessShareText = (result: SelfAwarenessResult): string => {
+  return `나의 현재 상태: ${result.title}\n${result.memeText}\n\n#자가진단 #재미있는테스트 #현재상태`;
 };

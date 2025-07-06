@@ -2,7 +2,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { useDrunkTest } from "@/hooks/useDrunkTest";
-import { drunkTestResults } from "@/data/drunkTestTypes";
+import { selfAwarenessResults } from "@/data/drunkTestTypes";
 import Navigation from "@/components/Navigation";
 
 import { Link } from "wouter";
@@ -28,10 +28,10 @@ export default function DrunkTest() {
 
   if (isCompleted) {
     const resultCode = getResult();
-    const result = drunkTestResults[resultCode];
+    const result = selfAwarenessResults[resultCode];
 
     const handleShare = (platform: string) => {
-      const shareText = `나의 술 취함 레벨: ${result.title}\n${result.memeText}\n\n#술취함테스트 #자가진단`;
+      const shareText = `나의 현재 상태: ${result.title}\n${result.memeText}\n\n#자가진단 #재미있는테스트`;
       const shareUrl = window.location.href;
 
       if (platform === 'twitter') {

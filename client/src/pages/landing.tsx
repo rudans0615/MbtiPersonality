@@ -27,7 +27,7 @@ export default function Landing() {
               </span>
             </h1>
             <p className="text-xl text-neutral-600 mb-12 max-w-3xl mx-auto leading-relaxed">
-              과학적으로 검증된 다양한 심리 테스트로 당신의 성격, 잠재력, 그리고 미래를 발견하세요. 
+              다양한 심리 테스트로 당신의 성격, 잠재력, 그리고 미래를 탐색해보세요. 
               더 나은 인간관계와 성공적인 삶을 위한 첫걸음을 시작해보세요.
             </p>
             
@@ -42,7 +42,7 @@ export default function Landing() {
                 <div className="text-sm text-neutral-600">참여자</div>
               </div>
               <div className="text-center">
-                <div className="text-3xl font-bold text-primary">95%</div>
+                <div className="text-3xl font-bold text-primary">높은</div>
                 <div className="text-sm text-neutral-600">만족도</div>
               </div>
               <div className="text-center">
@@ -61,7 +61,7 @@ export default function Landing() {
             다양한 심리 테스트
           </h2>
           <p className="text-lg text-neutral-600 max-w-2xl mx-auto">
-            당신의 다양한 면모를 발견할 수 있는 전문적인 심리 테스트들을 준비했습니다
+            당신의 다양한 면모를 발견할 수 있는 흥미로운 심리 테스트들을 준비했습니다
           </p>
         </div>
 
