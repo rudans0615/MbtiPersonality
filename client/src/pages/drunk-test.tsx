@@ -32,7 +32,7 @@ export default function DrunkTest() {
 
     const handleShare = (platform: string) => {
       const shareText = `나의 현재 상태: ${result.title}\n${result.memeText}\n\n#자가진단 #재미있는테스트`;
-      const shareUrl = window.location.href;
+      const shareUrl = 'https://mbtifinder.com/drunk-test';
 
       if (platform === 'twitter') {
         window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${shareUrl}`);

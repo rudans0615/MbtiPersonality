@@ -59,7 +59,7 @@ export default function TetoEgenResults() {
     if (!testResult) return;
     
     const typeData = tetoEgenTypes[testResult.type];
-    const currentUrl = window.location.origin + '/teto-egen-test';
+    const currentUrl = 'https://mbtifinder.com/teto-egen-test';
     const shareText = `나는 ${typeData.title}(${typeData.subtitle})입니다! 테토 ${testResult.balance.teto}% vs 에겐 ${testResult.balance.egen}% 🔥`;
     const encodedUrl = encodeURIComponent(currentUrl);
     const encodedText = encodeURIComponent(shareText);

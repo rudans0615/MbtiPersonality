@@ -27,7 +27,7 @@ export default function Results() {
   };
 
   const handleShare = (platform: string) => {
-    const currentUrl = window.location.origin + '/';
+    const currentUrl = 'https://mbtifinder.com/';
     const shareText = `나의 MBTI 성격유형은 ${mbtiResult}(${mbtiTypes[mbtiResult!]?.title})입니다! 당신도 확인해보세요!`;
     const encodedUrl = encodeURIComponent(currentUrl);
     const encodedText = encodeURIComponent(shareText);
