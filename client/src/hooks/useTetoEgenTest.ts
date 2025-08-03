@@ -77,11 +77,14 @@ export function useTetoEgenTest() {
   const goToPrevious = () => {
     if (isFirstQuestion) return;
     
-    setCurrentQuestionIndex(currentQuestionIndex - 1);
+    const previousQuestionIndex = currentQuestionIndex - 1;
+    const previousQuestionId = tetoEgenQuestions[previousQuestionIndex].id;
     
-    // 이전 답변 복원
-    const previousAnswer = answers.find(a => a.questionId === tetoEgenQuestions[currentQuestionIndex - 1].id);
-    setSelectedAnswer(previousAnswer?.value || null);
+    // 이전 질문의 답변 제거
+    setAnswers(prev => prev.filter(a => a.questionId !== previousQuestionId));
+    
+    setCurrentQuestionIndex(previousQuestionIndex);
+    setSelectedAnswer(null); // 선택 항목 초기화
   };
 
   const restart = () => {

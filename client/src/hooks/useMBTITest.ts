@@ -43,15 +43,15 @@ export function useMBTITest() {
 
   const previousQuestion = useCallback(() => {
     if (currentQuestion > 0) {
-      setCurrentQuestion(prev => prev - 1);
-      // Restore previous answer if exists
-      if (answers[currentQuestion - 1]) {
-        setSelectedAnswer(answers[currentQuestion - 1].value);
-      } else {
-        setSelectedAnswer(null);
-      }
+      const previousQuestionIndex = currentQuestion - 1;
+      
+      // 이전 질문의 답변 제거
+      setAnswers(prev => prev.filter((_, index) => index !== previousQuestionIndex));
+      
+      setCurrentQuestion(previousQuestionIndex);
+      setSelectedAnswer(null); // 선택 항목 초기화
     }
-  }, [currentQuestion, answers]);
+  }, [currentQuestion]);
 
   const restartTest = useCallback(() => {
     setCurrentQuestion(0);

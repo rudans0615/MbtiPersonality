@@ -36,7 +36,13 @@ export function useDrunkTest() {
 
   const previousQuestion = () => {
     if (currentQuestionIndex > 0) {
-      setCurrentQuestionIndex(currentQuestionIndex - 1);
+      const previousQuestionIndex = currentQuestionIndex - 1;
+      const previousQuestionId = drunkTestQuestions[previousQuestionIndex].id;
+      
+      // 이전 질문의 답변 제거
+      setAnswers(prev => prev.filter(a => a.questionId !== previousQuestionId));
+      
+      setCurrentQuestionIndex(previousQuestionIndex);
     }
   };
 
