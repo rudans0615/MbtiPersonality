@@ -64,6 +64,18 @@ export default function TetoEgenResults() {
     const encodedUrl = encodeURIComponent(currentUrl);
     const encodedText = encodeURIComponent(shareText);
 
+    // Use Web Share API for mobile devices if available
+    if (platform === 'native' && 'share' in navigator && navigator.share) {
+      navigator.share({
+        title: `테토-에겐 유형: ${typeData.title}`,
+        text: shareText,
+        url: currentUrl
+      }).catch(err => {
+        console.log('Share failed:', err);
+      });
+      return;
+    }
+
     switch (platform) {
       case 'facebook':
         const facebookUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}&quote=${encodedText}`;
@@ -277,12 +289,22 @@ export default function TetoEgenResults() {
                 <span>다시 테스트</span>
               </Button>
               
+              {'share' in navigator && (
+                <Button
+                  onClick={() => handleShare('native')}
+                  className="flex items-center justify-center space-x-2 flex-1 bg-primary hover:bg-primary/90"
+                >
+                  <Share2 size={18} />
+                  <span>공유하기</span>
+                </Button>
+              )}
+              
               <Button
                 onClick={() => handleShare('facebook')}
                 className="flex items-center justify-center space-x-2 flex-1 bg-blue-600 hover:bg-blue-700"
               >
                 <Share2 size={18} />
-                <span>페이스북 공유</span>
+                <span>페이스북</span>
               </Button>
               
               <Button
@@ -290,7 +312,7 @@ export default function TetoEgenResults() {
                 className="flex items-center justify-center space-x-2 flex-1 bg-sky-500 hover:bg-sky-600"
               >
                 <Share2 size={18} />
-                <span>트위터 공유</span>
+                <span>트위터</span>
               </Button>
               
               <Button

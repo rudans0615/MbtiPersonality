@@ -34,6 +34,18 @@ export default function DrunkTest() {
       const shareText = `나의 현재 상태: ${result.title}\n${result.memeText}\n\n#자가진단 #재미있는테스트`;
       const shareUrl = 'https://mbtifinder.com/drunk-test';
 
+      // Use Web Share API for mobile devices if available
+      if (platform === 'native' && 'share' in navigator && navigator.share) {
+        navigator.share({
+          title: `자가진단 결과: ${result.title}`,
+          text: shareText,
+          url: shareUrl
+        }).catch(err => {
+          console.log('Share failed:', err);
+        });
+        return;
+      }
+
       if (platform === 'twitter') {
         window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${shareUrl}`);
       } else if (platform === 'facebook') {
@@ -130,6 +142,14 @@ export default function DrunkTest() {
                     결과 공유하기
                   </h4>
                   <div className="flex justify-center space-x-4 flex-wrap gap-2">
+                    {'share' in navigator && (
+                      <Button
+                        onClick={() => handleShare('native')}
+                        className="bg-primary hover:bg-primary/90 text-white px-6 py-2"
+                      >
+                        <span className="mr-2">📱</span>공유하기
+                      </Button>
+                    )}
                     <Button
                       onClick={() => handleShare('twitter')}
                       className="bg-blue-500 hover:bg-blue-600 text-white px-6 py-2"

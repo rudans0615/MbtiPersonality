@@ -18,6 +18,18 @@ export default function ResultCard({ mbtiType, onRestart, onShare }: ResultCardP
     const encodedUrl = encodeURIComponent(currentUrl);
     const encodedText = encodeURIComponent(shareText);
 
+    // Use Web Share API for mobile devices if available
+    if (platform === 'native' && 'share' in navigator && navigator.share) {
+      navigator.share({
+        title: `MBTI 성격유형: ${mbtiType.code}(${mbtiType.title})`,
+        text: shareText,
+        url: currentUrl
+      }).catch(err => {
+        console.log('Share failed:', err);
+      });
+      return;
+    }
+
     switch (platform) {
       case 'facebook':
         const facebookUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}&quote=${encodedText}`;
@@ -151,6 +163,14 @@ export default function ResultCard({ mbtiType, onRestart, onShare }: ResultCardP
         <div className="text-center space-y-4">
           <h3 className="text-xl font-semibold text-neutral-800">결과 공유하기</h3>
           <div className="flex justify-center space-x-4 flex-wrap gap-2">
+            {'share' in navigator && (
+              <Button
+                onClick={() => handleShare('native')}
+                className="bg-primary text-white px-6 py-3 rounded-xl hover:bg-primary/90 transition-colors"
+              >
+                <i className="fas fa-share mr-2"></i>공유하기
+              </Button>
+            )}
             <Button
               onClick={() => handleShare('facebook')}
               className="bg-blue-600 text-white px-6 py-3 rounded-xl hover:bg-blue-700 transition-colors"

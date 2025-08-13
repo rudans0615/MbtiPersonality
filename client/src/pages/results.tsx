@@ -32,6 +32,18 @@ export default function Results() {
     const encodedUrl = encodeURIComponent(currentUrl);
     const encodedText = encodeURIComponent(shareText);
 
+    // Use Web Share API for mobile devices if available
+    if (platform === 'native' && 'share' in navigator && navigator.share) {
+      navigator.share({
+        title: `MBTI 성격유형: ${mbtiResult}(${mbtiTypes[mbtiResult!]?.title})`,
+        text: shareText,
+        url: currentUrl
+      }).catch(err => {
+        console.log('Share failed:', err);
+      });
+      return;
+    }
+
     switch (platform) {
       case 'facebook':
         const facebookUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}&quote=${encodedText}`;
