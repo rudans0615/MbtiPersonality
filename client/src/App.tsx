@@ -17,6 +17,9 @@ import Terms from "@/pages/terms";
 import Privacy from "@/pages/privacy";
 import NotFound from "@/pages/not-found";
 
+import Footer from "@/components/Footer";
+import Contact from "@/pages/contact";
+
 function Router() {
   return (
     <Switch>
@@ -31,6 +34,7 @@ function Router() {
       <Route path="/teto-egen-test" component={TetoEgenTest} />
       <Route path="/teto-egen-results" component={TetoEgenResults} />
       <Route path="/drunk-test" component={DrunkTest} />
+      <Route path="/contact" component={Contact} />
       <Route path="/terms" component={Terms} />
       <Route path="/privacy" component={Privacy} />
       <Route component={NotFound} />
@@ -44,6 +48,7 @@ function App() {
       <TooltipProvider>
         <Toaster />
         <Router />
+        <Footer />
       </TooltipProvider>
     </QueryClientProvider>
   );

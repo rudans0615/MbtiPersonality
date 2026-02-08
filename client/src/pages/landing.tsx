@@ -14,23 +14,23 @@ export default function Landing() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-neutral-50 to-neutral-100">
       <Navigation />
-      
+
       {/* Hero Section */}
       <section className="relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-secondary/5"></div>
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
           <div className="text-center animate-fade-in">
             <h1 className="text-4xl md:text-6xl font-bold text-neutral-800 mb-6 leading-tight">
-              나의 진짜 모습을<br/>
+              나의 진짜 모습을<br />
               <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
                 발견해보세요
               </span>
             </h1>
             <p className="text-xl text-neutral-600 mb-12 max-w-3xl mx-auto leading-relaxed">
-              다양한 심리 테스트로 당신의 성격, 잠재력, 그리고 미래를 탐색해보세요. 
+              다양한 심리 테스트로 당신의 성격, 잠재력, 그리고 미래를 탐색해보세요.
               더 나은 인간관계와 성공적인 삶을 위한 첫걸음을 시작해보세요.
             </p>
-            
+
             {/* Quick Stats */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-16 max-w-2xl mx-auto">
               <div className="text-center">
@@ -79,7 +79,7 @@ export default function Landing() {
                 </div>
                 <h3 className="text-xl font-bold text-neutral-800 mb-2">{test.title}</h3>
                 <p className="text-neutral-600 mb-4 line-clamp-2">{test.description}</p>
-                
+
                 <div className="flex items-center gap-4 text-sm text-neutral-500 mb-6">
                   <div className="flex items-center gap-1">
                     <Clock size={14} />
@@ -191,8 +191,6 @@ export default function Landing() {
         </div>
       </section>
 
-
-
       {/* CTA Section */}
       <section className="bg-gradient-to-r from-primary to-secondary py-16">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
@@ -203,8 +201,8 @@ export default function Landing() {
             몇 분만 투자하여 평생 도움이 될 자신에 대한 통찰을 얻어보세요
           </p>
           <Link href="/test">
-            <Button 
-              size="lg" 
+            <Button
+              size="lg"
               className="bg-white text-primary hover:bg-neutral-100 px-8 py-4 text-lg font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300"
             >
               무료로 테스트 시작하기
@@ -212,51 +210,6 @@ export default function Landing() {
           </Link>
         </div>
       </section>
-
-      {/* Footer */}
-      <footer className="bg-neutral-800 text-white py-12">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid md:grid-cols-3 gap-8 mb-8">
-            <div>
-              <div className="flex items-center space-x-2 mb-4">
-                <div className="w-8 h-8 bg-gradient-to-br from-primary to-secondary rounded-lg flex items-center justify-center">
-                  <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
-                  </svg>
-                </div>
-                <span className="text-xl font-bold">심리테스트</span>
-              </div>
-              <p className="text-neutral-400 mb-4">
-                과학적으로 검증된 심리 테스트로 당신의 진정한 모습을 발견하세요.
-              </p>
-            </div>
-
-            <div>
-              <h4 className="text-lg font-semibold mb-4">테스트</h4>
-              <ul className="space-y-2 text-neutral-400">
-                <li><Link href="/test"><a className="hover:text-white transition-colors">MBTI 성격유형 검사</a></Link></li>
-                <li><Link href="/teto-egen-test"><a className="hover:text-white transition-colors">테토 vs 에겐 진단</a></Link></li>
-                <li><Link href="/drunk-test"><a className="hover:text-white transition-colors">나 술 취했나? 테스트</a></Link></li>
-                <li><span className="text-neutral-500">연애유형 검사 (출시예정)</span></li>
-              </ul>
-            </div>
-
-            <div>
-              <h4 className="text-lg font-semibold mb-4">정보</h4>
-              <ul className="space-y-2 text-neutral-400">
-                <li><Link href="/about"><a className="hover:text-white transition-colors">소개</a></Link></li>
-                <li><Link href="/blog"><a className="hover:text-white transition-colors">블로그</a></Link></li>
-                <li><Link href="/terms"><a className="hover:text-white transition-colors">이용약관</a></Link></li>
-                <li><Link href="/privacy"><a className="hover:text-white transition-colors">개인정보처리방침</a></Link></li>
-              </ul>
-            </div>
-          </div>
-
-          <div className="border-t border-neutral-700 pt-8 text-center text-neutral-400">
-            <p>&copy; 2025 심리테스트. 모든 권리 보유.</p>
-          </div>
-        </div>
-      </footer>
     </div>
   );
 }
