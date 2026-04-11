@@ -5,6 +5,7 @@ import { mbtiTypes, getTypesByGroup } from "@/data/mbtiTypes";
 import { Card, CardContent } from "@/components/ui/card";
 import ResultCard from "@/components/ResultCard";
 import Navigation from "@/components/Navigation";
+import { CoupangRecommend } from "@/components/CoupangRecommend";
 
 import { useToast } from "@/hooks/use-toast";
 
@@ -137,7 +138,10 @@ export default function Results() {
           onShare={handleShare}
         />
 
-
+        {/* 쿠팡 파트너스 추천 */}
+        <div className="mt-8">
+          <CoupangRecommend keyword={`${mbtiResult} ${typeData.title} 선물`} title={`${mbtiResult} 유형을 위한 찰떡 아이템 🎁`} />
+        </div>
 
         {/* All MBTI Types Reference */}
         <Card className="bg-white rounded-3xl shadow-lg p-8 mt-8">
