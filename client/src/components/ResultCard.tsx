@@ -2,6 +2,8 @@ import { MBTIType } from "@/data/mbtiTypes";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
+import { AdSenseBlock } from "@/components/AdSenseBlock";
+import { CoupangRecommend } from "@/components/CoupangRecommend";
 
 interface ResultCardProps {
   mbtiType: MBTIType;
@@ -104,7 +106,10 @@ export default function ResultCard({ mbtiType, onRestart, onShare }: ResultCardP
           <p>{mbtiType.description}</p>
         </div>
 
-        <div className="grid md:grid-cols-2 gap-8 mb-8">
+        {/* 첫 번째 광고 영역: 결과 설명 바로 아래 */}
+        <AdSenseBlock adSlot="4325732101" />
+
+        <div className="grid md:grid-cols-2 gap-8 mb-8 mt-4">
           <div className="bg-accent/10 rounded-2xl p-6">
             <h3 className="text-xl font-semibold text-accent mb-4 flex items-center">
               <i className="fas fa-star mr-2"></i>강점
@@ -160,7 +165,13 @@ export default function ResultCard({ mbtiType, onRestart, onShare }: ResultCardP
           </div>
         </div>
 
-        <div className="text-center space-y-4">
+        {/* 제휴 마케팅 추천 스캐폴딩: MBTI 특화 자동 추천 */}
+        <CoupangRecommend keyword={mbtiType.title} />
+
+        {/* 두 번째 광고 영역: 추천 직업/상품과 결과 공유하기 사이 */}
+        <AdSenseBlock adSlot="7890123456" />
+
+        <div className="text-center space-y-4 mt-8">
           <h3 className="text-xl font-semibold text-neutral-800">결과 공유하기</h3>
           <div className="flex justify-center space-x-4 flex-wrap gap-2">
             {'share' in navigator && (

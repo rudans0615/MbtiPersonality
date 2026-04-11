@@ -14,6 +14,19 @@ export interface TestType {
 
 export const testTypes: TestType[] = [
   {
+    id: "mbtiMatchTest",
+    title: "Discover Your Perfect MBTI Match!",
+    subtitle: "Find out which MBTI personality type you are most compatible with. Answer these questions to see who resonates the most with your true self.",
+    description: "AI가 생성한 최신 바이럴 테스트입니다.",
+    emoji: "✨",
+    color: "from-blue-400 to-indigo-500",
+    duration: "약 3분",
+    questions: 12,
+    href: "/mbtiMatchTest-test",
+    features: ["AI 맞춤형 분석", "나만의 결과지", "궁합 확인"],
+    isAvailable: true
+  },
+  {
     id: "mbti",
     title: "MBTI 성격유형 검사",
     subtitle: "나의 진짜 성격 찾기",
@@ -64,6 +77,24 @@ export const testTypes: TestType[] = [
       "유머러스한 결과",
       "재미있는 자가진단",
       "SNS 공유 최적화"
+    ],
+    isAvailable: true
+  },
+  {
+    id: "hogu-test",
+    title: "연애 호구력 진단",
+    subtitle: "나는 육식계일까, 초식계일까?",
+    description: "끌려다니는 연애는 이제 그만! 당신의 연애 상대 우위와 호구력을 팩폭으로 진단합니다.",
+    emoji: "💔",
+    color: "from-rose-500 to-pink-600",
+    duration: "약 4분",
+    questions: 12,
+    href: "/hogu-test",
+    features: [
+      "4가지 연애 포식자/초식동물 유형",
+      "뼈때리는 팩트폭력 분석",
+      "쿠팡 제휴 찰떡 아이템 추천",
+      "연애 처방전 제공"
     ],
     isAvailable: true
   },

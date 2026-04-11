@@ -21,7 +21,7 @@ export default function Privacy() {
             <section>
               <h2 className="text-2xl font-bold text-neutral-800 mb-4">1. 개인정보의 처리목적</h2>
               <div className="text-neutral-700 leading-relaxed space-y-2">
-                <p>심리테스트 플랫폼(이하 "서비스")은 다음의 목적을 위하여 개인정보를 처리합니다:</p>
+                <p>MBTI Finder(이하 "서비스")는 다음의 목적을 위하여 개인정보를 처리합니다:</p>
                 <ul className="list-disc list-inside ml-4 space-y-1">
                   <li>서비스 제공 및 운영</li>
                   <li>웹사이트 이용 통계 분석 및 서비스 개선</li>
@@ -57,10 +57,18 @@ export default function Privacy() {
               <div className="text-neutral-700 leading-relaxed space-y-2">
                 <p>서비스는 다음과 같이 개인정보 처리업무를 위탁하고 있습니다:</p>
                 <div className="bg-neutral-50 p-4 rounded-lg mt-4">
-                  <h4 className="font-semibold mb-2">Google Analytics</h4>
+                  <h4 className="font-semibold mb-2">Google Analytics 및 Google AdSense</h4>
                   <ul className="list-disc list-inside ml-4 space-y-1 text-sm">
                     <li>위탁받는 자: Google LLC</li>
-                    <li>위탁하는 업무의 내용: 웹사이트 이용 통계 분석</li>
+                    <li>위탁하는 업무의 내용: 웹사이트 방문자 통계 분석 및 맞춤형 광고 제공</li>
+                    <li>위탁기간: 서비스 제공 기간</li>
+                  </ul>
+                </div>
+                <div className="bg-neutral-50 p-4 rounded-lg mt-4">
+                  <h4 className="font-semibold mb-2">쿠팡 파트너스</h4>
+                  <ul className="list-disc list-inside ml-4 space-y-1 text-sm">
+                    <li>위탁받는 자: 쿠팡(주)</li>
+                    <li>위탁하는 업무의 내용: 서비스 내 제휴 링크 제공에 따른 수익성 분석</li>
                     <li>위탁기간: 서비스 제공 기간</li>
                   </ul>
                 </div>
@@ -86,6 +94,8 @@ export default function Privacy() {
                 <p>① 서비스는 다음과 같은 목적을 위해 쿠키를 사용합니다:</p>
                 <ul className="list-disc list-inside ml-4 space-y-1">
                   <li>웹사이트 이용 패턴 분석 (Google Analytics)</li>
+                  <li>맞춤형 기만성 및 문맥형 광고 송출 (Google AdSense 등)</li>
+                  <li>제휴 마케팅 성과 추적 (쿠팡 파트너스 등 가상 제휴 링크 추적)</li>
                   <li>서비스 개선 및 맞춤화</li>
                 </ul>
                 <p>② 이용자는 쿠키 설치에 대한 선택권을 가지고 있습니다. 웹브라우저에서 옵션을 설정함으로써 모든 쿠키를 허용하거나, 쿠키 저장 시 확인을 거치거나, 아니면 모든 쿠키의 저장을 거부할 수도 있습니다.</p>
@@ -114,8 +124,8 @@ export default function Privacy() {
                 <div className="bg-neutral-50 p-4 rounded-lg mt-4">
                   <h4 className="font-semibold mb-2">개인정보보호책임자</h4>
                   <ul className="space-y-1 text-sm">
-                    <li>담당부서: 운영팀</li>
-                    <li>연락처: 웹사이트 문의를 통해 연락 가능</li>
+                    <li>담당부서: MBTI Finder 운영팀</li>
+                    <li>이메일: jkm3151@gmail.com</li>
                   </ul>
                 </div>
               </div>

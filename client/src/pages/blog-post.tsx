@@ -3,6 +3,7 @@ import { useLocation, Link } from "wouter";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { blogPosts, BlogPost } from "@/data/blogPosts";
+import { AdSenseBlock } from "@/components/AdSenseBlock";
 
 export default function BlogPostPage() {
   const [location] = useLocation();
@@ -111,6 +112,9 @@ export default function BlogPostPage() {
             `}</style>
           </CardContent>
         </Card>
+
+        {/* 광고 영역: 포스트 본문과 관련 포스트 사이 */}
+        <AdSenseBlock adSlot="8910123456" />
 
         {/* Related Posts */}
         <Card className="bg-white rounded-3xl shadow-lg">

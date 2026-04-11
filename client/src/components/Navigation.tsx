@@ -11,6 +11,12 @@ import { ChevronDown } from 'lucide-react';
 
 const testMenuItems = [
   {
+    title: 'Discover Your Perfect MBTI Match!',
+    href: '/mbtiMatchTest-test',
+    emoji: '✨',
+    description: 'Find out which MBTI personality type you are most compatible with. Answer these questions to see who resonates the most with your true self.'
+  },
+  {
     title: 'MBTI 성격유형 검사',
     href: '/test',
     emoji: '🧠',

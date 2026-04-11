@@ -13,8 +13,12 @@ import TypeDetail from "@/pages/type-detail";
 import TetoEgenTest from "@/pages/teto-egen-test";
 import TetoEgenResults from "@/pages/teto-egen-results";
 import DrunkTest from "@/pages/drunk-test";
+import HoguTest from "@/pages/hogu-test";
+import HoguResults from "@/pages/hogu-results";
 import Terms from "@/pages/terms";
 import Privacy from "@/pages/privacy";
+import MbtiMatchTestTest from "@/pages/mbtiMatchTest-test";
+import MbtiMatchTestResults from "@/pages/mbtiMatchTest-results";
 import NotFound from "@/pages/not-found";
 
 import Footer from "@/components/Footer";
@@ -34,9 +38,13 @@ function Router() {
       <Route path="/teto-egen-test" component={TetoEgenTest} />
       <Route path="/teto-egen-results" component={TetoEgenResults} />
       <Route path="/drunk-test" component={DrunkTest} />
+      <Route path="/hogu-test" component={HoguTest} />
+      <Route path="/hogu-results" component={HoguResults} />
       <Route path="/contact" component={Contact} />
       <Route path="/terms" component={Terms} />
       <Route path="/privacy" component={Privacy} />
+      <Route path="/mbtiMatchTest-test" component={MbtiMatchTestTest} />
+      <Route path="/mbtiMatchTest-results" component={MbtiMatchTestResults} />
       <Route component={NotFound} />
     </Switch>
   );

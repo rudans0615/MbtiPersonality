@@ -12,8 +12,8 @@ export default function About() {
       {/* Header */}
       <div className="gradient-bg text-white py-16">
         <div className="max-w-4xl mx-auto px-6 text-center">
-          <h1 className="text-4xl md:text-5xl font-bold mb-4">성격유형 검사 소개</h1>
-          <p className="text-xl opacity-90">MBTI와 테토-에겐 성격유형에 대해 알아보세요</p>
+          <h1 className="text-4xl md:text-5xl font-bold mb-4">MBTI Finder 소개</h1>
+          <p className="text-xl opacity-90">MBTI와 테토-에겐 성격유형 등 다양한 테스트를 만나보세요</p>
         </div>
       </div>
 

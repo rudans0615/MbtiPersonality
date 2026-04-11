@@ -31,9 +31,9 @@ export default function Contact() {
                                     </div>
                                     <div>
                                         <h3 className="font-semibold text-neutral-800">이메일</h3>
-                                        <p className="text-neutral-600">support@mbtipersonality.com</p>
+                                        <p className="text-neutral-600">jkm3151@gmail.com</p>
                                         <p className="text-sm text-neutral-500 mt-1">
-                                            평일 오전 9시 - 오후 6시 (공휴일 제외)
+                                            상시 확인 후 안내해 드립니다.
                                         </p>
                                     </div>
                                 </div>
@@ -43,10 +43,10 @@ export default function Contact() {
                                         <i className="fas fa-map-marker-alt text-secondary text-xl"></i>
                                     </div>
                                     <div>
-                                        <h3 className="font-semibold text-neutral-800">주소</h3>
-                                        <p className="text-neutral-600">서울특별시 강남구 테헤란로 123</p>
+                                        <h3 className="font-semibold text-neutral-800">운영 형태</h3>
+                                        <p className="text-neutral-600">온라인 서비스 (MBTI Finder)</p>
                                         <p className="text-sm text-neutral-500 mt-1">
-                                            (방문 상담은 예약제로 운영됩니다)
+                                            온라인 문의를 우선으로 지원합니다.
                                         </p>
                                     </div>
                                 </div>
