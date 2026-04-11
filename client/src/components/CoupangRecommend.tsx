@@ -88,6 +88,7 @@ export function CoupangRecommend({ keyword, title }: CoupangRecommendProps) {
               <img 
                 src={product.imageUrl} 
                 alt={product.name}
+                referrerPolicy="no-referrer"
                 className="max-w-[80%] max-h-[80%] object-contain group-hover:scale-110 transition-transform duration-300"
                 onError={(e) => {
                   (e.target as HTMLImageElement).src = "https://via.placeholder.com/150?text=No+Image";
