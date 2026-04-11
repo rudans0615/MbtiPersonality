@@ -81,20 +81,17 @@ export default function QuestionCard({
           ))}
         </div>
 
-        <div className="flex justify-center mt-12">
-          <Button
-            onClick={onPrevious}
-            disabled={!canGoPrevious}
-            variant="ghost"
-            className="px-8 py-3 text-neutral-600 hover:text-primary"
-          >
-            <i className="fas fa-arrow-left mr-2"></i>이전
-          </Button>
-          
-          <div className="text-center text-sm text-neutral-500 flex items-center px-8">
-            답변을 선택하면 자동으로 다음 질문으로 넘어갑니다
+        {canGoPrevious && (
+          <div className="mt-8 pt-6 border-t border-neutral-100 flex justify-center">
+            <Button
+              onClick={onPrevious}
+              variant="ghost"
+              className="text-neutral-400 hover:text-primary hover:bg-primary/5 transition-all"
+            >
+              <i className="fas fa-arrow-left mr-2"></i> 이전 문항으로
+            </Button>
           </div>
-        </div>
+        )}
       </CardContent>
     </Card>
   );

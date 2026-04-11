@@ -97,21 +97,17 @@ export default function TetoEgenTest() {
             </div>
 
             {/* Navigation */}
-            <div className="flex justify-center items-center mt-8 pt-6 border-t border-neutral-200">
-              <Button
-                variant="ghost"
-                onClick={goToPrevious}
-                disabled={!canGoPrevious}
-                className="flex items-center space-x-2"
-              >
-                <ArrowLeft size={18} />
-                <span>이전</span>
-              </Button>
-
-              <div className="text-center text-sm text-neutral-500 flex items-center px-8">
-                답변을 선택하면 자동으로 다음 질문으로 넘어갑니다
+            {canGoPrevious && (
+              <div className="mt-8 pt-6 border-t border-neutral-100 flex justify-center">
+                <Button
+                  onClick={goToPrevious}
+                  variant="ghost"
+                  className="text-neutral-400 hover:text-primary hover:bg-primary/5 transition-all"
+                >
+                  <ArrowLeft size={16} className="mr-2" /> 이전 문항으로
+                </Button>
               </div>
-            </div>
+            )}
           </CardContent>
         </Card>
       </div>

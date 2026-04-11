@@ -1,7 +1,7 @@
 import crypto from 'crypto';
 
 function generateCoupangAuth(method, uri, accessKey, secretKey) {
-  const datetime = new Date().toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
+  const datetime = new Date().toISOString().substring(2).replace(/[-:]/g, '').split('.')[0] + 'Z';
   const [path, query = ''] = uri.split('?');
   const message = datetime + method + path + query;
   const signature = crypto.createHmac('sha256', secretKey).update(message).digest('hex');

@@ -282,20 +282,17 @@ export default function DrunkTest() {
 
 
 
-            <div className="flex justify-center space-x-4">
-              <Button
-                onClick={previousQuestion}
-                disabled={!canGoPrevious}
-                variant="outline"
-                className="px-8 py-3 rounded-xl"
-              >
-                <span className="mr-2">⬅️</span>이전
-              </Button>
-              
-              <div className="text-center text-sm text-neutral-500 flex items-center px-4">
-                답변을 선택하면 자동으로 다음 질문으로 넘어갑니다
+            {canGoPrevious && (
+              <div className="mt-8 pt-6 border-t border-purple-100 flex justify-center">
+                <Button
+                  onClick={previousQuestion}
+                  variant="ghost"
+                  className="text-neutral-400 hover:text-purple-600 hover:bg-purple-50 transition-all"
+                >
+                  <i className="fas fa-arrow-left mr-2"></i> 이전 문항으로
+                </Button>
               </div>
-            </div>
+            )}
           </CardContent>
         </Card>
       </div>
