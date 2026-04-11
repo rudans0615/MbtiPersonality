@@ -67,7 +67,7 @@ export default function HoguTest() {
               {currentQuestionIndex + 1} / {hoguQuestions.length}
             </span>
           </div>
-          <ProgressBar progress={progress} className="bg-rose-500" />
+          <ProgressBar current={currentQuestionIndex + 1} total={hoguQuestions.length} />
         </div>
 
         <Card className="bg-white rounded-3xl shadow-xl overflow-hidden border-0">

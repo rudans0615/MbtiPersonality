@@ -37,7 +37,10 @@ export function ShareButtons({ title, shareText, url }: ShareButtonsProps) {
         break;
       case 'kakao':
         // 카카오톡 공유: SDK 미존재시 클립보드 복사로 대체
-        copyToClipboard(true);
+        copyToClipboard('kakao');
+        break;
+      case 'instagram':
+        copyToClipboard('instagram');
         break;
       case 'copy':
         copyToClipboard();
@@ -45,24 +48,32 @@ export function ShareButtons({ title, shareText, url }: ShareButtonsProps) {
     }
   };
 
-  const copyToClipboard = (isKakaoFallback = false) => {
+  const copyToClipboard = (type = '') => {
     const shareMessage = `${shareText}\n\n${url}`;
     
+    let title = "링크가 복사되었습니다!";
+    let description = "테스트 결과를 친구들과 공유해보세요.";
+    
+    if (type === 'kakao') {
+      title = "카카오톡 공유 (링크 복사완료)";
+      description = "카카오톡 채팅방에 붙여넣기 하세요.";
+    } else if (type === 'instagram') {
+      title = "인스타그램 공유 (링크 복사완료)";
+      description = "인스타그램 스토리나 프로필에 붙여넣기 하세요.";
+    }
+
     if (navigator.clipboard && window.isSecureContext) {
       navigator.clipboard.writeText(shareMessage).then(() => {
-        toast({
-          title: isKakaoFallback ? "카카오톡 공유 (링크 복사완료)" : "링크가 복사되었습니다!",
-          description: isKakaoFallback ? "카카오톡 채팅방에 붙여넣기 하세요." : "테스트 결과를 친구들과 공유해보세요.",
-        });
+        toast({ title, description });
       }).catch(() => {
-        fallbackCopyTextToClipboard(shareMessage, isKakaoFallback);
+        fallbackCopyTextToClipboard(shareMessage, title, description);
       });
     } else {
-      fallbackCopyTextToClipboard(shareMessage, isKakaoFallback);
+      fallbackCopyTextToClipboard(shareMessage, title, description);
     }
   };
 
-  const fallbackCopyTextToClipboard = (text: string, isKakaoFallback: boolean) => {
+  const fallbackCopyTextToClipboard = (text: string, title: string, description: string) => {
     const textArea = document.createElement("textarea");
     textArea.value = text;
     textArea.style.top = "0";
@@ -73,10 +84,7 @@ export function ShareButtons({ title, shareText, url }: ShareButtonsProps) {
     textArea.select();
     try {
       document.execCommand('copy');
-      toast({
-        title: isKakaoFallback ? "카카오톡 공유 (링크 복사완료)" : "링크가 복사되었습니다!",
-        description: isKakaoFallback ? "카카오톡 채팅방에 붙여넣기 하세요." : "테스트 결과를 친구들과 공유해보세요.",
-      });
+      toast({ title, description });
     } catch (err) {
       toast({
         title: "복사 실패",
@@ -108,6 +116,13 @@ export function ShareButtons({ title, shareText, url }: ShareButtonsProps) {
         >
           <i className="fas fa-comment text-xl mb-1 block"></i>
           <div>카카오톡</div>
+        </Button>
+        <Button
+          onClick={() => handleShare('instagram')}
+          className="flex-1 min-w-[120px] max-w-[200px] bg-gradient-to-r from-[#833AB4] via-[#FD1D1D] to-[#F56040] text-white py-6 rounded-2xl hover:opacity-90 hover:scale-105 transition-all text-sm shadow-md border-0"
+        >
+          <i className="fab fa-instagram text-xl mb-1 block"></i>
+          <div>인스타그램</div>
         </Button>
         <Button
           onClick={() => handleShare('twitter')}
