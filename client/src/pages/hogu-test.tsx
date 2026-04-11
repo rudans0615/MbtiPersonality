@@ -59,11 +59,12 @@ export default function HoguTest() {
 
   return (
     <div className="min-h-screen bg-neutral-50 pt-20 pb-12 px-4 selection:bg-rose-200">
-      <div className="max-w-2xl mx-auto hidden md:block">
+      <div className="max-w-2xl mx-auto">
         <Button 
           variant="ghost" 
           onClick={handleBack}
-          className="mb-8 hover:bg-white/50"
+          className="mb-4 hover:bg-white/50"
+          disabled={currentQuestionIndices.length <= 1}
         >
           <i className="fas fa-arrow-left mr-2"></i> 이전으로
         </Button>
@@ -110,9 +111,17 @@ export default function HoguTest() {
 
       {/* Mobile progress navigation positioned at bottom */}
       <div className="fixed bottom-0 left-0 right-0 p-4 bg-white/80 backdrop-blur-md border-t border-neutral-200 md:hidden flex justify-between items-center z-50">
-        <div className="flex-1">
-          <p className="text-xs text-neutral-500 font-medium mb-1">
-            Question {currentQuestionIndex + 1} of {hoguQuestions.length}
+        <Button 
+          variant="ghost" 
+          onClick={handleBack}
+          disabled={currentQuestionIndices.length <= 1}
+          className="shrink-0 text-neutral-600 hover:text-rose-500 hover:bg-rose-50 rounded-full shadow-sm border border-neutral-200 bg-white px-4 h-10"
+        >
+          <i className="fas fa-arrow-left mr-2"></i> 이전
+        </Button>
+        <div className="flex-1 ml-4">
+          <p className="text-xs text-neutral-500 font-medium mb-1 text-right">
+            {currentQuestionIndex + 1} / {hoguQuestions.length}
           </p>
           <div className="h-1.5 w-full bg-neutral-100 rounded-full overflow-hidden">
             <div 
@@ -121,14 +130,6 @@ export default function HoguTest() {
             />
           </div>
         </div>
-        <Button 
-          variant="ghost" 
-          size="icon"
-          onClick={handleBack}
-          className="ml-4 h-10 w-10 shrink-0 text-neutral-600 hover:text-rose-500 hover:bg-rose-50 rounded-full shadow-sm border border-neutral-200 bg-white"
-        >
-          <i className="fas fa-arrow-left"></i>
-        </Button>
       </div>
     </div>
   );

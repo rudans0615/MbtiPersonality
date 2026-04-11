@@ -47,7 +47,7 @@ export default function HoguResults() {
     }
   }, [result]);
 
-  if (!result || !adLayoutVariant) return null;
+  if (!result) return null;
 
   const handleCopyLink = () => {
     const url = "https://mbtifinder.com/hogu-test";
@@ -85,10 +85,8 @@ export default function HoguResults() {
               {result.description}
             </div>
 
-            {/* A/B Test Variant A: Coupang at TOP */}
-            {adLayoutVariant === 'A_TOP' && (
-              <CoupangRecommend keyword={result.title} title="나의 부족한 호구력을 채워줄(혹은 달래줄) 아이템" />
-            )}
+            {/* 쿠팡 파트너스 추천 */}
+            <CoupangRecommend keyword={result.title} title="나의 부족한 호구력을 채워줄(혹은 달래줄) 아이템" />
 
             {/* AdSense Block 1 */}
             <div className="my-8">
@@ -126,10 +124,7 @@ export default function HoguResults() {
               </div>
             </div>
 
-            {/* A/B Test Variant B: Coupang at BOTTOM (Original) */}
-            {adLayoutVariant === 'B_BOTTOM' && (
-              <CoupangRecommend keyword={result.title} title="나의 부족한 호구력을 채워줄(혹은 달래줄) 아이템" />
-            )}
+
 
             {/* AdSense Block 2 */}
             <div className="my-8">
