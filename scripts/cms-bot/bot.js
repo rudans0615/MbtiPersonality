@@ -101,10 +101,12 @@ bot.onText(/\/(newtest|newtes)\s+(.+)/, async (msg, match) => {
     const { exec } = await import('child_process');
     bot.sendMessage(chatId, `⚙️ 코드 작성 완료! GitHub 및 Vercel로 배포 데이터 전송을 시작합니다...`);
 
-    exec(`git add . && (git diff-index --quiet HEAD || git commit -m "feat(ai-content): add new test ${aiData.title}") && git push origin main`, (error, stdout, stderr) => {
+    const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
+    exec(`git add -A && (git diff-index --quiet HEAD || git commit -m "feat(ai-content): add new test ${aiData.title}") && git push origin main`, { cwd: repoRoot }, (error, stdout, stderr) => {
       if (error) {
-         console.error("GIT ERROR:", stderr);
-         bot.sendMessage(chatId, `⚠️ 로컬 파일은 생성되었으나 GitHub 전송에 실패했습니다.\n상세 에러: ${stderr || error.message}`);
+         console.error("GIT STDOUT:", stdout);
+         console.error("GIT STDERR:", stderr);
+         bot.sendMessage(chatId, `⚠️ GitHub 전송 실패.\nSTDOUT: ${stdout || '(없음)'}\nSTDERR: ${stderr || '(없음)'}\nERROR: ${error.code}`);
          return;
       }
       
