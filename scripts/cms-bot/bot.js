@@ -99,28 +99,45 @@ bot.onText(/\/(newtest|newtes)\s+(.+)/, async (msg, match) => {
     await injectCode(aiData);
 
     const { exec } = await import('child_process');
-    bot.sendMessage(chatId, `⚙️ 코드 작성 완료! GitHub 및 Vercel로 배포 데이터 전송을 시작합니다...`);
+    bot.sendMessage(chatId, `⚙️ 코드 작성 완료! GitHub PR(결재 요청)을 생성합니다...`);
 
+    const branchName = `feat/ai-${aiData.testId}-${Date.now()}`;
     const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
-    exec(`git add -A && (git diff-index --quiet HEAD || git commit -m "feat(ai-content): add new test ${aiData.title}") && git push origin main`, { cwd: repoRoot }, (error, stdout, stderr) => {
+    
+    exec(`git checkout -b ${branchName} && git add -A && git commit -m "feat(ai-content): add new test ${aiData.title}" && git push origin ${branchName}`, { cwd: repoRoot }, async (error, stdout, stderr) => {
+      // 작업 후 항상 main 브랜치로 복귀
+      exec(`git checkout main`, { cwd: repoRoot });
+      
       if (error) {
          console.error("GIT STDOUT:", stdout);
          console.error("GIT STDERR:", stderr);
-         bot.sendMessage(chatId, `⚠️ GitHub 전송 실패.\nSTDOUT: ${stdout || '(없음)'}\nSTDERR: ${stderr || '(없음)'}\nERROR: ${error.code}`);
+         bot.sendMessage(chatId, `⚠️ GitHub 전송 실패.\nSTDERR: ${stderr || '(없음)'}\nERROR: ${error.code}`);
          return;
       }
       
-      // 3. 완료 결과 보고
-      bot.sendMessage(chatId, `
-🎉 **완벽 코딩 자동화 및 서버 연동 완료!**
-    
-📌 내용: [${aiData.title}]
-✅ Vercel 연동 내역:
-- \`src/data/${aiData.testId}\` 데이터, 페이지 생성
-- \`App.tsx\` 와 메뉴바(\`Navigation.tsx\`) 해킹 주입 완료
-- **🚀 GitHub 퍼블리싱 성공! 현재 Vercel이 라이브 서버를 굽기 시작했습니다.**
+      try {
+        // GitHub PR 생성
+        const pr = await octokit.pulls.create({
+          owner,
+          repo,
+          title: `🆕 [AI 신규 테스트] ${aiData.title}`,
+          head: branchName,
+          base: 'main',
+          body: `## 📋 AI 자동 생성 테스트 결재 요청\n\n- **테스트명**: ${aiData.title}\n- **부제**: ${aiData.subtitle || ''}\n- **카테고리**: ${aiData.category || 'HOT'}\n- **문항 수**: ${aiData.questions?.length || 12}문항\n\n---\n> ✅ **대표님 승인(Merge) 후 자동 배포됩니다.**\n> ❌ 거절 시 Close 버튼을 눌러주세요.`
+        });
+        
+        bot.sendMessage(chatId, `
+📋 **[결재 요청] 신규 테스트 PR이 생성되었습니다!**
 
-약 1분 뒤 브라우저 새로고침을 누르시면 라이브 서버 반영을 확인하실 수 있습니다!`);
+📌 테스트명: ${aiData.title}
+🔗 결재 링크: ${pr.data.html_url}
+
+👆 위 링크에서 내용 확인 후:
+  ✅ 승인 → **Merge pull request** 클릭 → 자동 배포
+  ❌ 거절 → **Close pull request** 클릭`);
+      } catch (prError) {
+        bot.sendMessage(chatId, `⚠️ PR 생성 실패: ${prError.message}\n(브랜치 ${branchName}은 정상 푸시됨)`);
+      }
     });
 
   } catch (error) {
