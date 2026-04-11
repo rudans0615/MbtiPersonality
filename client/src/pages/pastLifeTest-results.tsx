@@ -4,8 +4,9 @@ import Navigation from "@/components/Navigation";
 import SEO from "@/components/SEO";
 import { Button } from "@/components/ui/button";
 import { CoupangRecommend } from "@/components/CoupangRecommend";
+import { ShareButtons } from "@/components/ShareButtons";
 import { calculatePastLifeTestTestLevel, pastLifeTestResults } from "@/data/pastLifeTestTypes";
-import { Loader2 } from "lucide-react";
+import { Loader2, RotateCcw } from "lucide-react";
 
 export default function PastLifeTestResults() {
   const [location] = useLocation();
@@ -50,10 +51,15 @@ export default function PastLifeTestResults() {
           <div className="bg-neutral-50 p-6 rounded-2xl mb-10 text-left">
             <p className="text-lg text-neutral-700 leading-relaxed break-keep">{result.description}</p>
           </div>
-          <CoupangRecommend keyword={result.title} title="나에게 꼭 필요한 찰떡 아이템 🎁" />
-          <Button onClick={() => { window.location.href = "/pastLifeTest-test"; }} size="lg" className="w-full mt-10 h-16 text-xl rounded-full bg-neutral-900 text-white hover:bg-neutral-800 shadow-xl transition-transform hover:-translate-y-1">
-            테스트 다시 하기 💫
-          </Button>
+          <div className="mt-8 mb-8">
+            <CoupangRecommend keyword={result.title} title="나에게 꼭 필요한 찰떡 아이템 🎁" />
+          </div>
+          <ShareButtons title="당신의 전생은 어떤 모습이었을까요? 결과" shareText={`저의 검사 결과는 '${result.title}'입니다!`} url="https://mbtifinder.com/pastLifeTest-test" />
+          <div className="mt-8 flex justify-center pb-8">
+            <Button onClick={() => { window.location.href = "/pastLifeTest-test"; }} className="bg-gradient-to-r from-neutral-800 to-neutral-900 text-white px-8 py-6 rounded-full text-lg hover:shadow-lg transition-transform hover:-translate-y-1">
+              <RotateCcw size={20} className="mr-2" /> 테스트 다시 하기
+            </Button>
+          </div>
         </div>
       </main>
     </div>

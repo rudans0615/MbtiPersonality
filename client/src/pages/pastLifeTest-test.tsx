@@ -9,15 +9,22 @@ export default function PastLifeTestTest() {
   const [, setLocation] = useLocation();
   const [hasStarted, setHasStarted] = useState(false);
   const [currentStep, setCurrentStep] = useState(0);
-  const [score, setScore] = useState(0);
+  const [scoreHistory, setScoreHistory] = useState<number[]>([]);
 
   const handleAnswer = (points: number) => {
-    const newScore = score + points;
+    const newHistory = [...scoreHistory.slice(0, currentStep), points];
+    setScoreHistory(newHistory);
     if (currentStep < pastLifeTestQuestions.length - 1) {
-      setScore(newScore);
       setCurrentStep(curr => curr + 1);
     } else {
-      setLocation("/pastLifeTest-results?score=" + newScore);
+      const totalScore = newHistory.reduce((a, b) => a + b, 0);
+      setLocation("/pastLifeTest-results?score=" + totalScore);
+    }
+  };
+
+  const handlePrevious = () => {
+    if (currentStep > 0) {
+      setCurrentStep(curr => curr - 1);
     }
   };
 
@@ -68,6 +75,13 @@ export default function PastLifeTestTest() {
                 );
               })}
             </div>
+            {currentStep > 0 && (
+              <div className="mt-8 pt-6 border-t border-neutral-100 flex justify-center">
+                <Button onClick={handlePrevious} variant="ghost" className="text-neutral-400 hover:text-neutral-800 hover:bg-neutral-100 rounded-xl transition-all">
+                  <i className="fas fa-arrow-left mr-2"></i> 이전으로
+                </Button>
+              </div>
+            )}
           </div>
         </main>
       )}
