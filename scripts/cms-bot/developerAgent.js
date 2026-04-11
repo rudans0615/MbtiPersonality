@@ -234,4 +234,15 @@ export async function injectCode(aiData) {
     typesFile = typesFile.replace(/export const testTypes: TestType\[\] = \[/, 'export const testTypes: TestType[] = [' + newTestConfig);
     fs.writeFileSync(typesPath, typesFile);
   }
+
+  // 6. Inject into sitemap.xml
+  const sitemapPath = path.join(clientSrc, '../public/sitemap.xml');
+  if (fs.existsSync(sitemapPath)) {
+    let sitemapFile = fs.readFileSync(sitemapPath, 'utf-8');
+    if (!sitemapFile.includes('/' + testId + '-test</loc>')) {
+      const newSitemapEntry = `  <url>\n    <loc>https://mbtifinder.com/${testId}-test</loc>\n    <changefreq>weekly</changefreq>\n    <priority>0.8</priority>\n  </url>\n</urlset>`;
+      sitemapFile = sitemapFile.replace('</urlset>', newSitemapEntry);
+      fs.writeFileSync(sitemapPath, sitemapFile);
+    }
+  }
 }
