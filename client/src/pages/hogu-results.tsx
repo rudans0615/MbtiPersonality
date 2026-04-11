@@ -3,6 +3,7 @@ import SEO from "@/components/SEO";
 import { useLocation } from "wouter";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { ShareButtons } from "@/components/ShareButtons";
 import { calculateHoguLevel, hoguResults } from "@/data/hoguTestTypes";
 import { AdSenseBlock } from "@/components/AdSenseBlock";
 import { CoupangRecommend } from "@/components/CoupangRecommend";

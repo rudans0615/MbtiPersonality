@@ -1,5 +1,6 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { ShareButtons } from "@/components/ShareButtons";
 import { Progress } from "@/components/ui/progress";
 import { useDrunkTest } from "@/hooks/useDrunkTest";
 import { selfAwarenessResults } from "@/data/drunkTestTypes";

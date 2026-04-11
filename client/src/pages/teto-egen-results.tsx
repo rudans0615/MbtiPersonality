@@ -4,6 +4,8 @@ import { useLocation } from "wouter";
 import { tetoEgenTypes, getCompatibilityDescription } from "@/data/tetoEgenTypes";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { CoupangRecommend } from "@/components/CoupangRecommend";
+import { ShareButtons } from "@/components/ShareButtons";
 import Navigation from "@/components/Navigation";
 
 import { useToast } from "@/hooks/use-toast";
@@ -257,73 +259,24 @@ export default function TetoEgenResults() {
               </div>
             )}
 
-            {/* Recommended Products */}
-            <div className="mb-8">
-              <h3 className="text-xl font-bold text-neutral-800 mb-4 flex items-center">
-                🛍️ {typeData.title} 맞춤 추천 상품
-              </h3>
-              <p className="text-sm text-neutral-600 mb-4">
-                당신의 성향에 맞는 엄선된 상품들을 추천해드려요!
-              </p>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                {getCoupangProducts(testResult.type).map((product, index) => (
-                  <div key={index} className="bg-neutral-50 rounded-lg p-2 flex justify-center">
-                    <div 
-                      dangerouslySetInnerHTML={{ __html: product }}
-                      className="coupang-product-iframe"
-                    />
-                  </div>
-                ))}
-              </div>
-              <p className="text-xs text-neutral-500 mt-2 text-center">
-                "이 포스팅은 쿠팡 파트너스 활동의 일환으로, 이에 따른 일정액의 수수료를 제공받습니다."
-              </p>
+            {/* 쿠팡 추천 및 공유 */}
+            <div className="mt-8 mb-8">
+              <CoupangRecommend keyword={`${testResult.type} ${typeData.title} 선물`} title={`🛍️ ${typeData.title} 맞춤 추천 상품`} />
             </div>
 
-            {/* Action Buttons */}
-            <div className="flex flex-col sm:flex-row gap-3">
+            <ShareButtons 
+              title="테토 vs 에겐 진단 결과"
+              shareText={`나의 호르몬 성향은 '${typeData.title}'입니다!`}
+              url="https://mbtifinder.com/teto-egen-test"
+            />
+
+            <div className="mt-8 flex justify-center pb-8">
               <Button
                 onClick={handleRestart}
-                variant="outline"
-                className="flex items-center justify-center space-x-2 flex-1"
+                className="bg-gradient-to-r from-neutral-800 to-neutral-900 text-white px-8 py-6 rounded-full text-lg hover:shadow-lg transition-transform hover:-translate-y-1"
               >
-                <RotateCcw size={18} />
-                <span>다시 테스트</span>
-              </Button>
-              
-              {'share' in navigator && (
-                <Button
-                  onClick={() => handleShare('native')}
-                  className="flex items-center justify-center space-x-2 flex-1 bg-primary hover:bg-primary/90"
-                >
-                  <Share2 size={18} />
-                  <span>공유하기</span>
-                </Button>
-              )}
-              
-              <Button
-                onClick={() => handleShare('facebook')}
-                className="flex items-center justify-center space-x-2 flex-1 bg-blue-600 hover:bg-blue-700"
-              >
-                <Share2 size={18} />
-                <span>페이스북</span>
-              </Button>
-              
-              <Button
-                onClick={() => handleShare('twitter')}
-                className="flex items-center justify-center space-x-2 flex-1 bg-sky-500 hover:bg-sky-600"
-              >
-                <Share2 size={18} />
-                <span>트위터</span>
-              </Button>
-              
-              <Button
-                onClick={() => handleShare('copy')}
-                variant="outline"
-                className="flex items-center justify-center space-x-2 flex-1"
-              >
-                <Share2 size={18} />
-                <span>링크 복사</span>
+                <RotateCcw size={20} className="mr-2" />
+                다시 테스트하기
               </Button>
             </div>
           </CardContent>

@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { AdSenseBlock } from "@/components/AdSenseBlock";
 import { CoupangRecommend } from "@/components/CoupangRecommend";
+import { ShareButtons } from "@/components/ShareButtons";
 
 interface ResultCardProps {
   mbtiType: MBTIType;
