@@ -14,19 +14,6 @@ export interface TestType {
 
 export const testTypes: TestType[] = [
   {
-    id: "mbtiMatchTest",
-    title: "Discover Your Perfect MBTI Match!",
-    subtitle: "Find out which MBTI personality type you are most compatible with. Answer these questions to see who resonates the most with your true self.",
-    description: "AI가 생성한 최신 바이럴 테스트입니다.",
-    emoji: "✨",
-    color: "from-blue-400 to-indigo-500",
-    duration: "약 3분",
-    questions: 12,
-    href: "/mbtiMatchTest-test",
-    features: ["AI 맞춤형 분석", "나만의 결과지", "궁합 확인"],
-    isAvailable: true
-  },
-  {
     id: "mbti",
     title: "MBTI 성격유형 검사",
     subtitle: "나의 진짜 성격 찾기",

@@ -17,8 +17,6 @@ import HoguTest from "@/pages/hogu-test";
 import HoguResults from "@/pages/hogu-results";
 import Terms from "@/pages/terms";
 import Privacy from "@/pages/privacy";
-import MbtiMatchTestTest from "@/pages/mbtiMatchTest-test";
-import MbtiMatchTestResults from "@/pages/mbtiMatchTest-results";
 import NotFound from "@/pages/not-found";
 
 import Footer from "@/components/Footer";
@@ -43,8 +41,6 @@ function Router() {
       <Route path="/contact" component={Contact} />
       <Route path="/terms" component={Terms} />
       <Route path="/privacy" component={Privacy} />
-      <Route path="/mbtiMatchTest-test" component={MbtiMatchTestTest} />
-      <Route path="/mbtiMatchTest-results" component={MbtiMatchTestResults} />
       <Route component={NotFound} />
     </Switch>
   );
