@@ -17,6 +17,20 @@ export interface TestType {
 
 export const testTypes: TestType[] = [
   {
+    id: "pastLifeTest",
+    category: "FUN",
+    title: "당신의 전생은 어떤 모습이었을까?",
+    subtitle: "궁금한 당신의 무의식 속 이야기!",
+    description: "전생에 당신은 어떤 인생을 살았을까요? 중세의 기사, 신비한 마법사, 혹은 단순한 농부? 이 독특한 심리 테스트를 통해 당신의 과거를 파헤쳐보고, 잊혀진 기억 속의 진실을 찾아보세요! 상상도 못했던 당신의 숨겨진 전생을 밝혀줄 거예요.",
+    emoji: "✨",
+    color: "from-purple-500 to-pink-500",
+    duration: "약 3분",
+    questions: 12,
+    href: "/pastLifeTest-test",
+    features: ["AI 맞춤 분석", "나만의 결과지", "궁합 확인"],
+    isAvailable: true
+  },
+  {
     id: "mbti",
     category: "PERSONALITY",
     title: "MBTI 성격유형 검사",

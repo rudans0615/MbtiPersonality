@@ -19,6 +19,8 @@ import HoguTest from "@/pages/hogu-test";
 import HoguResults from "@/pages/hogu-results";
 import Terms from "@/pages/terms";
 import Privacy from "@/pages/privacy";
+import PastLifeTestTest from "@/pages/pastLifeTest-test";
+import PastLifeTestResults from "@/pages/pastLifeTest-results";
 import NotFound from "@/pages/not-found";
 
 import Footer from "@/components/Footer";
@@ -43,6 +45,8 @@ function Router() {
       <Route path="/contact" component={Contact} />
       <Route path="/terms" component={Terms} />
       <Route path="/privacy" component={Privacy} />
+      <Route path="/pastLifeTest-test" component={PastLifeTestTest} />
+      <Route path="/pastLifeTest-results" component={PastLifeTestResults} />
       <Route component={NotFound} />
     </Switch>
   );
