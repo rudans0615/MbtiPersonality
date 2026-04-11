@@ -26,13 +26,17 @@ export default function MbtiMatchTestTest() {
       <Navigation />
       <main className="flex-grow max-w-2xl mx-auto w-full px-4 py-8 flex flex-col">
         <div className="bg-white rounded-3xl p-8 shadow-sm flex-grow flex flex-col justify-center text-center">
-          <h2 className="text-2xl font-bold mb-8">{question?.question || "Discover Your Perfect MBTI Match!"}</h2>
+          <h2 className="text-2xl font-bold mb-8">{question?.question || question?.questionText || "Discover Your Perfect MBTI Match!"}</h2>
           <div className="space-y-4">
-            {question?.options?.map((opt: any, idx: number) => (
-              <Button key={idx} onClick={() => handleAnswer(opt.score)} className="w-full h-16 text-lg" variant="outline">
-                {opt.text}
-              </Button>
-            ))}
+            {question?.options?.map((opt: any, idx: number) => {
+              const text = typeof opt === 'string' ? opt : opt.text;
+              const val = typeof opt === 'string' ? (question.score ? Object.values(question.score)[idx] : 1) : opt.score;
+              return (
+                <Button key={idx} onClick={() => handleAnswer(val as number)} className="w-full h-16 text-lg" variant="outline">
+                  {text}
+                </Button>
+              );
+            })}
           </div>
         </div>
       </main>
