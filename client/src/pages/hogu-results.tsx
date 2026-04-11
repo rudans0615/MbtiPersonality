@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import SEO from "@/components/SEO";
 import { useLocation } from "wouter";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -60,6 +61,7 @@ export default function HoguResults() {
 
   return (
     <div className="min-h-screen bg-neutral-50 pt-24 pb-12 px-4 selection:bg-rose-200">
+      <SEO title="연애 호구력 진단 결과" description="당신의 연애 포식자/초식동물 유형 결과입니다." />
       <div className="max-w-2xl mx-auto">
         <Card className="bg-white rounded-3xl shadow-xl overflow-hidden animate-in fade-in slide-in-from-bottom-4 duration-700">
           <CardContent className="p-8 md:p-12">

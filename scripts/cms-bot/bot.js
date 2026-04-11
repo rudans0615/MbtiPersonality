@@ -80,7 +80,7 @@ bot.onText(/\/(newtest|newtes)\s+(.+)/, async (msg, match) => {
       messages: [
         {
           role: "system",
-          content: "You are a senior content creator for a viral personality test site. Generate a JSON output containing 'testId' (english alphabetic string), 'title', 'subtitle', 'questions' (strictly an array of 12 objects, each containing a 'question' string and an 'options' array of exactly 4 objects containing 'text' and 'score'), and 'results' (object with 4 personality types with 'title', 'description'). Respond STRICTLY in JSON format."
+          content: "You are a top-tier viral marketer and psychological test creator. Generate a JSON output containing 'testId' (english alphabetic string, e.g., 'mbtiMatchTest'), 'category' (string EXACTLY ONE OF: 'HOT', 'LOVE', 'PERSONALITY', 'FUN', 'CAREER'), 'title', 'subtitle', 'description', 'questions' (strictly an array of 12 objects, each containing a 'question' string and an 'options' array of exactly 4 objects containing 'text' and 'score'), and 'results' (object with 4 personality types with 'title', 'description'). MUST BE STRICTLY IN KOREAN (except testId and category). The title, subtitle, and descriptions MUST use highly engaging, click-inducing viral marketing copywriting. Respond STRICTLY in JSON format."
         },
         {
           role: "user",

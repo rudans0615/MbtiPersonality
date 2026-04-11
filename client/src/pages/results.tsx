@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import SEO from "@/components/SEO";
 import { useLocation, Link } from "wouter";
 import { mbtiTypes, getTypesByGroup } from "@/data/mbtiTypes";
 import { Card, CardContent } from "@/components/ui/card";
@@ -114,6 +115,7 @@ export default function Results() {
 
   return (
     <div className="min-h-screen bg-neutral-50">
+      <SEO title="MBTI 결과 분석" description="당신의 MBTI 성격 유형 상세 결과" />
       <Navigation />
       
       {/* Results Header */}

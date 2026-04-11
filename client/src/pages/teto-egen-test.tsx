@@ -1,4 +1,5 @@
 import { useTetoEgenTest } from "@/hooks/useTetoEgenTest";
+import SEO from "@/components/SEO";
 import Navigation from "@/components/Navigation";
 import ProgressBar from "@/components/ProgressBar";
 import { Button } from "@/components/ui/button";
@@ -35,6 +36,7 @@ export default function TetoEgenTest() {
 
   return (
     <div className="min-h-screen bg-neutral-50">
+      <SEO title="테토 vs 에겐 호르몬 진단" description="테스토스테론과 에스트로겐 수치를 기반으로 당신의 두뇌 성향을 분석합니다." />
       <Navigation />
       
       {/* Progress Header */}

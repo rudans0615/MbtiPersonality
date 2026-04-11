@@ -1,5 +1,8 @@
+export type TestCategory = 'HOT' | 'PERSONALITY' | 'LOVE' | 'FUN' | 'CAREER';
+
 export interface TestType {
   id: string;
+  category: TestCategory;
   title: string;
   subtitle: string;
   description: string;
@@ -15,6 +18,7 @@ export interface TestType {
 export const testTypes: TestType[] = [
   {
     id: "mbti",
+    category: "PERSONALITY",
     title: "MBTI 성격유형 검사",
     subtitle: "나의 진짜 성격 찾기",
     description: "과학적으로 검증된 MBTI 성격유형 검사로 당신의 숨겨진 성격과 잠재력을 발견하세요.",
@@ -33,6 +37,7 @@ export const testTypes: TestType[] = [
   },
   {
     id: "teto-egen",
+    category: "HOT",
     title: "테토 vs 에겐 진단",
     subtitle: "호르몬 성향 분석",
     description: "당신의 테스토스테론과 에스트로겐 성향을 4가지 유형으로 분석해보세요.",
@@ -51,6 +56,7 @@ export const testTypes: TestType[] = [
   },
   {
     id: "self-awareness-test",
+    category: "FUN",
     title: "나는 지금 어떤 상태일까?",
     subtitle: "현재 컨디션 자가진단",
     description: "현재 나의 상태와 컨디션을 재미있게 체크해보세요. 건전하고 유머러스한 자가진단 테스트입니다.",
@@ -69,6 +75,7 @@ export const testTypes: TestType[] = [
   },
   {
     id: "hogu-test",
+    category: "LOVE",
     title: "연애 호구력 진단",
     subtitle: "나는 육식계일까, 초식계일까?",
     description: "끌려다니는 연애는 이제 그만! 당신의 연애 상대 우위와 호구력을 팩폭으로 진단합니다.",
@@ -87,6 +94,7 @@ export const testTypes: TestType[] = [
   },
   {
     id: "love",
+    category: "LOVE",
     title: "연애유형 검사",
     subtitle: "나의 사랑 스타일 알아보기",
     description: "당신의 연애 스타일과 이상형, 연애에서 중요하게 생각하는 가치를 알아보세요.",
@@ -105,6 +113,7 @@ export const testTypes: TestType[] = [
   },
   {
     id: "career",
+    category: "CAREER",
     title: "직업적성 검사",
     subtitle: "나에게 맞는 직업 찾기",
     description: "당신의 성향과 능력에 맞는 최적의 직업과 진로를 추천해드립니다.",
@@ -123,6 +132,7 @@ export const testTypes: TestType[] = [
   },
   {
     id: "stress",
+    category: "PERSONALITY",
     title: "스트레스 유형 검사",
     subtitle: "나만의 스트레스 해소법",
     description: "당신이 스트레스를 받는 상황과 효과적인 해소 방법을 알아보세요.",
@@ -141,6 +151,7 @@ export const testTypes: TestType[] = [
   },
   {
     id: "communication",
+    category: "PERSONALITY",
     title: "소통 스타일 검사",
     subtitle: "나의 대화법 알아보기",
     description: "당신의 소통 스타일과 다른 사람과 더 잘 어울리는 방법을 알아보세요.",
@@ -159,6 +170,7 @@ export const testTypes: TestType[] = [
   },
   {
     id: "leadership",
+    category: "CAREER",
     title: "리더십 유형 검사",
     subtitle: "나의 리더십 스타일",
     description: "당신만의 리더십 스타일과 팀을 이끄는 방식을 알아보세요.",

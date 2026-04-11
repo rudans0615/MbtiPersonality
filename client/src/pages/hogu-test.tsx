@@ -1,4 +1,5 @@
 import { useState } from "react";
+import SEO from "@/components/SEO";
 import { useLocation } from "wouter";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -44,6 +45,7 @@ export default function HoguTest() {
   if (isFinishing) {
     return (
       <div className="min-h-screen bg-neutral-50 flex flex-col items-center justify-center p-4">
+      <SEO title="연애 호구력 진단 테스트" description="끌려다니는 연애는 그만! 나의 호구력을 팩트로 진단해보세요." />
         <div className="text-center space-y-6 animate-pulse">
           <div className="w-24 h-24 mx-auto bg-gradient-to-tr from-pink-400 to-rose-500 rounded-full flex items-center justify-center">
             <i className="fas fa-heart-broken text-white text-4xl"></i>

@@ -1,4 +1,5 @@
 import { useLocation } from "wouter";
+import SEO from "@/components/SEO";
 import { useMBTITest } from "@/hooks/useMBTITest";
 import { mbtiTypes } from "@/data/mbtiTypes";
 import ProgressBar from "@/components/ProgressBar";
@@ -40,6 +41,7 @@ export default function Test() {
 
   return (
     <div className="min-h-screen bg-neutral-50">
+      <SEO title="MBTI 성격유형 검사" description="과학적으로 검증된 16가지 성격 분석" />
       <Navigation />
       
       {/* Progress Header */}

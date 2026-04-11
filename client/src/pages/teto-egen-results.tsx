@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import SEO from "@/components/SEO";
 import { useLocation } from "wouter";
 import { tetoEgenTypes, getCompatibilityDescription } from "@/data/tetoEgenTypes";
 import { Card, CardContent } from "@/components/ui/card";
@@ -144,6 +145,7 @@ export default function TetoEgenResults() {
 
   return (
     <div className="min-h-screen bg-neutral-50">
+      <SEO title="테토 vs 에겐 진단 결과" description="당신의 호르몬 성향 분석 결과입니다." />
       <Navigation />
       
       {/* Results Header */}
