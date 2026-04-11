@@ -4,6 +4,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { blogPosts, BlogPost } from "@/data/blogPosts";
 import { AdSenseBlock } from "@/components/AdSenseBlock";
+import SEO from "@/components/SEO";
 
 export default function BlogPostPage() {
   const [location] = useLocation();
@@ -36,6 +37,7 @@ export default function BlogPostPage() {
 
   return (
     <div className="min-h-screen bg-neutral-50">
+      <SEO title={post.title + " | MBTI Finder 블로그"} description={post.excerpt} url={"https://mbtifinder.com/blog/" + post.id} />
       {/* Header */}
       <div className="gradient-bg text-white py-16">
         <div className="max-w-4xl mx-auto px-6">

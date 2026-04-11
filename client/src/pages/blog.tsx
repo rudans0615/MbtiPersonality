@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import Navigation from "@/components/Navigation";
+import SEO from "@/components/SEO";
 import { blogPosts } from "@/data/blogPosts";
 import { Link } from "wouter";
 import { Calendar, Clock, ArrowRight, Search, ChevronLeft, ChevronRight } from "lucide-react";
@@ -43,6 +44,7 @@ export default function Blog() {
 
   return (
     <div className="min-h-screen bg-neutral-50">
+      <SEO title="성격분석 블로그 | MBTI Finder" description="MBTI, 테토에겐, 연애 심리 등 성격유형에 대한 깊이 있는 인사이트와 분석 글을 만나보세요." url="https://mbtifinder.com/blog" />
       <Navigation />
 
       {/* Header */}

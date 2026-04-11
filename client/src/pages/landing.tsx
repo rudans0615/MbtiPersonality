@@ -2,6 +2,7 @@ import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import SEO from "@/components/SEO";
 
 import Navigation from "@/components/Navigation";
 import { testTypes } from "@/data/testTypes";
@@ -100,6 +101,12 @@ export default function Landing() {
 
   return (
     <div className="min-h-screen bg-[#F8F9FB]">
+      <SEO 
+        title="MBTI 성격유형 검사 | 재미있는 심리테스트 모음" 
+        description="MBTI 16가지 성격유형 검사, 테토에겐 호르몬 진단, 연애 호구력 테스트 등 재미있고 정확한 무료 심리테스트를 지금 바로 해보세요!"
+        keywords="MBTI, MBTI 검사, 성격유형검사, 심리테스트, 무료 심리테스트, 연애 테스트, 호구력 테스트, 성격 분석, 심리 진단, 테토에겐"
+        url="https://mbtifinder.com"
+      />
       <Navigation />
 
       {/* Hero Section */}

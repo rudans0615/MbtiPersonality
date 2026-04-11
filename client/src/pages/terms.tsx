@@ -1,9 +1,11 @@
 import { Card, CardContent } from "@/components/ui/card";
 import Navigation from "@/components/Navigation";
+import SEO from "@/components/SEO";
 
 export default function Terms() {
   return (
     <div className="min-h-screen bg-neutral-50">
+      <SEO title="이용약관 | MBTI Finder" description="MBTI Finder 서비스 이용에 관한 약관입니다." url="https://mbtifinder.com/terms" />
       <Navigation />
       
       {/* Header */}

@@ -4,6 +4,8 @@ import { Progress } from "@/components/ui/progress";
 import { useDrunkTest } from "@/hooks/useDrunkTest";
 import { selfAwarenessResults } from "@/data/drunkTestTypes";
 import Navigation from "@/components/Navigation";
+import SEO from "@/components/SEO";
+import { CoupangRecommend } from "@/components/CoupangRecommend";
 
 import { Link } from "wouter";
 
@@ -59,6 +61,7 @@ export default function DrunkTest() {
 
     return (
       <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-orange-50">
+        <SEO title="나 술 취했나? 자가진단 테스트 결과" description={`당신의 현재 상태는 '${result.title}'입니다. 지금 바로 확인해보세요!`} url="https://mbtifinder.com/drunk-test" />
         <Navigation />
         
         <div className="max-w-2xl mx-auto px-4 py-8">
@@ -135,7 +138,8 @@ export default function DrunkTest() {
                   </div>
                 </div>
 
-
+                {/* 쿠팡 파트너스 추천 */}
+                <CoupangRecommend keyword={`${result.title} 숙취해소`} title="취한 나를 위한 필수 아이템 🍺" />
 
                 <div className="bg-gradient-to-r from-pink-50 to-purple-50 rounded-xl p-6 text-center">
                   <h4 className="text-lg font-semibold text-neutral-800 mb-4">
@@ -196,6 +200,7 @@ export default function DrunkTest() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-orange-50">
+      <SEO title="나 술 취했나? 자가진단 테스트" description="지금 내가 술에 얼마나 취했을까? 유쾌한 밈 자가진단으로 취함 정도를 확인해보세요!" url="https://mbtifinder.com/drunk-test" />
       <Navigation />
       
       <div className="max-w-2xl mx-auto px-4 py-8">

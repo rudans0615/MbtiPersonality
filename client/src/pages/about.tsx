@@ -2,11 +2,13 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Link } from "wouter";
 import Navigation from "@/components/Navigation";
+import SEO from "@/components/SEO";
 
 
 export default function About() {
   return (
     <div className="min-h-screen bg-neutral-50">
+      <SEO title="소개 | MBTI Finder" description="MBTI Finder는 과학적으로 검증된 성격유형 검사와 다양한 심리테스트를 무료로 제공하는 플랫폼입니다." url="https://mbtifinder.com/about" />
       <Navigation />
       
       {/* Header */}

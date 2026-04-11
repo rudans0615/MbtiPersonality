@@ -3,6 +3,7 @@ import { useLocation, Link } from "wouter";
 import { mbtiTypes } from "@/data/mbtiTypes";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import SEO from "@/components/SEO";
 
 
 export default function TypeDetail() {
@@ -34,6 +35,7 @@ export default function TypeDetail() {
 
   return (
     <div className="min-h-screen bg-neutral-50">
+      <SEO title={`${typeData.code} - ${typeData.title} | MBTI 성격유형 상세정보`} description={typeData.description.slice(0, 160)} url={`https://mbtifinder.com/type/${mbtiType}`} />
       {/* Header */}
       <div className="gradient-bg text-white py-16">
         <div className="max-w-4xl mx-auto px-6 text-center">

@@ -1,9 +1,11 @@
 import { Card, CardContent } from "@/components/ui/card";
 import Navigation from "@/components/Navigation";
+import SEO from "@/components/SEO";
 
 export default function Privacy() {
   return (
     <div className="min-h-screen bg-neutral-50">
+      <SEO title="개인정보처리방침 | MBTI Finder" description="MBTI Finder의 개인정보 수집, 이용, 보호에 관한 정책입니다." url="https://mbtifinder.com/privacy" />
       <Navigation />
       
       {/* Header */}

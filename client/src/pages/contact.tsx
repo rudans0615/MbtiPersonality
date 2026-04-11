@@ -1,6 +1,7 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
+import SEO from "@/components/SEO";
 
 export default function Contact() {
     const [submitted, setSubmitted] = useState(false);
@@ -12,6 +13,7 @@ export default function Contact() {
 
     return (
         <div className="min-h-screen bg-neutral-50 pt-24 pb-12">
+            <SEO title="문의하기 | MBTI Finder" description="MBTI Finder에 문의사항이 있으신가요? 협업 제안, 버그 신고, 기타 문의를 남겨주세요." url="https://mbtifinder.com/contact" />
             <div className="max-w-4xl mx-auto px-6">
                 <div className="text-center mb-12">
                     <h1 className="text-4xl font-bold text-neutral-800 mb-4">문의하기</h1>
