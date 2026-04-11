@@ -37,8 +37,6 @@ export default function HoguTest() {
       const newIndices = [...currentQuestionIndices];
       newIndices.pop();
       setCurrentQuestionIndices(newIndices);
-    } else {
-      setLocation("/");
     }
   };
 
@@ -58,19 +56,8 @@ export default function HoguTest() {
   }
 
   return (
-    <div className="min-h-screen bg-neutral-50 pt-20 pb-12 px-4 selection:bg-rose-200">
-      <div className="max-w-2xl mx-auto">
-        <Button 
-          variant="ghost" 
-          onClick={handleBack}
-          className="mb-4 hover:bg-white/50"
-          disabled={currentQuestionIndices.length <= 1}
-        >
-          <i className="fas fa-arrow-left mr-2"></i> 이전으로
-        </Button>
-      </div>
-
-      <div className="max-w-2xl mx-auto relative relative z-10 transition-all duration-500">
+    <div className="min-h-screen bg-neutral-50 pt-20 pb-24 px-4 selection:bg-rose-200">
+      <div className="max-w-2xl mx-auto relative z-10 transition-all duration-500">
         <div className="mb-8">
           <div className="flex items-center justify-between mb-4">
             <span className="text-sm font-semibold text-rose-500 bg-rose-100 px-3 py-1 rounded-full">
@@ -105,31 +92,21 @@ export default function HoguTest() {
                 </button>
               ))}
             </div>
+
+            {/* 이전 버튼 - 2번째 문항부터 카드 하단에 자연스럽게 표시 */}
+            {currentQuestionIndices.length > 1 && (
+              <div className="mt-8 pt-6 border-t border-neutral-100 flex justify-center">
+                <Button 
+                  variant="ghost" 
+                  onClick={handleBack}
+                  className="text-neutral-400 hover:text-rose-500 hover:bg-rose-50 transition-all"
+                >
+                  <i className="fas fa-arrow-left mr-2"></i> 이전 문항으로
+                </Button>
+              </div>
+            )}
           </CardContent>
         </Card>
-      </div>
-
-      {/* Mobile progress navigation positioned at bottom */}
-      <div className="fixed bottom-0 left-0 right-0 p-4 bg-white/80 backdrop-blur-md border-t border-neutral-200 md:hidden flex justify-between items-center z-50">
-        <Button 
-          variant="ghost" 
-          onClick={handleBack}
-          disabled={currentQuestionIndices.length <= 1}
-          className="shrink-0 text-neutral-600 hover:text-rose-500 hover:bg-rose-50 rounded-full shadow-sm border border-neutral-200 bg-white px-4 h-10"
-        >
-          <i className="fas fa-arrow-left mr-2"></i> 이전
-        </Button>
-        <div className="flex-1 ml-4">
-          <p className="text-xs text-neutral-500 font-medium mb-1 text-right">
-            {currentQuestionIndex + 1} / {hoguQuestions.length}
-          </p>
-          <div className="h-1.5 w-full bg-neutral-100 rounded-full overflow-hidden">
-            <div 
-              className="h-full bg-rose-500 transition-all duration-500 rounded-full"
-              style={{ width: `${Math.max(5, progress)}%` }}
-            />
-          </div>
-        </div>
       </div>
     </div>
   );
