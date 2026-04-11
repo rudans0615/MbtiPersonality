@@ -46,6 +46,37 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // 쿠팡 파트너스 애드블락 우회용 이미지 프록시
+  app.get('/api/affiliates/image', async (req, res) => {
+    const imageUrl = req.query.url as string;
+    
+    if (!imageUrl) {
+      return res.status(400).json({ error: 'url is required' });
+    }
+
+    try {
+      const response = await fetch(imageUrl, {
+        method: 'GET',
+        headers: {
+          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)',
+          'Referer': 'https://www.coupang.com/'
+        }
+      });
+
+      if (!response.ok) throw new Error(`Failed to fetch image: ${response.status}`);
+
+      const contentType = response.headers.get('content-type');
+      const arrayBuffer = await response.arrayBuffer();
+      
+      res.setHeader('Content-Type', contentType || 'image/jpeg');
+      res.setHeader('Cache-Control', 'public, max-age=86400, stale-while-revalidate=43200');
+      res.status(200).send(Buffer.from(arrayBuffer));
+    } catch (error: any) {
+      console.error('Image proxy error:', error);
+      res.status(500).json({ error: error.message });
+    }
+  });
+
   const httpServer = createServer(app);
 
   return httpServer;

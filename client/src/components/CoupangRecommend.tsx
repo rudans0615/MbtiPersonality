@@ -86,7 +86,7 @@ export function CoupangRecommend({ keyword, title }: CoupangRecommendProps) {
           >
             <div className="aspect-square bg-gray-50 flex items-center justify-center overflow-hidden border-b border-gray-100">
               <img 
-                src={product.imageUrl} 
+                src={`/api/affiliates/image?url=${encodeURIComponent(product.imageUrl)}`} 
                 alt={product.name}
                 referrerPolicy="no-referrer"
                 className="max-w-[80%] max-h-[80%] object-contain group-hover:scale-110 transition-transform duration-300"
