@@ -25,6 +25,12 @@ import DopamineResults from "@/pages/dopamine-results";
 
 import PetPersonalityPreferenceTest from "@/pages/petPersonalityPreference-test";
 import PetPersonalityPreferenceResults from "@/pages/petPersonalityPreference-results";
+import SocialMediaHabitsTest from "@/pages/socialMediaHabits-test";
+import SocialMediaHabitsResults from "@/pages/socialMediaHabits-results";
+import FriendshipCompatibilityTest from "@/pages/friendshipCompatibility-test";
+import FriendshipCompatibilityResults from "@/pages/friendshipCompatibility-results";
+import SocialMediaHabitsTestTest from "@/pages/socialMediaHabitsTest-test";
+import SocialMediaHabitsTestResults from "@/pages/socialMediaHabitsTest-results";
 import NotFound from "@/pages/not-found";
 
 import Footer from "@/components/Footer";
@@ -54,6 +60,12 @@ function Router() {
 
       <Route path="/petPersonalityPreference-test" component={PetPersonalityPreferenceTest} />
       <Route path="/petPersonalityPreference-results" component={PetPersonalityPreferenceResults} />
+      <Route path="/socialMediaHabits-test" component={SocialMediaHabitsTest} />
+      <Route path="/socialMediaHabits-results" component={SocialMediaHabitsResults} />
+      <Route path="/friendshipCompatibility-test" component={FriendshipCompatibilityTest} />
+      <Route path="/friendshipCompatibility-results" component={FriendshipCompatibilityResults} />
+      <Route path="/socialMediaHabitsTest-test" component={SocialMediaHabitsTestTest} />
+      <Route path="/socialMediaHabitsTest-results" component={SocialMediaHabitsTestResults} />
       <Route component={NotFound} />
     </Switch>
   );
