@@ -17,6 +17,48 @@ export interface TestType {
 
 export const testTypes: TestType[] = [
   {
+    id: "socialMediaHabitsTest",
+    category: "FUN",
+    title: "너의 SNS 소비 스타일은?",
+    subtitle: "당신의 SNS에서의 숨은 취향을 알아봐!",
+    description: "매일매일 무심코 소비하는 SNS, 과연 어떤 스타일인지 간단한 테스트로 알아보자! 어떤 영상이 당신을 끌어들이는지, SNS 크리에이터와의 궁합은 어떤지 스스로를 돌아보는 재미있고 흥미로운 시간이 될 거야. 자, 그럼 시작해볼까?",
+    emoji: "📱",
+    color: "from-purple-500 to-pink-500",
+    duration: "약 3분",
+    questions: 12,
+    href: "/socialMediaHabitsTest-test",
+    features: ["AI 맞춤 분석", "나만의 결과지", "궁합 확인"],
+    isAvailable: true
+  },
+  {
+    id: "friendshipCompatibility",
+    category: "PERSONALITY",
+    title: "내 친구와의 우정, 얼마나 잘 맞을까?",
+    subtitle: "너와 친구의 궁합 테스트!",
+    description: "너와 친구의 우정의 깊이를 테스트해봐! 당신의 성향이 친구와 얼마나 잘 맞는지 알게 될 거야. 친구 관계를 보다 즐겁고 특별하게 만들어보자!",
+    emoji: "👭",
+    color: "from-purple-500 to-pink-500",
+    duration: "약 3분",
+    questions: 12,
+    href: "/friendshipCompatibility-test",
+    features: ["AI 맞춤 분석", "나만의 결과지", "궁합 확인"],
+    isAvailable: true
+  },
+  {
+    id: "socialMediaHabits",
+    category: "FUN",
+    title: "당신의 SNS 중독 지수는?",
+    subtitle: "SNS 생활을 통해 알아보는 나의 уникальный 관리 포인트!",
+    description: "SNS를 들여다보면 내 속마음이 보이는 법! 당신의 SNS 사용 습관을 통해 과연 어떤 타입인지 알아보자! 경쾌하고 재밌는 시간이 될 거야~",
+    emoji: "📱",
+    color: "from-purple-500 to-pink-500",
+    duration: "약 3분",
+    questions: 12,
+    href: "/socialMediaHabits-test",
+    features: ["AI 맞춤 분석", "나만의 결과지", "궁합 확인"],
+    isAvailable: true
+  },
+  {
     id: "petPersonalityPreference",
     category: "PERSONALITY",
     title: "내 반려동물이 나의 취향을 알려줄까?",
