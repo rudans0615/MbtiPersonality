@@ -351,7 +351,8 @@ JSON만 출력. 다른 텍스트 금지.`
         });
         bot.sendMessage(chatId, `\n�\udf89 **[배치 완료!]**\n\n✅ 성공: ${successList.length}개\n${successList.map((t, i) => `  ${i + 1}. ${t}`).join('\n')}\n${failList.length > 0 ? `\n❌ 실패: ${failList.length}개` : ''}\n\n�\udd17 PR: ${pr.data.html_url}\n\n�\udc46 Merge 하시면 자동 배포됩니다!`);
       } catch (prErr) {
-        bot.sendMessage(chatId, `⚠️ PR 생성 실패: ${prErr.message}`);
+        const errMsg = prErr?.response?.data?.message || prErr?.message || JSON.stringify(prErr);
+        bot.sendMessage(chatId, `⚠️ PR 생성 실패: ${errMsg}\n\n(브랜치 ${branchName}은 정상 푸시됨. GitHub에서 수동 PR 가능)`);
       }
     });
   } else {
