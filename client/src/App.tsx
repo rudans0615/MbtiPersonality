@@ -20,6 +20,8 @@ import HoguResults from "@/pages/hogu-results";
 import Terms from "@/pages/terms";
 import Privacy from "@/pages/privacy";
 
+import InnerAnimalTestTest from "@/pages/innerAnimalTest-test";
+import InnerAnimalTestResults from "@/pages/innerAnimalTest-results";
 import NotFound from "@/pages/not-found";
 
 import Footer from "@/components/Footer";
@@ -45,6 +47,8 @@ function Router() {
       <Route path="/terms" component={Terms} />
       <Route path="/privacy" component={Privacy} />
 
+      <Route path="/innerAnimalTest-test" component={InnerAnimalTestTest} />
+      <Route path="/innerAnimalTest-results" component={InnerAnimalTestResults} />
       <Route component={NotFound} />
     </Switch>
   );

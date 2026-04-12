@@ -17,6 +17,20 @@ export interface TestType {
 
 export const testTypes: TestType[] = [
   {
+    id: "innerAnimalTest",
+    category: "PERSONALITY",
+    title: "당신의 마음속 동물은 무엇인가요?",
+    subtitle: "심리 테스트로 숨겨진 본성을 발견하세요!",
+    description: "고유한 성격과 숨겨진 본능을 가지고 있는 당신의 마음속 동물은 과연 어떤 모습일까요? 이 테스트를 통해 당신이 어떤 동물의 특성을 지니고 있는지 알아보세요! 당신의 내면을 들여다보며 새로운 스스로를 발견하는 기회를 놓치지 마세요.",
+    emoji: "✨",
+    color: "from-purple-500 to-pink-500",
+    duration: "약 3분",
+    questions: 12,
+    href: "/innerAnimalTest-test",
+    features: ["AI 맞춤 분석", "나만의 결과지", "궁합 확인"],
+    isAvailable: true
+  },
+  {
     id: "mbti",
     category: "PERSONALITY",
     title: "MBTI 성격유형 검사",
