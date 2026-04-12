@@ -344,12 +344,12 @@ JSON만 출력. 다른 텍스트 금지.`
       try {
         const pr = await octokit.pulls.create({
           owner, repo,
-          title: `�\udce6 [AI 배치] 신규 테스트 ${successList.length}개 추가`,
+          title: `[AI Batch] ${successList.length} new tests`,
           head: branchName,
           base: 'main',
-          body: `## �\udce6 AI 배치 생성 결과\n\n### ✅ 성공 (${successList.length}개)\n${successList.map((t, i) => `${i + 1}. ${t}`).join('\n')}\n\n${failList.length > 0 ? `### ❌ 실패 (${failList.length}개)\n${failList.join('\n')}` : ''}`
+          body: `## AI Batch Results\n\n### Success (${successList.length})\n${successList.map((t, i) => `${i + 1}. ${t}`).join('\n')}\n\n${failList.length > 0 ? `### Failed (${failList.length})\n${failList.join('\n')}` : ''}`
         });
-        bot.sendMessage(chatId, `\n�\udf89 **[배치 완료!]**\n\n✅ 성공: ${successList.length}개\n${successList.map((t, i) => `  ${i + 1}. ${t}`).join('\n')}\n${failList.length > 0 ? `\n❌ 실패: ${failList.length}개` : ''}\n\n�\udd17 PR: ${pr.data.html_url}\n\n�\udc46 Merge 하시면 자동 배포됩니다!`);
+        bot.sendMessage(chatId, `\n[Batch Complete!]\n\nSuccess: ${successList.length}\n${successList.map((t, i) => `  ${i + 1}. ${t}`).join('\n')}\n${failList.length > 0 ? `\nFailed: ${failList.length}` : ''}\n\nPR: ${pr.data.html_url}\n\nMerge to deploy!`);
       } catch (prErr) {
         const errMsg = prErr?.response?.data?.message || prErr?.message || JSON.stringify(prErr);
         bot.sendMessage(chatId, `⚠️ PR 생성 실패: ${errMsg}\n\n(브랜치 ${branchName}은 정상 푸시됨. GitHub에서 수동 PR 가능)`);
