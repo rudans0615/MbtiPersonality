@@ -116,6 +116,9 @@ bot.onText(/\/(newtest|newtes)\s+(.+)/, async (msg, match) => {
   bot.sendMessage(chatId, `📝 [${topic}] 주제로 신규 콘텐츠 AI 기획을 시작합니다...\n(약 1~2분 소요)`);
 
   try {
+    const targetOptions = Math.random() < 0.5 ? 2 : 4;
+    const targetQuestions = Math.random() < 0.5 ? 8 : 12;
+
     // 1. OpenAI를 통한 테스트 로직 및 데이터 생성
     const completion = await openai.chat.completions.create({
       model: "gpt-4o-mini",
@@ -141,8 +144,9 @@ bot.onText(/\/(newtest|newtes)\s+(.+)/, async (msg, match) => {
 4. 선택지도 반드시 자연스러운 한국어 구어체로 작성
    - ❌ "누군가의 조언을 듣는다."
    - ✅ "일단 친한 언니한테 카톡으로 sos 보냄"
-5. 각 질문은 10~30대 여성이 일상에서 겪는 구체적인 시나리오여야 함 (카페, SNS, 친구관계, 연애, 쇼핑, 야근 등)
-6. 테스트 문항(questions)은 반드시 최소 10개 이상 작성해야 함 (권장 12개)
+5. 각 질문은 10~30대 여성이 일상에서 겪는 구체적인 시나리오여야 함
+6. 테스트 문항(questions)은 반드시 정확히 ${targetQuestions}개 작성할 것.
+7. 각 문항의 선택지(options)는 반드시 정확히 ${targetOptions}개로 작성할 것 (A/B 구조 또는 4지선다).
 
 [JSON 출력 형식 - 반드시 준수]
 {
@@ -154,9 +158,9 @@ bot.onText(/\/(newtest|newtes)\s+(.+)/, async (msg, match) => {
   "emoji": "대표 이모지 1개",
   "questions": [
     {
-      "question": "구체적 상황이 담긴 질문 (최소 10개 이상 필수 작성, 권장 12개)",
+      "question": "구체적 상황이 담긴 질문 (반드시 ${targetQuestions}개 작성)",
       "options": [
-        { "text": "자연스러운 구어체 선택지", "score": 1 }
+        { "text": "자연스러운 구어체 선택지 (반드시 ${targetOptions}개)", "score": 1 }
       ]
     }
   ],
@@ -270,6 +274,8 @@ bot.onText(/\/batch\s*(\d*)/, async (msg, match) => {
 
   for (let i = 0; i < count; i++) {
     const angle = angles[Math.floor(Math.random() * angles.length)];
+    const targetOptions = Math.random() < 0.5 ? 2 : 4;
+    const targetQuestions = Math.random() < 0.5 ? 8 : 12;
     bot.sendMessage(chatId, `\n�\udd04 [${i + 1}/${count}] "주제: ${angle}" 방향으로 테스트 생성 중...`);
 
     try {
@@ -293,7 +299,8 @@ bot.onText(/\/batch\s*(\d*)/, async (msg, match) => {
 3. 문법 오류 절대 불가. 생성 후 스스로 문법 검수
 4. 선택지도 자연스러운 구어체
 5. 10~30대 여성 일상 시나리오 기반
-6. 테스트 문항(questions)은 최소 10개 이상 필수 작성 (권장 12개)
+6. 테스트 문항(questions)은 반드시 정확히 ${targetQuestions}개 작성할 것.
+7. 각 문항의 선택지(options)는 반드시 정확히 ${targetOptions}개로 작성할 것 (A/B 구조 또는 4지선다).
 
 [JSON 출력 형식]
 {
@@ -303,7 +310,7 @@ bot.onText(/\/batch\s*(\d*)/, async (msg, match) => {
   "subtitle": "부제목",
   "description": "소개",
   "emoji": "이모지 1개",
-  "questions": [{ "question": "구체적 상황 질문 (최소 10개 이상 작성)", "options": [{ "text": "구어체 선택지", "score": 1 }] }],
+  "questions": [{ "question": "구체적 상황 질문 (반드시 ${targetQuestions}개 작성)", "options": [{ "text": "구어체 선택지 (반드시 ${targetOptions}개)", "score": 1 }] }],
   "results": { "유형키": { "title": "유형명", "emoji": "이모지", "subtitle": "한줄요약", "description": "설명", "characteristics": ["특징1","특징2","특징3","특징4"], "coupangKeyword": "상품 키워드" } }
 }
 JSON만 출력. 다른 텍스트 금지.`

@@ -16,6 +16,13 @@ export function ResultImageCard({ testTitle, resultTitle, resultEmoji, resultSub
   const [saved, setSaved] = useState(false);
 
   const handleSave = async () => {
+    if (typeof window !== "undefined" && (window as any).gtag) {
+      (window as any).gtag('event', 'share_clicked', {
+        platform: 'image_download',
+        test_path: window.location.pathname
+      });
+    }
+
     if (!cardRef.current) return;
 
     try {

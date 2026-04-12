@@ -11,6 +11,13 @@ export function ShareButtons({ title, shareText, url }: ShareButtonsProps) {
   const { toast } = useToast();
 
   const handleShare = (platform: string) => {
+    if (typeof window !== "undefined" && (window as any).gtag) {
+      (window as any).gtag('event', 'share_clicked', {
+        platform: platform,
+        test_path: window.location.pathname
+      });
+    }
+
     const encodedUrl = encodeURIComponent(url);
     const encodedText = encodeURIComponent(shareText);
 

@@ -52,6 +52,17 @@ export default function ${capitalizedId}() {
   const [scoreHistory, setScoreHistory] = useState<number[]>([]);
   const [showInterstitial, setShowInterstitial] = useState(false);
 
+  const handleStart = () => {
+    setHasStarted(true);
+    if (typeof window !== "undefined" && (window as any).gtag) {
+      (window as any).gtag('event', 'test_started', {
+        test_id: "${testId}",
+        options_count: ${testId}Questions[0]?.options?.length || 2,
+        questions_count: ${testId}Questions.length
+      });
+    }
+  };
+
   const handleAnswer = (points: number) => {
     const newHistory = [...scoreHistory.slice(0, currentStep), points];
     setScoreHistory(newHistory);
@@ -112,7 +123,7 @@ export default function ${capitalizedId}() {
             <div className="text-6xl mb-6">${emojiChar}</div>
             <h1 className="text-3xl md:text-5xl font-extrabold mb-6 tracking-tight text-neutral-900">${title}</h1>
             <p className="text-lg md:text-xl text-neutral-500 mb-10 leading-relaxed">${subtitle || ''}</p>
-            <Button onClick={() => setHasStarted(true)} size="lg" className="w-full md:w-auto h-16 text-xl rounded-full px-16 bg-gradient-to-r from-pink-400 via-purple-400 to-indigo-400 hover:from-pink-500 hover:via-purple-500 hover:to-indigo-500 text-white shadow-xl hover:shadow-2xl transition-all border-2 border-white/50">
+            <Button onClick={handleStart} size="lg" className="w-full md:w-auto h-16 text-xl rounded-full px-16 bg-gradient-to-r from-pink-400 via-purple-400 to-indigo-400 hover:from-pink-500 hover:via-purple-500 hover:to-indigo-500 text-white shadow-xl hover:shadow-2xl transition-all border-2 border-white/50">
               \uc9c0\uae08 \ubc14\ub85c \uc54c\uc544\ubcf4\uae30 \ud83d\udc49
             </Button>
           </div>
@@ -186,6 +197,7 @@ import { ShareButtons } from "@/components/ShareButtons";
 import { AdSenseBlock } from "@/components/AdSenseBlock";
 import { ResultImageCard } from "@/components/ResultImageCard";
 import { calculate${capitalizedId}Level, ${testId}Results } from "@/data/${testId}Types";
+import { ${testId}Questions } from "@/data/${testId}Questions";
 import { testTypes } from "@/data/testTypes";
 import { Loader2, RotateCcw, Zap, Sparkles } from "lucide-react";
 
@@ -197,7 +209,16 @@ export default function ${capitalizedResults}() {
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     setScore(parseInt(params.get("score") || "0", 10));
-    const timer = setTimeout(() => setIsAnalyzing(false), 3000);
+    const timer = setTimeout(() => {
+      setIsAnalyzing(false);
+      if (typeof window !== "undefined" && (window as any).gtag) {
+        (window as any).gtag('event', 'test_completed', {
+          test_id: "${testId}",
+          options_count: ${testId}Questions[0]?.options?.length || 2,
+          questions_count: ${testId}Questions.length
+        });
+      }
+    }, 3000);
     return () => clearTimeout(timer);
   }, [location]);
 
