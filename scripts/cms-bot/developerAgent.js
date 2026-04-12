@@ -10,7 +10,7 @@ export async function injectCode(aiData) {
   const capitalizedId = testId.charAt(0).toUpperCase() + testId.slice(1) + 'Test';
   const capitalizedResults = testId.charAt(0).toUpperCase() + testId.slice(1) + 'Results';
   const emojiChar = emoji || '\u2728';
-  const descText = description || 'AI가 생성한 최신 바이럴 테스트입니다.';
+  const descText = description || 'AI\uac00 \uc0dd\uc131\ud55c \ucd5c\uc2e0 \ubc14\uc774\ub7f4 \ud14c\uc2a4\ud2b8\uc785\ub2c8\ub2e4.';
   const qLen = questions?.length || 12;
   
   // 1. Data Files Generation
@@ -22,7 +22,6 @@ export async function injectCode(aiData) {
     '  const keys = Object.keys(' + testId + 'Results);',
     '  const numKeys = keys.length;',
     '  if (numKeys === 0) return "";',
-    '  // 12 questions \u00d7 score 1~4 = range 12~48, evenly split',
     '  const maxScore = ' + qLen + ' * 4;',
     '  const minScore = ' + qLen + ';',
     '  const range = maxScore - minScore;',
@@ -35,7 +34,7 @@ export async function injectCode(aiData) {
   ].join('\n');
   fs.writeFileSync(path.join(clientSrc, 'data/' + testId + 'Types.ts'), resultsContent);
 
-  // 2. Test Page
+  // 2. Test Page (matches dopamine-test.tsx CSS: pink bg, gradient progress, Q badge, glassmorphic card)
   const testPage = `import { useState } from "react";
 import { useLocation } from "wouter";
 import Navigation from "@/components/Navigation";
@@ -53,12 +52,14 @@ export default function ${capitalizedId}() {
   const handleAnswer = (points: number) => {
     const newHistory = [...scoreHistory.slice(0, currentStep), points];
     setScoreHistory(newHistory);
-    if (currentStep < ${testId}Questions.length - 1) {
-      setCurrentStep(curr => curr + 1);
-    } else {
-      const totalScore = newHistory.reduce((a, b) => a + b, 0);
-      setLocation("/${testId}-results?score=" + totalScore);
-    }
+    setTimeout(() => {
+      if (currentStep < ${testId}Questions.length - 1) {
+        setCurrentStep(curr => curr + 1);
+      } else {
+        const totalScore = newHistory.reduce((a, b) => a + b, 0);
+        setLocation("/${testId}-results?score=" + totalScore);
+      }
+    }, 300);
   };
 
   const handlePrevious = () => {
@@ -71,65 +72,80 @@ export default function ${capitalizedId}() {
   const progress = Math.round(((currentStep + 1) / ${testId}Questions.length) * 100);
 
   return (
-    <div className="min-h-screen bg-[#F8F9FB] flex flex-col font-sans">
+    <div className="min-h-screen bg-pink-50/30">
       <SEO title="${title}" description="${descText.replace(/"/g, '\\"')}" url="https://mbtifinder.com/${testId}-test" keywords="${(category || '\uc2ec\ub9ac\ud14c\uc2a4\ud2b8') + ', ' + title.replace(/ /g, ', ')}" />
       <Navigation />
       {!hasStarted ? (
         <main className="flex-grow max-w-3xl mx-auto w-full px-4 py-12 pb-24 flex flex-col items-center">
-          <div className="bg-white rounded-[2rem] p-8 md:p-12 shadow-md flex-col justify-center text-center w-full mb-10 border border-neutral-100">
+          <div className="bg-white/90 backdrop-blur-sm rounded-[2rem] p-8 md:p-12 shadow-xl border border-white/60 flex-col justify-center text-center w-full mb-10">
             <div className="text-6xl mb-6">${emojiChar}</div>
             <h1 className="text-3xl md:text-5xl font-extrabold mb-6 tracking-tight text-neutral-900">${title}</h1>
             <p className="text-lg md:text-xl text-neutral-500 mb-10 leading-relaxed">${subtitle || ''}</p>
-            <Button onClick={() => setHasStarted(true)} size="lg" className="w-full md:w-auto h-16 text-xl rounded-full px-16 bg-neutral-900 hover:bg-neutral-800 text-white shadow-xl hover:shadow-2xl transition-all">
+            <Button onClick={() => setHasStarted(true)} size="lg" className="w-full md:w-auto h-16 text-xl rounded-full px-16 bg-gradient-to-r from-pink-400 via-purple-400 to-indigo-400 hover:from-pink-500 hover:via-purple-500 hover:to-indigo-500 text-white shadow-xl hover:shadow-2xl transition-all border-2 border-white/50">
               \uc9c0\uae08 \ubc14\ub85c \uc54c\uc544\ubcf4\uae30 \ud83d\udc49
             </Button>
           </div>
-          <div className="bg-white/60 border border-neutral-200 rounded-2xl p-8 text-left w-full mt-8 prose prose-neutral max-w-none">
+          <div className="bg-white/60 backdrop-blur-sm border border-white/60 rounded-2xl p-8 text-left w-full mt-8 prose prose-neutral max-w-none">
             <h2 className="text-xl font-bold mb-4">\ud83d\udca1 \uc774 \ud14c\uc2a4\ud2b8\uc5d0 \ub300\ud558\uc5ec</h2>
             <p className="text-neutral-600 mb-4">${title}\ub294 \ub2f9\uc2e0\uc758 \uc2ec\ub9ac\ub97c \uae4a\uc774 \uc788\uac8c \ubd84\uc11d\ud569\ub2c8\ub2e4. ${descText}</p>
             <p className="text-neutral-600 mb-6">\ucd1d ${qLen}\uac1c\uc758 \ubb38\ud56d\uc73c\ub85c \uc774\ub8e8\uc5b4\uc838 \uc788\uc73c\uba70, \uc9c1\uad00\uc801\uc73c\ub85c \uac00\uc7a5 \uba3c\uc800 \ub5a0\uc624\ub974\ub294 \ub2f5\ubcc0\uc744 \uc120\ud0dd\ud558\ub294 \uac83\uc774 \uac00\uc7a5 \uc815\ud655\ud569\ub2c8\ub2e4.</p>
           </div>
         </main>
       ) : (
-        <main className="flex-grow max-w-2xl mx-auto w-full px-4 py-8 flex flex-col">
-          <div className="mb-8">
-            <div className="flex justify-between text-sm font-bold text-neutral-500 mb-2 px-2">
-              <span>\uc9c4\ud589\ub960</span>
-              <span>{currentStep + 1} / {${testId}Questions.length}</span>
-            </div>
-            <div className="w-full bg-neutral-200 rounded-full h-3">
-              <div className="bg-neutral-900 h-3 rounded-full transition-all duration-300" style={{ width: progress + "%" }}></div>
-            </div>
-          </div>
-          <div className="bg-white rounded-3xl p-8 md:p-10 shadow-lg flex-grow flex flex-col justify-center text-center">
-            <h2 className="text-2xl md:text-3xl font-bold mb-10 leading-relaxed text-neutral-800 break-keep">{question?.question || question?.questionText || "${title}"}</h2>
-            <div className="space-y-4">
-              {question?.options?.map((opt: any, idx: number) => {
-                const text = typeof opt === "string" ? opt : opt.text;
-                const val = typeof opt === "string" ? 1 : (opt.score ?? 1);
-                return (
-                  <Button key={idx} onClick={() => handleAnswer(val as number)} className="w-full h-auto py-6 px-6 text-lg rounded-2xl bg-neutral-50 hover:bg-neutral-100 text-neutral-700 border-2 border-neutral-100 hover:border-neutral-300 transition-all whitespace-normal break-keep" variant="outline">
-                    {text}
-                  </Button>
-                );
-              })}
-            </div>
-            {currentStep > 0 && (
-              <div className="mt-8 pt-6 border-t border-neutral-100 flex justify-center">
-                <Button onClick={handlePrevious} variant="ghost" className="text-neutral-400 hover:text-neutral-800 hover:bg-neutral-100 rounded-xl transition-all">
-                  <ArrowLeft size={16} className="mr-2" /> \uc774\uc804\uc73c\ub85c
-                </Button>
+        <>
+          {/* Progress Header - pink gradient */}
+          <div className="bg-white/80 backdrop-blur-md shadow-sm sticky top-0 z-20">
+            <div className="max-w-2xl mx-auto px-6 py-4">
+              <div className="w-full bg-pink-100 rounded-full h-2.5">
+                <div className="bg-gradient-to-r from-pink-400 via-purple-400 to-indigo-400 h-2.5 rounded-full transition-all duration-500" style={{ width: progress + "%" }}></div>
               </div>
-            )}
+              <p className="text-sm font-semibold tracking-wider text-pink-500 mt-3 text-center">
+                {currentStep + 1} / {${testId}Questions.length}
+              </p>
+            </div>
           </div>
-        </main>
+
+          {/* Question Content - glassmorphic card with Q badge */}
+          <div className="max-w-2xl mx-auto px-6 py-12">
+            <div className="bg-white/90 backdrop-blur-sm rounded-[2rem] shadow-xl border border-white/60 overflow-hidden relative">
+              <div className="p-8 md:p-10 relative z-10">
+                <div className="text-center mb-10">
+                  <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-tr from-pink-300 via-purple-300 to-indigo-300 text-white rounded-full text-2xl font-black mb-6 shadow-md">
+                    Q{currentStep + 1}
+                  </div>
+                  <h2 className="text-2xl md:text-[1.7rem] font-bold text-neutral-800 leading-snug tracking-tight break-keep">
+                    {question?.question || question?.questionText || "${title}"}
+                  </h2>
+                </div>
+                <div className="space-y-4">
+                  {question?.options?.map((opt: any, idx: number) => {
+                    const text = typeof opt === "string" ? opt : opt.text;
+                    const val = typeof opt === "string" ? 1 : (opt.score ?? 1);
+                    return (
+                      <button key={idx} onClick={() => handleAnswer(val as number)} className="w-full p-5 text-left rounded-2xl border-2 border-neutral-100 hover:border-pink-200 hover:bg-pink-50/30 shadow-sm transition-all duration-300 transform hover:-translate-y-1">
+                        <div className="font-medium text-neutral-700 text-[1.05rem] leading-relaxed">{text}</div>
+                      </button>
+                    );
+                  })}
+                </div>
+                {currentStep > 0 && (
+                  <div className="mt-10 pt-6 border-t border-neutral-100 flex justify-center">
+                    <Button onClick={handlePrevious} variant="ghost" className="text-neutral-400 hover:text-pink-500 hover:bg-pink-50 transition-all font-semibold rounded-xl px-6 py-6">
+                      <ArrowLeft size={18} className="mr-2" /> \uc120\ud0dd \ub2e4\uc2dc\ud558\uae30
+                    </Button>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        </>
       )}
     </div>
   );
 }`;
   fs.writeFileSync(path.join(clientSrc, 'pages/' + testId + '-test.tsx'), testPage);
 
-  // 3. Results Page
+  // 3. Results Page (matches dopamine-results.tsx: gradient header, glassmorphic card, emoji, characteristics, AdSense, CoupangRecommend, ShareButtons, all types overview)
   const resultsPage = `import { useState, useEffect } from "react";
 import { useLocation } from "wouter";
 import Navigation from "@/components/Navigation";
@@ -178,7 +194,6 @@ export default function ${capitalizedResults}() {
       <SEO title={(result.title || "\uacb0\uacfc") + " | ${title}"} description={result.description} url={\`https://mbtifinder.com/${testId}-results?score=\${score}\`} />
       <Navigation />
 
-      {/* Results Header */}
       <div className="bg-gradient-to-br from-pink-300 via-purple-300 to-indigo-300 text-white py-20 relative overflow-hidden">
         <div className="max-w-3xl mx-auto px-6 text-center relative z-10">
           <h1 className="text-xl md:text-2xl font-semibold mb-4 tracking-wider opacity-90 drop-shadow-md">${title} \uacb0\uacfc \ud83d\udcab</h1>
@@ -187,7 +202,6 @@ export default function ${capitalizedResults}() {
       </div>
 
       <div className="max-w-3xl mx-auto px-6 py-12">
-        {/* Main Result Card */}
         <div className="bg-white/80 backdrop-blur-xl border border-white/60 rounded-[2.5rem] shadow-[0_8px_32px_rgba(236,72,153,0.1)] p-8 md:p-12 -mt-24 relative z-20 overflow-hidden">
           <div className="text-center mb-10">
             <div className="inline-flex items-center justify-center w-28 h-28 bg-white rounded-full text-5xl mb-6 shadow-xl border-4 border-pink-100">
@@ -200,10 +214,8 @@ export default function ${capitalizedResults}() {
             </div>
           </div>
 
-          {/* AdSense */}
           <AdSenseBlock adSlot="8811223344" />
 
-          {/* Characteristics */}
           {result.characteristics && result.characteristics.length > 0 && (
             <div className="mb-10 mt-6">
               <h3 className="text-xl font-bold text-neutral-800 mb-5 flex items-center justify-center">
@@ -221,15 +233,12 @@ export default function ${capitalizedResults}() {
             </div>
           )}
 
-          {/* Coupang */}
           <div className="mt-12 mb-8">
             <CoupangRecommend keyword={result.coupangKeyword || result.title} title={\`\ud83c\udf80 \${result.title}\ub97c \uc704\ud55c \ucc30\ub5a1 \ucd94\ucc9c\ud15c\`} />
           </div>
 
-          {/* AdSense */}
           <AdSenseBlock adSlot="9922334455" />
 
-          {/* Share */}
           <div className="text-center space-y-5 mt-10">
             <ShareButtons title="${title} \uacb0\uacfc" shareText={\`\ub098\uc758 \uac80\uc0ac \uacb0\uacfc\ub294 '\${result.title}'! \ub108\ub3c4 \ud574\ubd10 \ud83d\udc49\`} url="https://mbtifinder.com/${testId}-test" />
           </div>
@@ -241,7 +250,6 @@ export default function ${capitalizedResults}() {
           </div>
         </div>
 
-        {/* All Types Overview */}
         <div className="mt-12 mb-6 text-center">
           <h3 className="text-2xl font-bold text-neutral-800">\ubaa8\ub4e0 \uc720\ud615 \ubaa8\uc544\ubcf4\uae30</h3>
         </div>
