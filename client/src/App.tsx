@@ -31,6 +31,10 @@ import FriendshipCompatibilityTest from "@/pages/friendshipCompatibility-test";
 import FriendshipCompatibilityResults from "@/pages/friendshipCompatibility-results";
 import SocialMediaHabitsTestTest from "@/pages/socialMediaHabitsTest-test";
 import SocialMediaHabitsTestResults from "@/pages/socialMediaHabitsTest-results";
+import WorkLifeBalanceTest from "@/pages/workLifeBalance-test";
+import WorkLifeBalanceResults from "@/pages/workLifeBalance-results";
+import IndependentLivingStyleTest from "@/pages/independentLivingStyle-test";
+import IndependentLivingStyleResults from "@/pages/independentLivingStyle-results";
 import NotFound from "@/pages/not-found";
 
 import Footer from "@/components/Footer";
@@ -66,6 +70,10 @@ function Router() {
       <Route path="/friendshipCompatibility-results" component={FriendshipCompatibilityResults} />
       <Route path="/socialMediaHabitsTest-test" component={SocialMediaHabitsTestTest} />
       <Route path="/socialMediaHabitsTest-results" component={SocialMediaHabitsTestResults} />
+      <Route path="/workLifeBalance-test" component={WorkLifeBalanceTest} />
+      <Route path="/workLifeBalance-results" component={WorkLifeBalanceResults} />
+      <Route path="/independentLivingStyle-test" component={IndependentLivingStyleTest} />
+      <Route path="/independentLivingStyle-results" component={IndependentLivingStyleResults} />
       <Route component={NotFound} />
     </Switch>
   );

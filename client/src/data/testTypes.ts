@@ -17,6 +17,34 @@ export interface TestType {
 
 export const testTypes: TestType[] = [
   {
+    id: "independentLivingStyle",
+    category: "PERSONALITY",
+    title: "너의 독립 공간 스타일은?",
+    subtitle: "당신의 자취 공간은 어떤 분위기일까?",
+    description: "자취를 경험하며 나만의 공간을 꾸미는 일은 쉽지 않죠. 지금부터 12가지 상황을 통해 당신의 독립적인 공간 스타일을 알아봐요! 이 결과는 친구들과 공유하면 재밌을 거예요.",
+    emoji: "🏠",
+    color: "from-purple-500 to-pink-500",
+    duration: "약 3분",
+    questions: 12,
+    href: "/independentLivingStyle-test",
+    features: ["AI 맞춤 분석", "나만의 결과지", "궁합 확인"],
+    isAvailable: true
+  },
+  {
+    id: "workLifeBalance",
+    category: "PERSONALITY",
+    title: "직장인으로서의 나의 퇴사 타입 알아보기",
+    subtitle: "퇴사를 꿈꾸는 당신, 어떤 유형일까?",
+    description: "내 커리어에 대한 가치관, 퇴사하고 싶은 이유, 그리고 직장 생활에서의 스트레스 등을 통해 나의 퇴사 타입을 파악해보세요. 나와 비슷한 사람들과 소통할 좋은 기회일 거예요!",
+    emoji: "💼",
+    color: "from-purple-500 to-pink-500",
+    duration: "약 3분",
+    questions: 8,
+    href: "/workLifeBalance-test",
+    features: ["AI 맞춤 분석", "나만의 결과지", "궁합 확인"],
+    isAvailable: true
+  },
+  {
     id: "socialMediaHabitsTest",
     category: "FUN",
     title: "너의 SNS 소비 스타일은?",
