@@ -17,6 +17,25 @@ export interface TestType {
 
 export const testTypes: TestType[] = [
   {
+    id: "dopamine-test",
+    category: "HOT",
+    title: "도파민 중독 성향 테스트",
+    subtitle: "나의 도파민 원천은?",
+    description: "숏폼 망령, 탕후루 흡입러, 소비요정 지름신, 갓생 호소인 등 당신의 도파민 중독 유형을 팩폭으로 분석합니다.",
+    emoji: "📱",
+    color: "from-indigo-500 to-pink-500",
+    duration: "약 3분",
+    questions: 12,
+    href: "/dopamine-test",
+    features: [
+      "4가지 도파민 중독 유형 분석",
+      "뼈때리는 팩트폭력 특징",
+      "도파민 메이트 궁합",
+      "쿠팡 제휴 맞춤 아이템 추천"
+    ],
+    isAvailable: true
+  },
+  {
     id: "mbti",
     category: "PERSONALITY",
     title: "MBTI 성격유형 검사",

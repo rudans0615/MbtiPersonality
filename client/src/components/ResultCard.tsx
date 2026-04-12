@@ -89,16 +89,17 @@ export default function ResultCard({ mbtiType, onRestart, onShare }: ResultCardP
   };
 
   return (
-    <Card className="bg-white rounded-3xl shadow-2xl p-8 md:p-12 -mt-16 relative z-10 animate-slide-up">
+    <Card className="bg-white/80 backdrop-blur-xl border border-white/60 rounded-[2.5rem] shadow-[0_8px_32px_rgba(236,72,153,0.1)] p-8 md:p-12 -mt-16 relative z-10 animate-slide-up overflow-hidden">
+      <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-pink-300 via-purple-300 to-indigo-300 opacity-80"></div>
       <CardContent className="p-0">
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-24 h-24 bg-gradient-to-r from-primary to-secondary rounded-full text-white text-3xl font-bold mb-6">
+          <div className="inline-flex items-center justify-center w-28 h-28 bg-gradient-to-tr from-pink-300 via-purple-300 to-indigo-300 rounded-full text-white text-4xl font-bold mb-6 shadow-xl shadow-purple-200/50 border-4 border-white">
             <span>{mbtiType.code}</span>
           </div>
-          <h2 className="text-3xl font-bold text-neutral-800 mb-2">
+          <h2 className="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-neutral-800 to-neutral-600 mb-2 tracking-tight">
             {mbtiType.title}
           </h2>
-          <p className="text-lg text-neutral-600">
+          <p className="text-lg text-pink-500 font-medium tracking-wide">
             {mbtiType.subtitle}
           </p>
         </div>
@@ -111,27 +112,27 @@ export default function ResultCard({ mbtiType, onRestart, onShare }: ResultCardP
         <AdSenseBlock adSlot="4325732101" />
 
         <div className="grid md:grid-cols-2 gap-8 mb-8 mt-4">
-          <div className="bg-accent/10 rounded-2xl p-6">
-            <h3 className="text-xl font-semibold text-accent mb-4 flex items-center">
-              <i className="fas fa-star mr-2"></i>강점
+          <div className="bg-pink-50/50 rounded-[2rem] p-6 border border-pink-100">
+            <h3 className="text-xl font-bold text-pink-500 mb-4 flex items-center">
+              <i className="fas fa-star mr-2 text-yellow-400"></i>매력 포인트
             </h3>
-            <ul className="space-y-2">
+            <ul className="space-y-3">
               {mbtiType.strengths.map((strength, index) => (
-                <li key={index} className="flex items-start">
-                  <span className="text-accent mr-2">•</span>
+                <li key={index} className="flex items-start text-neutral-700">
+                  <span className="text-pink-400 mr-2 mt-0.5">✨</span>
                   {strength}
                 </li>
               ))}
             </ul>
           </div>
-          <div className="bg-red-50 rounded-2xl p-6">
-            <h3 className="text-xl font-semibold text-red-600 mb-4 flex items-center">
-              <i className="fas fa-exclamation-triangle mr-2"></i>주의점
+          <div className="bg-indigo-50/50 rounded-[2rem] p-6 border border-indigo-100">
+            <h3 className="text-xl font-bold text-indigo-500 mb-4 flex items-center">
+              <i className="fas fa-seedling mr-2 text-indigo-400"></i>성장 포인트
             </h3>
-            <ul className="space-y-2">
+            <ul className="space-y-3">
               {mbtiType.weaknesses.map((weakness, index) => (
-                <li key={index} className="flex items-start">
-                  <span className="text-red-600 mr-2">•</span>
+                <li key={index} className="flex items-start text-neutral-700">
+                  <span className="text-indigo-400 mr-2 mt-0.5">🌱</span>
                   {weakness}
                 </li>
               ))}
@@ -139,28 +140,28 @@ export default function ResultCard({ mbtiType, onRestart, onShare }: ResultCardP
           </div>
         </div>
 
-        <div className="bg-neutral-50 rounded-2xl p-6 mb-8">
-          <h3 className="text-xl font-semibold text-neutral-800 mb-4 flex items-center">
-            <i className="fas fa-heart mr-2 text-pink-500"></i>궁합이 좋은 유형
+        <div className="bg-gradient-to-br from-rose-50 to-pink-50 rounded-[2rem] p-6 mb-8 border border-pink-100">
+          <h3 className="text-xl font-bold text-rose-500 mb-4 flex items-center justify-center">
+            <i className="fas fa-heart mr-2 text-rose-400"></i>나와 찰떡인 유형
           </h3>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
             {mbtiType.compatible.map((type, index) => (
-              <div key={index} className="bg-white rounded-xl p-4 text-center">
-                <div className="font-bold text-primary mb-1">{type}</div>
-                <div className="text-sm text-neutral-600">궁합 유형</div>
+              <div key={index} className="bg-white/80 backdrop-blur-sm rounded-2xl p-4 text-center border border-white hover:shadow-md transition-shadow cursor-pointer group">
+                <div className="font-extrabold text-rose-500 mb-1 group-hover:scale-110 transition-transform">{type}</div>
+                <div className="text-xs text-rose-400 font-medium">최고의 궁합</div>
               </div>
             ))}
           </div>
         </div>
 
-        <div className="bg-secondary/10 rounded-2xl p-6 mb-8">
-          <h3 className="text-xl font-semibold text-secondary mb-4 flex items-center">
-            <i className="fas fa-briefcase mr-2"></i>추천 직업
+        <div className="bg-gradient-to-br from-purple-50 to-indigo-50 rounded-[2rem] p-6 mb-8 border border-purple-100">
+          <h3 className="text-xl font-bold text-purple-600 mb-4 flex items-center justify-center">
+            <i className="fas fa-briefcase mr-2 text-purple-400"></i>추천하는 일/취향
           </h3>
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+          <div className="flex flex-wrap gap-2 justify-center">
             {mbtiType.careers.map((career, index) => (
-              <span key={index} className="bg-white px-4 py-2 rounded-lg text-center">
-                {career}
+              <span key={index} className="bg-white/80 backdrop-blur-sm px-4 py-2 rounded-full text-sm font-medium text-purple-700 border border-white shadow-sm">
+                #{career}
               </span>
             ))}
           </div>
@@ -172,41 +173,29 @@ export default function ResultCard({ mbtiType, onRestart, onShare }: ResultCardP
         {/* 두 번째 광고 영역: 추천 직업/상품과 결과 공유하기 사이 */}
         <AdSenseBlock adSlot="7890123456" />
 
-        <div className="text-center space-y-4 mt-8">
-          <h3 className="text-xl font-semibold text-neutral-800">결과 공유하기</h3>
-          <div className="flex justify-center space-x-4 flex-wrap gap-2">
+        <div className="text-center space-y-5 mt-10">
+          <h3 className="text-lg font-bold text-neutral-600">🔥 내 결과 친구들에게 자랑하기 🔥</h3>
+          <div className="flex justify-center space-x-3 flex-wrap gap-y-3">
             {'share' in navigator && (
               <Button
                 onClick={() => handleShare('native')}
-                className="bg-primary text-white px-6 py-3 rounded-xl hover:bg-primary/90 transition-colors"
+                className="bg-neutral-800 text-white px-6 py-6 rounded-2xl hover:bg-neutral-900 transition-all hover:-translate-y-1 shadow-lg"
               >
-                <i className="fas fa-share mr-2"></i>공유하기
+                <i className="fas fa-share-nodes text-xl mr-2"></i>공유하기
               </Button>
             )}
             <Button
-              onClick={() => handleShare('facebook')}
-              className="bg-blue-600 text-white px-6 py-3 rounded-xl hover:bg-blue-700 transition-colors"
-            >
-              <i className="fab fa-facebook-f mr-2"></i>페이스북
-            </Button>
-            <Button
-              onClick={() => handleShare('twitter')}
-              className="bg-sky-500 text-white px-6 py-3 rounded-xl hover:bg-sky-600 transition-colors"
-            >
-              <i className="fab fa-twitter mr-2"></i>트위터
-            </Button>
-            <Button
               onClick={() => handleShare('copy')}
-              className="bg-neutral-600 text-white px-6 py-3 rounded-xl hover:bg-neutral-700 transition-colors"
+              className="bg-white text-neutral-800 border-2 border-neutral-200 px-6 py-6 rounded-2xl hover:border-neutral-300 hover:bg-neutral-50 transition-all hover:-translate-y-1 shadow-sm"
             >
-              <i className="fas fa-link mr-2"></i>링크 복사
+              <i className="fas fa-link text-xl mr-2"></i>링크 복사
             </Button>
           </div>
           <Button
             onClick={onRestart}
-            className="block mx-auto mt-6 bg-gradient-to-r from-primary to-secondary text-white px-8 py-3 rounded-xl hover:shadow-lg transition-all"
+            className="block w-full max-w-sm mx-auto mt-6 bg-gradient-to-r from-pink-400 via-purple-400 to-indigo-400 text-white px-8 py-6 rounded-2xl text-lg font-bold hover:shadow-lg hover:shadow-purple-200/50 transition-all hover:-translate-y-1 border-2 border-white/50"
           >
-            <i className="fas fa-redo mr-2"></i>다시 검사하기
+            <i className="fas fa-rotate-right mr-2"></i>심리테스트 다시하기
           </Button>
         </div>
       </CardContent>

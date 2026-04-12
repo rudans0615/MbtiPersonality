@@ -20,6 +20,9 @@ import HoguResults from "@/pages/hogu-results";
 import Terms from "@/pages/terms";
 import Privacy from "@/pages/privacy";
 
+import DopamineTest from "@/pages/dopamine-test";
+import DopamineResults from "@/pages/dopamine-results";
+
 import NotFound from "@/pages/not-found";
 
 import Footer from "@/components/Footer";
@@ -41,6 +44,8 @@ function Router() {
       <Route path="/drunk-test" component={DrunkTest} />
       <Route path="/hogu-test" component={HoguTest} />
       <Route path="/hogu-results" component={HoguResults} />
+      <Route path="/dopamine-test" component={DopamineTest} />
+      <Route path="/dopamine-results" component={DopamineResults} />
       <Route path="/contact" component={Contact} />
       <Route path="/terms" component={Terms} />
       <Route path="/privacy" component={Privacy} />
