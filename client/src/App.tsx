@@ -25,6 +25,12 @@ import DopamineResults from "@/pages/dopamine-results";
 
 import PetPersonalityPreferenceTest from "@/pages/petPersonalityPreference-test";
 import PetPersonalityPreferenceResults from "@/pages/petPersonalityPreference-results";
+import HealingJourneyTest from "@/pages/healingJourney-test";
+import HealingJourneyResults from "@/pages/healingJourney-results";
+import CrushConfessionsTest from "@/pages/crushConfessions-test";
+import CrushConfessionsResults from "@/pages/crushConfessions-results";
+import HomeDecorDreamsTest from "@/pages/homeDecorDreams-test";
+import HomeDecorDreamsResults from "@/pages/homeDecorDreams-results";
 import NotFound from "@/pages/not-found";
 
 import Footer from "@/components/Footer";
@@ -54,6 +60,12 @@ function Router() {
 
       <Route path="/petPersonalityPreference-test" component={PetPersonalityPreferenceTest} />
       <Route path="/petPersonalityPreference-results" component={PetPersonalityPreferenceResults} />
+      <Route path="/healingJourney-test" component={HealingJourneyTest} />
+      <Route path="/healingJourney-results" component={HealingJourneyResults} />
+      <Route path="/crushConfessions-test" component={CrushConfessionsTest} />
+      <Route path="/crushConfessions-results" component={CrushConfessionsResults} />
+      <Route path="/homeDecorDreams-test" component={HomeDecorDreamsTest} />
+      <Route path="/homeDecorDreams-results" component={HomeDecorDreamsResults} />
       <Route component={NotFound} />
     </Switch>
   );

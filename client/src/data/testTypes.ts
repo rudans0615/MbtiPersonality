@@ -17,6 +17,48 @@ export interface TestType {
 
 export const testTypes: TestType[] = [
   {
+    id: "homeDecorDreams",
+    category: "FUN",
+    title: "넌 어떤 집을 꿈꾸고 있을까?",
+    subtitle: "너의 주거취향을 알아보자!",
+    description: "자취생이라면 누구나 한번쯤 상상해본 완벽한 집! 오늘은 네가 꿈꾸는 집의 스타일을 파악해볼게. 어떤 공간에서 나의 인생을 살고 싶은지 알아보자! ",
+    emoji: "🏡",
+    color: "from-purple-500 to-pink-500",
+    duration: "약 3분",
+    questions: 4,
+    href: "/homeDecorDreams-test",
+    features: ["AI 맞춤 분석", "나만의 결과지", "궁합 확인"],
+    isAvailable: true
+  },
+  {
+    id: "crushConfessions",
+    category: "LOVE",
+    title: "너의 썸 여부를 점쳐보는 심리 테스트",
+    subtitle: "썸타는 기분, 맞춰볼래?",
+    description: "너의 최근 썸상대에게 나쁜 소식을 전해야 하는 상황! 어떻게 대처할지에 따라 너의 썸이 진짜인지 가짜인지 확인할 수 있어. 자신이 요즘 느끼고 있는 진짜 감정, 같이 알아보자!",
+    emoji: "💔",
+    color: "from-purple-500 to-pink-500",
+    duration: "약 3분",
+    questions: 4,
+    href: "/crushConfessions-test",
+    features: ["AI 맞춤 분석", "나만의 결과지", "궁합 확인"],
+    isAvailable: true
+  },
+  {
+    id: "healingJourney",
+    category: "CAREER",
+    title: "너의 힐링 여행 스타일은?",
+    subtitle: "지친 마음을 싸이하고 떠나보자!",
+    description: "하루하루 바쁜 일상 속에서 힘든 나에게 필요한 힐링의 순간은 언제일까? 다양한 상황 속에서 네가 어떤 힐링 여행 스타일인지를 알아보자!",
+    emoji: "🧳",
+    color: "from-purple-500 to-pink-500",
+    duration: "약 3분",
+    questions: 4,
+    href: "/healingJourney-test",
+    features: ["AI 맞춤 분석", "나만의 결과지", "궁합 확인"],
+    isAvailable: true
+  },
+  {
     id: "petPersonalityPreference",
     category: "PERSONALITY",
     title: "내 반려동물이 나의 취향을 알려줄까?",
