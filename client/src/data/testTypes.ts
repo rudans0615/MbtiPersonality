@@ -17,6 +17,20 @@ export interface TestType {
 
 export const testTypes: TestType[] = [
   {
+    id: "petPersonalityTaste",
+    category: "PERSONALITY",
+    title: "내 반려동물 성격으로 보는 진짜 나 취향!",
+    subtitle: "내 취향을 반려동물로 쉽게 알아보자🐾",
+    description: "반려동물을 통해 나의 숨겨진 취향을 알아보는 재미있는 테스트! 어떤 스타일의 반려동물 성격이 나와 잘 맞는지 확인해봐!",
+    emoji: "🐶",
+    color: "from-purple-500 to-pink-500",
+    duration: "약 3분",
+    questions: 10,
+    href: "/petPersonalityTaste-test",
+    features: ["AI 맞춤 분석", "나만의 결과지", "궁합 확인"],
+    isAvailable: true
+  },
+  {
     id: "dopamine-test",
     category: "HOT",
     title: "도파민 중독 성향 테스트",
