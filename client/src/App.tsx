@@ -25,6 +25,12 @@ import DopamineResults from "@/pages/dopamine-results";
 
 import PetPersonalityPreferenceTest from "@/pages/petPersonalityPreference-test";
 import PetPersonalityPreferenceResults from "@/pages/petPersonalityPreference-results";
+import VacationVibesTest from "@/pages/vacationVibes-test";
+import VacationVibesResults from "@/pages/vacationVibes-results";
+import FashionStyleReflectTest from "@/pages/fashionStyleReflect-test";
+import FashionStyleReflectResults from "@/pages/fashionStyleReflect-results";
+import ShoppingMysteryTest from "@/pages/shoppingMystery-test";
+import ShoppingMysteryResults from "@/pages/shoppingMystery-results";
 import NotFound from "@/pages/not-found";
 
 import Footer from "@/components/Footer";
@@ -54,6 +60,12 @@ function Router() {
 
       <Route path="/petPersonalityPreference-test" component={PetPersonalityPreferenceTest} />
       <Route path="/petPersonalityPreference-results" component={PetPersonalityPreferenceResults} />
+      <Route path="/vacationVibes-test" component={VacationVibesTest} />
+      <Route path="/vacationVibes-results" component={VacationVibesResults} />
+      <Route path="/fashionStyleReflect-test" component={FashionStyleReflectTest} />
+      <Route path="/fashionStyleReflect-results" component={FashionStyleReflectResults} />
+      <Route path="/shoppingMystery-test" component={ShoppingMysteryTest} />
+      <Route path="/shoppingMystery-results" component={ShoppingMysteryResults} />
       <Route component={NotFound} />
     </Switch>
   );

@@ -17,6 +17,48 @@ export interface TestType {
 
 export const testTypes: TestType[] = [
   {
+    id: "shoppingMystery",
+    category: "FUN",
+    title: "네가 쇼핑할 때의 비밀을 찾아보자!",
+    subtitle: "너의 진짜 쇼핑 스타일은 뭘까?",
+    description: "너의 쇼핑 스타일에 따라 숨겨진 진짜 모습이 드러날지도 몰라! 친구들과 공유하고 어떤 타입인지 알아보자!",
+    emoji: "🛍️",
+    color: "from-purple-500 to-pink-500",
+    duration: "약 3분",
+    questions: 3,
+    href: "/shoppingMystery-test",
+    features: ["AI 맞춤 분석", "나만의 결과지", "궁합 확인"],
+    isAvailable: true
+  },
+  {
+    id: "fashionStyleReflect",
+    category: "PERSONALITY",
+    title: "너의 패션 스타일, 속마음을 드러내다!",
+    subtitle: "어떤 패션이 네 성격을 대변할까?",
+    description: "다양한 패션 상황 속에서 네가 어떻게 반응하는지 알아보고, 그로부터 드러나는 너의 속마음을 엿보자! 친구들과 함께 공유해서 공감을 나눠봐!",
+    emoji: "👗",
+    color: "from-purple-500 to-pink-500",
+    duration: "약 3분",
+    questions: 4,
+    href: "/fashionStyleReflect-test",
+    features: ["AI 맞춤 분석", "나만의 결과지", "궁합 확인"],
+    isAvailable: true
+  },
+  {
+    id: "vacationVibes",
+    category: "FUN",
+    title: "너의 휴식 스타일은?",
+    subtitle: "어떤 여행지를 떠나야 할까?",
+    description: "이번 심리테스트로 나만의 휴식 스타일을 알아보자! 좋아하는 여행 스타일에 따라 내가 진정으로 필요로 하는 힐링 방법을 찾아보세요.",
+    emoji: "🌴",
+    color: "from-purple-500 to-pink-500",
+    duration: "약 3분",
+    questions: 4,
+    href: "/vacationVibes-test",
+    features: ["AI 맞춤 분석", "나만의 결과지", "궁합 확인"],
+    isAvailable: true
+  },
+  {
     id: "petPersonalityPreference",
     category: "PERSONALITY",
     title: "내 반려동물이 나의 취향을 알려줄까?",
