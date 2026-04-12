@@ -12,6 +12,7 @@ export async function injectCode(aiData) {
   const emojiChar = emoji || '\u2728';
   const descText = description || 'AI\uac00 \uc0dd\uc131\ud55c \ucd5c\uc2e0 \ubc14\uc774\ub7f4 \ud14c\uc2a4\ud2b8\uc785\ub2c8\ub2e4.';
   const qLen = questions?.length || 12;
+  const midPoint = Math.floor(qLen / 2); // Q6 interstitial point
   
   // 1. Data Files Generation
   const questionsContent = 'export const ' + testId + 'Questions = ' + JSON.stringify(questions, null, 2) + ';';
@@ -34,13 +35,14 @@ export async function injectCode(aiData) {
   ].join('\n');
   fs.writeFileSync(path.join(clientSrc, 'data/' + testId + 'Types.ts'), resultsContent);
 
-  // 2. Test Page (matches dopamine-test.tsx CSS: pink bg, gradient progress, Q badge, glassmorphic card)
+  // 2. Test Page (dopamine CSS + Q6 interstitial ad)
   const testPage = `import { useState } from "react";
 import { useLocation } from "wouter";
 import Navigation from "@/components/Navigation";
 import SEO from "@/components/SEO";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft } from "lucide-react";
+import { AdSenseBlock } from "@/components/AdSenseBlock";
+import { ArrowLeft, Loader2 } from "lucide-react";
 import { ${testId}Questions } from "@/data/${testId}Questions";
 
 export default function ${capitalizedId}() {
@@ -48,10 +50,22 @@ export default function ${capitalizedId}() {
   const [hasStarted, setHasStarted] = useState(false);
   const [currentStep, setCurrentStep] = useState(0);
   const [scoreHistory, setScoreHistory] = useState<number[]>([]);
+  const [showInterstitial, setShowInterstitial] = useState(false);
 
   const handleAnswer = (points: number) => {
     const newHistory = [...scoreHistory.slice(0, currentStep), points];
     setScoreHistory(newHistory);
+
+    // Q${midPoint} interstitial: show "analyzing" screen with ad
+    if (currentStep === ${midPoint} - 1) {
+      setShowInterstitial(true);
+      setTimeout(() => {
+        setShowInterstitial(false);
+        setCurrentStep(curr => curr + 1);
+      }, 3000);
+      return;
+    }
+
     setTimeout(() => {
       if (currentStep < ${testId}Questions.length - 1) {
         setCurrentStep(curr => curr + 1);
@@ -70,6 +84,23 @@ export default function ${capitalizedId}() {
 
   const question = ${testId}Questions[currentStep];
   const progress = Math.round(((currentStep + 1) / ${testId}Questions.length) * 100);
+
+  // Interstitial ad screen at midpoint
+  if (showInterstitial) {
+    return (
+      <div className="min-h-screen bg-pink-50/30 flex flex-col">
+        <Navigation />
+        <main className="flex-grow flex flex-col items-center justify-center p-6">
+          <Loader2 className="h-12 w-12 animate-spin text-pink-400 mb-6" />
+          <h2 className="text-2xl font-bold text-neutral-800 mb-2">\ub354 \uc815\ud655\ud55c \uacb0\uacfc\ub97c \uc704\ud574...</h2>
+          <p className="text-neutral-500 mb-8">\ub2f5\ubcc0 \ud328\ud134\uc744 \uc2ec\uce35 \ubd84\uc11d \uc911\uc774\uc5d0\uc694 \ud83e\udde0</p>
+          <div className="w-full max-w-md">
+            <AdSenseBlock adSlot="5566778899" />
+          </div>
+        </main>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-pink-50/30">
@@ -90,10 +121,10 @@ export default function ${capitalizedId}() {
             <p className="text-neutral-600 mb-4">${title}\ub294 \ub2f9\uc2e0\uc758 \uc2ec\ub9ac\ub97c \uae4a\uc774 \uc788\uac8c \ubd84\uc11d\ud569\ub2c8\ub2e4. ${descText}</p>
             <p className="text-neutral-600 mb-6">\ucd1d ${qLen}\uac1c\uc758 \ubb38\ud56d\uc73c\ub85c \uc774\ub8e8\uc5b4\uc838 \uc788\uc73c\uba70, \uc9c1\uad00\uc801\uc73c\ub85c \uac00\uc7a5 \uba3c\uc800 \ub5a0\uc624\ub974\ub294 \ub2f5\ubcc0\uc744 \uc120\ud0dd\ud558\ub294 \uac83\uc774 \uac00\uc7a5 \uc815\ud655\ud569\ub2c8\ub2e4.</p>
           </div>
+          <AdSenseBlock adSlot="1122334455" />
         </main>
       ) : (
         <>
-          {/* Progress Header - pink gradient */}
           <div className="bg-white/80 backdrop-blur-md shadow-sm sticky top-0 z-20">
             <div className="max-w-2xl mx-auto px-6 py-4">
               <div className="w-full bg-pink-100 rounded-full h-2.5">
@@ -105,7 +136,6 @@ export default function ${capitalizedId}() {
             </div>
           </div>
 
-          {/* Question Content - glassmorphic card with Q badge */}
           <div className="max-w-2xl mx-auto px-6 py-12">
             <div className="bg-white/90 backdrop-blur-sm rounded-[2rem] shadow-xl border border-white/60 overflow-hidden relative">
               <div className="p-8 md:p-10 relative z-10">
@@ -145,7 +175,7 @@ export default function ${capitalizedId}() {
 }`;
   fs.writeFileSync(path.join(clientSrc, 'pages/' + testId + '-test.tsx'), testPage);
 
-  // 3. Results Page (matches dopamine-results.tsx: gradient header, glassmorphic card, emoji, characteristics, AdSense, CoupangRecommend, ShareButtons, all types overview)
+  // 3. Results Page (+ ResultImageCard + cross-link recommended tests)
   const resultsPage = `import { useState, useEffect } from "react";
 import { useLocation } from "wouter";
 import Navigation from "@/components/Navigation";
@@ -154,8 +184,10 @@ import { Button } from "@/components/ui/button";
 import { CoupangRecommend } from "@/components/CoupangRecommend";
 import { ShareButtons } from "@/components/ShareButtons";
 import { AdSenseBlock } from "@/components/AdSenseBlock";
+import { ResultImageCard } from "@/components/ResultImageCard";
 import { calculate${capitalizedId}Level, ${testId}Results } from "@/data/${testId}Types";
-import { Loader2, RotateCcw, Zap } from "lucide-react";
+import { testTypes } from "@/data/testTypes";
+import { Loader2, RotateCcw, Zap, Sparkles } from "lucide-react";
 
 export default function ${capitalizedResults}() {
   const [location] = useLocation();
@@ -173,6 +205,9 @@ export default function ${capitalizedResults}() {
   const allKeys = Object.keys(${testId}Results);
   const result = ${testId}Results[resultKey] || ${testId}Results[allKeys[0]] || { title: "\ubd84\uc11d \uc644\ub8cc", description: "\ub2f9\uc2e0\ub9cc\uc758 \ud2b9\ubcc4\ud55c \uacb0\uacfc\uc785\ub2c8\ub2e4!" };
 
+  // Cross-link: random 3 other tests
+  const otherTests = testTypes.filter(t => t.id !== "${testId}" && t.isAvailable).sort(() => Math.random() - 0.5).slice(0, 3);
+
   if (isAnalyzing) {
     return (
       <div className="min-h-screen bg-pink-50/30 flex flex-col font-sans">
@@ -182,6 +217,9 @@ export default function ${capitalizedResults}() {
           <Loader2 className="h-16 w-16 animate-spin text-pink-400 mb-8" />
           <h2 className="text-3xl font-extrabold text-neutral-800 mb-4">\ub2f9\uc2e0\uc758 \ub2f5\ubcc0\uc744 \ubd84\uc11d \uc911\uc785\ub2c8\ub2e4...</h2>
           <p className="text-neutral-500 mb-12">AI\uac00 \ub2f9\uc2e0\uc758 \uc2ec\ub9ac \ub370\uc774\ud130\ub97c \ud574\ub3c5\ud558\uace0 \uc788\uc5b4\uc694 \ud83e\udde0</p>
+          <div className="w-full max-w-md">
+            <AdSenseBlock adSlot="3344556677" />
+          </div>
         </main>
       </div>
     );
@@ -213,6 +251,15 @@ export default function ${capitalizedResults}() {
               <p className="text-[1.05rem] text-neutral-700 leading-relaxed font-medium">{result.description}</p>
             </div>
           </div>
+
+          {/* Result Image Card - saveable for Instagram Stories */}
+          <ResultImageCard
+            testTitle="${title}"
+            resultTitle={result.title}
+            resultEmoji={result.emoji || "\u2728"}
+            resultSubtitle={result.subtitle}
+            characteristics={result.characteristics}
+          />
 
           <AdSenseBlock adSlot="8811223344" />
 
@@ -250,6 +297,7 @@ export default function ${capitalizedResults}() {
           </div>
         </div>
 
+        {/* All Types Overview */}
         <div className="mt-12 mb-6 text-center">
           <h3 className="text-2xl font-bold text-neutral-800">\ubaa8\ub4e0 \uc720\ud615 \ubaa8\uc544\ubcf4\uae30</h3>
         </div>
@@ -270,6 +318,30 @@ export default function ${capitalizedResults}() {
             );
           })}
         </div>
+
+        {/* Cross-link: Recommended other tests */}
+        {otherTests.length > 0 && (
+          <div className="mt-16 mb-8">
+            <div className="text-center mb-8">
+              <h3 className="text-2xl font-bold text-neutral-800 flex items-center justify-center">
+                <Sparkles className="mr-2 text-pink-400" size={24} />
+                \uc774\ub7f0 \ud14c\uc2a4\ud2b8\ub3c4 \uc7ac\ubc0c\uc5b4\uc694!
+              </h3>
+              <p className="text-neutral-500 mt-2">\uce5c\uad6c\ub4e4\uc774 \ub9ce\uc774 \ud574\ubcf8 \uc778\uae30 \ud14c\uc2a4\ud2b8</p>
+            </div>
+            <div className="grid sm:grid-cols-3 gap-4">
+              {otherTests.map((test) => (
+                <a key={test.id} href={test.href} className="block p-6 bg-white rounded-2xl border-2 border-white hover:border-pink-200 shadow-sm hover:shadow-md transition-all duration-300 transform hover:-translate-y-1 text-center no-underline">
+                  <div className="text-4xl mb-3">{test.emoji}</div>
+                  <h4 className="font-bold text-neutral-800 text-sm leading-snug mb-2">{test.title}</h4>
+                  <p className="text-xs text-pink-400 font-semibold">\ud14c\uc2a4\ud2b8 \ud558\ub7ec\uac00\uae30 \u2192</p>
+                </a>
+              ))}
+            </div>
+          </div>
+        )}
+
+        <AdSenseBlock adSlot="1133557799" />
       </div>
     </div>
   );

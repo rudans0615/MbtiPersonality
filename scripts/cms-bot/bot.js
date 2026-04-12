@@ -32,6 +32,7 @@ console.log('🤖 Antigravity CMS Bot is running...');
 bot.setMyCommands([
   { command: 'suggest', description: '요즘 유행하는 바이럴 테스트 추천받기' },
   { command: 'newtest', description: '신규 테스트 자동 생성 및 배포 (예: /newtest 탕후루 취향)' },
+  { command: 'batch', description: '한번에 여러 테스트 자동 생성 (예: /batch 3)' },
 ]);
 
 bot.sendMessage(process.env.ADMIN_CHAT_ID || '', '🤖 콘텐츠 자동화 봇이 가동되었습니다.\n- 💡 /추천 : 요즘 유행하는 바이럴 테스트 기획안 받기\n- 🚀 /newtest [주제] : 기획안으로 테스트 자동배포 시작');
@@ -240,5 +241,120 @@ JSON만 출력해. 다른 텍스트 절대 금지.`
   } catch (error) {
     console.error(error);
     bot.sendMessage(chatId, `❌ 에러 발생: ${error.message}`);
+  }
+});
+
+// /batch 명령어 핸들러 (한번에 여러 테스트 자동 생성)
+bot.onText(/\/batch\s*(\d*)/, async (msg, match) => {
+  const chatId = msg.chat.id;
+  const count = Math.min(parseInt(match[1] || '3', 10), 5); // 최대 5개
+
+  bot.sendMessage(chatId, `📦 [배치 모드] ${count}개의 신규 테스트를 자동 기획합니다...\n(테스트당 약 1분 소요, 총 ${count}분 예상)`);
+
+  const angles = [
+    '연애/썸/소개팅/이별 감정',
+    '직장생활/야근/퇴사/상사 유형',
+    '소비습관/쇼핑/재테크/짠테크',
+    '음식/카페/야식/배달앱 취향',
+    'SNS/릴스/유튀브/넷플릭스 습관',
+    '여행/휴식/힐링/번아웃 관리',
+    '우정/친구관계/MBTI궁합/인간관계',
+    '뷰티/패션/자기관리/다이어트',
+    '집꾸미기/자취/룸메/독립생활',
+    '계절감성/날씨/감정/멘탈관리'
+  ];
+
+  const successList = [];
+  const failList = [];
+
+  for (let i = 0; i < count; i++) {
+    const angle = angles[Math.floor(Math.random() * angles.length)];
+    bot.sendMessage(chatId, `\n�\udd04 [${i + 1}/${count}] "주제: ${angle}" 방향으로 테스트 생성 중...`);
+
+    try {
+      const completion = await openai.chat.completions.create({
+        model: "gpt-4o-mini",
+        temperature: 1.2,
+        response_format: { type: "json_object" },
+        messages: [
+          {
+            role: "system",
+            content: `너는 10~30대 한국 여성을 타겟으로 하는 최고의 바이럴 심리테스트 기획자야.
+
+[페르소나]
+- 인스타/틱톡에서 매일 밈을 소비하는 25세 여성 마케터
+- "ㅋㅋㅋ 이거 완전 나잖아" 라는 반응을 끌어내는 게 목표
+- 말투: ~인 사람?, ~하는 편이야?, 솔직히 말해봐 등 반말+존댓말 믹스
+
+[질문 작성 절대 규칙]
+1. "이런 경우" 같은 모호한 지시어 절대 금지. 반드시 구체적 상황 묘사
+2. "~것인가요?" 같은 딱딱한 존칭 금지. 자연스러운 구어체
+3. 문법 오류 절대 불가. 생성 후 스스로 문법 검수
+4. 선택지도 자연스러운 구어체
+5. 10~30대 여성 일상 시나리오 기반
+
+[JSON 출력 형식]
+{
+  "testId": "camelCase 영문 ID",
+  "category": "HOT | LOVE | PERSONALITY | FUN | CAREER 중 택1",
+  "title": "바이럴 제목",
+  "subtitle": "부제목",
+  "description": "소개",
+  "emoji": "이모지 1개",
+  "questions": [{ "question": "구체적 상황 질문", "options": [{ "text": "구어체 선택지", "score": 1 }] }],
+  "results": { "유형키": { "title": "유형명", "emoji": "이모지", "subtitle": "한줄요약", "description": "설명", "characteristics": ["특징1","특징2","특징3","특징4"], "coupangKeyword": "상품 키워드" } }
+}
+JSON만 출력. 다른 텍스트 금지.`
+          },
+          {
+            role: "user",
+            content: `"${angle}" 방향으로 10~30대 여성이 SNS에 공유하고 싶어지는 바이럴 심리 테스트를 기획해줘. 이전에 나온 주제와 절대 겹치지 않는 창의적인 주제로.`
+          }
+        ]
+      });
+
+      const aiData = JSON.parse(completion.choices[0].message.content);
+      bot.sendMessage(chatId, `✅ [${i + 1}/${count}] "${aiData.title}" 생성 완료! 코드 작성 중...`);
+
+      const { injectCode } = await import('./developerAgent.js');
+      await injectCode(aiData);
+      successList.push(aiData.title);
+
+    } catch (err) {
+      console.error(`Batch item ${i + 1} failed:`, err);
+      failList.push(`#${i + 1}: ${err.message}`);
+    }
+  }
+
+  // 모든 테스트 생성 후 한번에 Git push + PR
+  if (successList.length > 0) {
+    bot.sendMessage(chatId, `\n�\ude80 ${successList.length}개 테스트 코드 작성 완료! GitHub PR 생성 중...`);
+    const { exec } = await import('child_process');
+    const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
+    const branchName = `feat/ai-batch-${Date.now()}`;
+
+    exec(`git checkout -b ${branchName} && git add -A && git commit -m "feat(ai-batch): add ${successList.length} new tests" && git push origin ${branchName}`, { cwd: repoRoot }, async (error, stdout, stderr) => {
+      exec(`git checkout main`, { cwd: repoRoot });
+
+      if (error) {
+        bot.sendMessage(chatId, `⚠️ GitHub 전송 실패: ${stderr || error.message}`);
+        return;
+      }
+
+      try {
+        const pr = await octokit.pulls.create({
+          owner, repo,
+          title: `�\udce6 [AI 배치] 신규 테스트 ${successList.length}개 추가`,
+          head: branchName,
+          base: 'main',
+          body: `## �\udce6 AI 배치 생성 결과\n\n### ✅ 성공 (${successList.length}개)\n${successList.map((t, i) => `${i + 1}. ${t}`).join('\n')}\n\n${failList.length > 0 ? `### ❌ 실패 (${failList.length}개)\n${failList.join('\n')}` : ''}`
+        });
+        bot.sendMessage(chatId, `\n�\udf89 **[배치 완료!]**\n\n✅ 성공: ${successList.length}개\n${successList.map((t, i) => `  ${i + 1}. ${t}`).join('\n')}\n${failList.length > 0 ? `\n❌ 실패: ${failList.length}개` : ''}\n\n�\udd17 PR: ${pr.data.html_url}\n\n�\udc46 Merge 하시면 자동 배포됩니다!`);
+      } catch (prErr) {
+        bot.sendMessage(chatId, `⚠️ PR 생성 실패: ${prErr.message}`);
+      }
+    });
+  } else {
+    bot.sendMessage(chatId, `❌ 모든 테스트 생성에 실패했습니다.`);
   }
 });
