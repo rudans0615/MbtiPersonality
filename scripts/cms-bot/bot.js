@@ -119,9 +119,10 @@ bot.onText(/\/(newtest|newtes)\s+(.+)/, async (msg, match) => {
     const targetOptions = Math.random() < 0.5 ? 2 : 4;
     const targetQuestions = Math.random() < 0.5 ? 8 : 12;
 
-    // 1. OpenAI를 통한 테스트 로직 및 데이터 생성
-    const completion = await openai.chat.completions.create({
+    // 1. OpenAI를 통한 테스트 로직 및 데이터 생성 (초안)
+    const draftCompletion = await openai.chat.completions.create({
       model: "gpt-4o-mini",
+      temperature: 0.9,
       response_format: { type: "json_object" },
       messages: [
         {
@@ -192,9 +193,32 @@ JSON만 출력해. 다른 텍스트 절대 금지.`
       ]
     });
 
-    const aiData = JSON.parse(completion.choices[0].message.content);
+    const rawDraft = draftCompletion.choices[0].message.content;
     
-    bot.sendMessage(chatId, `✅ AI 콘텐츠 생성 완료! GitHub PR 생성을 준비합니다.\n- 테스트명: ${aiData.title}`);
+    bot.sendMessage(chatId, `🔍 초안 생성 완료! AI 검수 에이전트가 오타 및 문맥을 교정 중입니다...`);
+
+    // 2. 검수 에이전트 (Validation)
+    const validationCompletion = await openai.chat.completions.create({
+      model: "gpt-4o-mini",
+      temperature: 0.1,
+      response_format: { type: "json_object" },
+      messages: [
+        {
+          role: "system",
+          content: `너는 한국어 심리테스트 검수 전문 AI 에디터야. 
+다음 제출되는 JSON 데이터의 스키마 명세("testId", "questions", "results" 등 구조)는 단 1%도 건드리지 마.
+대신, 텍스트(질문, 선택지, 결과 설명)에 포함된 아래 오류만 완벽하게 고쳐.
+1. "의원릅려고 해", "엎friend도", "സാം", "스뚜둥" 같은 무의미한 외계어 및 AI 환각 완전 제거.
+2. 부자연스럽거나 번역기 돌린 것 같은 딱딱한 문장을 친근한 10~30대 구어체로 교정.
+3. 오타 및 맞춤법 교정.`
+        },
+        { role: "user", content: rawDraft }
+      ]
+    });
+
+    const aiData = JSON.parse(validationCompletion.choices[0].message.content);
+    
+    bot.sendMessage(chatId, `✅ 검수 및 기획 완료! GitHub PR 생성을 준비합니다.\n- 테스트명: ${aiData.title}`);
 
     // 2. 개발자 에이전트 파일 생셩 및 주입 (Full-stack AST Code Injection)
     bot.sendMessage(chatId, `🚀 기획안 승인 완료! 풀스택 에이전트가 로컬 React 코드를 자동 작성 중입니다...`);
@@ -279,9 +303,9 @@ bot.onText(/\/batch\s*(\d*)/, async (msg, match) => {
     bot.sendMessage(chatId, `\n�\udd04 [${i + 1}/${count}] "주제: ${angle}" 방향으로 테스트 생성 중...`);
 
     try {
-      const completion = await openai.chat.completions.create({
+      const draftCompletion = await openai.chat.completions.create({
         model: "gpt-4o-mini",
-        temperature: 1.2,
+        temperature: 0.9,
         response_format: { type: "json_object" },
         messages: [
           {
@@ -322,8 +346,29 @@ JSON만 출력. 다른 텍스트 금지.`
         ]
       });
 
-      const aiData = JSON.parse(completion.choices[0].message.content);
-      bot.sendMessage(chatId, `✅ [${i + 1}/${count}] "${aiData.title}" 생성 완료! 코드 작성 중...`);
+      const rawDraft = draftCompletion.choices[0].message.content;
+
+      // 2. 검수 에이전트 (Validation)
+      const validationCompletion = await openai.chat.completions.create({
+        model: "gpt-4o-mini",
+        temperature: 0.1,
+        response_format: { type: "json_object" },
+        messages: [
+          {
+            role: "system",
+            content: `너는 한국어 심리테스트 검수 전문 AI 에디터야. 
+다음 제출되는 JSON 데이터의 스키마 명세("testId", "questions", "results" 등 구조)는 단 1%도 건드리지 마.
+대신, 텍스트(질문, 선택지, 결과 설명)에 포함된 아래 오류만 완벽하게 고쳐.
+1. "의원릅려고 해", "엎friend도", "സാം", "스뚜둥" 같은 무의미한 외계어 및 AI 환각 완전 제거.
+2. 부자연스럽거나 번역기 돌린 것 같은 딱딱한 문장을 친근한 10~30대 구어체로 교정.
+3. 오타 및 맞춤법 교정.`
+          },
+          { role: "user", content: rawDraft }
+        ]
+      });
+
+      const aiData = JSON.parse(validationCompletion.choices[0].message.content);
+      bot.sendMessage(chatId, `✅ [${i + 1}/${count}] "${aiData.title}" 생성 및 검수 완료! 코드 작성 중...`);
 
       const { injectCode } = await import('./developerAgent.js');
       await injectCode(aiData);
