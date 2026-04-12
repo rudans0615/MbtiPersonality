@@ -23,6 +23,8 @@ import Privacy from "@/pages/privacy";
 import DopamineTest from "@/pages/dopamine-test";
 import DopamineResults from "@/pages/dopamine-results";
 
+import PetPersonalityPreferenceTest from "@/pages/petPersonalityPreference-test";
+import PetPersonalityPreferenceResults from "@/pages/petPersonalityPreference-results";
 import NotFound from "@/pages/not-found";
 
 import Footer from "@/components/Footer";
@@ -50,6 +52,8 @@ function Router() {
       <Route path="/terms" component={Terms} />
       <Route path="/privacy" component={Privacy} />
 
+      <Route path="/petPersonalityPreference-test" component={PetPersonalityPreferenceTest} />
+      <Route path="/petPersonalityPreference-results" component={PetPersonalityPreferenceResults} />
       <Route component={NotFound} />
     </Switch>
   );
