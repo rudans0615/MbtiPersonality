@@ -17,6 +17,48 @@ export interface TestType {
 
 export const testTypes: TestType[] = [
   {
+    id: "workplacePersonalityTest",
+    category: "CAREER",
+    title: "너의 직장 생활 뚜껑 열어보기!",
+    subtitle: "퇴사 후의 넷플릭스, 찐 염원을 확인해봐!",
+    description: "직장에서의 경험과 너의 성향은 어떤 직장인의 모습을 만들어 주는 걸까? 야근 후 퇴사 결정까지, 다양한 상황 속에서 널 드러내는 심리 테스트를 해봐.",
+    emoji: "💼",
+    color: "from-purple-500 to-pink-500",
+    duration: "약 3분",
+    questions: 5,
+    href: "/workplacePersonalityTest-test",
+    features: ["AI 맞춤 분석", "나만의 결과지", "궁합 확인"],
+    isAvailable: true
+  },
+  {
+    id: "seasonalEmotionalCheck",
+    category: "FUN",
+    title: "지금 당신의 기분은 어떤 계절?",
+    subtitle: "현재 기분에 맞는 계절을 찾아보세요!",
+    description: "매일 날씨에 따라 바뀌는 우리의 감정. 당신의 마음속 계절은 어떤 건지 확인해봐! 내 기분에 딱 맞는 계절이 있을지도?",
+    emoji: "☀️",
+    color: "from-purple-500 to-pink-500",
+    duration: "약 3분",
+    questions: 4,
+    href: "/seasonalEmotionalCheck-test",
+    features: ["AI 맞춤 분석", "나만의 결과지", "궁합 확인"],
+    isAvailable: true
+  },
+  {
+    id: "roommateStyleTest",
+    category: "PERSONALITY",
+    title: "나의 룸메 스타일은?",
+    subtitle: "너의 라이프스타일에 맞는 룸메이트 유형 찾기!",
+    description: "각양각색의 룸메이트와 함께하는 자취 생활. 너와 잘 맞는 룸메 스타일은 어떤 걸까? 아래 질문에 답해보면서, 내 스타일과 잘 맞는 룸메를 찾아보자!",
+    emoji: "🏠",
+    color: "from-purple-500 to-pink-500",
+    duration: "약 3분",
+    questions: 3,
+    href: "/roommateStyleTest-test",
+    features: ["AI 맞춤 분석", "나만의 결과지", "궁합 확인"],
+    isAvailable: true
+  },
+  {
     id: "petPersonalityPreference",
     category: "PERSONALITY",
     title: "내 반려동물이 나의 취향을 알려줄까?",

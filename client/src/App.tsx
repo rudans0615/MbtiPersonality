@@ -25,6 +25,12 @@ import DopamineResults from "@/pages/dopamine-results";
 
 import PetPersonalityPreferenceTest from "@/pages/petPersonalityPreference-test";
 import PetPersonalityPreferenceResults from "@/pages/petPersonalityPreference-results";
+import RoommateStyleTestTest from "@/pages/roommateStyleTest-test";
+import RoommateStyleTestResults from "@/pages/roommateStyleTest-results";
+import SeasonalEmotionalCheckTest from "@/pages/seasonalEmotionalCheck-test";
+import SeasonalEmotionalCheckResults from "@/pages/seasonalEmotionalCheck-results";
+import WorkplacePersonalityTestTest from "@/pages/workplacePersonalityTest-test";
+import WorkplacePersonalityTestResults from "@/pages/workplacePersonalityTest-results";
 import NotFound from "@/pages/not-found";
 
 import Footer from "@/components/Footer";
@@ -54,6 +60,12 @@ function Router() {
 
       <Route path="/petPersonalityPreference-test" component={PetPersonalityPreferenceTest} />
       <Route path="/petPersonalityPreference-results" component={PetPersonalityPreferenceResults} />
+      <Route path="/roommateStyleTest-test" component={RoommateStyleTestTest} />
+      <Route path="/roommateStyleTest-results" component={RoommateStyleTestResults} />
+      <Route path="/seasonalEmotionalCheck-test" component={SeasonalEmotionalCheckTest} />
+      <Route path="/seasonalEmotionalCheck-results" component={SeasonalEmotionalCheckResults} />
+      <Route path="/workplacePersonalityTest-test" component={WorkplacePersonalityTestTest} />
+      <Route path="/workplacePersonalityTest-results" component={WorkplacePersonalityTestResults} />
       <Route component={NotFound} />
     </Switch>
   );
