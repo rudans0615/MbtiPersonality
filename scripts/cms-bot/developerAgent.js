@@ -6,7 +6,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const clientSrc = path.resolve(__dirname, '../../client/src');
 
 export async function injectCode(aiData) {
-  const { testId, title, subtitle, description, emoji, questions, results, category } = aiData;
+  const { testId, title, subtitle, description, emoji, questions, results, category, seoArticle } = aiData;
   const capitalizedId = testId.charAt(0).toUpperCase() + testId.slice(1) + 'Test';
   const capitalizedResults = testId.charAt(0).toUpperCase() + testId.slice(1) + 'Results';
   const emojiChar = emoji || '\u2728';
@@ -15,7 +15,7 @@ export async function injectCode(aiData) {
   const midPoint = Math.floor(qLen / 2); // Q6 interstitial point
   
   // 1. Data Files Generation
-  const questionsContent = 'export const ' + testId + 'Questions = ' + JSON.stringify(questions, null, 2) + ';';
+  const questionsContent = 'export const seoArticle = ' + JSON.stringify(seoArticle || '이 테스트는 심리적 성향을 알아볼 수 있는 흥미로운 분석을 제공합니다. 문항을 통해 당신의 심리를 깊이 있게 탐구해보세요.') + ';\nexport const ' + testId + 'Questions = ' + JSON.stringify(questions, null, 2) + ';';
   fs.writeFileSync(path.join(clientSrc, 'data/' + testId + 'Questions.ts'), questionsContent);
 
   const resultsContent = [
@@ -43,7 +43,7 @@ import SEO from "@/components/SEO";
 import { Button } from "@/components/ui/button";
 import { AdSenseBlock } from "@/components/AdSenseBlock";
 import { ArrowLeft, Loader2 } from "lucide-react";
-import { ${testId}Questions } from "@/data/${testId}Questions";
+import { ${testId}Questions, seoArticle } from "@/data/${testId}Questions";
 
 export default function ${capitalizedId}() {
   const [, setLocation] = useLocation();
@@ -131,6 +131,12 @@ export default function ${capitalizedId}() {
             <h2 className="text-xl font-bold mb-4">\ud83d\udca1 \uc774 \ud14c\uc2a4\ud2b8\uc5d0 \ub300\ud558\uc5ec</h2>
             <p className="text-neutral-600 mb-4">${title}\ub294 \ub2f9\uc2e0\uc758 \uc2ec\ub9ac\ub97c \uae4a\uc774 \uc788\uac8c \ubd84\uc11d\ud569\ub2c8\ub2e4. ${descText}</p>
             <p className="text-neutral-600 mb-6">\ucd1d ${qLen}\uac1c\uc758 \ubb38\ud56d\uc73c\ub85c \uc774\ub8e8\uc5b4\uc838 \uc788\uc73c\uba70, \uc9c1\uad00\uc801\uc73c\ub85c \uac00\uc7a5 \uba3c\uc800 \ub5a0\uc624\ub974\ub294 \ub2f5\ubcc0\uc744 \uc120\ud0dd\ud558\ub294 \uac83\uc774 \uac00\uc7a5 \uc815\ud655\ud569\ub2c8\ub2e4.</p>
+            <div className="mt-8 pt-6 border-t border-neutral-200">
+              <h3 className="text-lg font-bold mb-3 text-neutral-800">\ud83d\udcd6 심리 분석 칼럼</h3>
+              <div className="text-neutral-600 text-[0.95rem] leading-relaxed whitespace-pre-wrap">
+                {seoArticle}
+              </div>
+            </div>
           </div>
           <AdSenseBlock adSlot="1122334455" />
         </main>

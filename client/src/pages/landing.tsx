@@ -1,4 +1,5 @@
 import { Link } from "wouter";
+import { useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -6,7 +7,7 @@ import SEO from "@/components/SEO";
 
 import Navigation from "@/components/Navigation";
 import { testTypes } from "@/data/testTypes";
-import { Clock, Users, ArrowRight, Star, Sparkles, Heart, Brain, Laugh, Rocket } from "lucide-react";
+import { Clock, Users, ArrowRight, Star, Sparkles, Heart, Brain, Laugh, Rocket, ChevronLeft, ChevronRight } from "lucide-react";
 
 const getIconForCategory = (cat: string) => {
   switch(cat) {
@@ -31,9 +32,18 @@ const getTitleForCategory = (cat: string) => {
 };
 
 const CategoryRow = ({ category, tests, isComingSoon = false }: { category: string, tests: any[], isComingSoon?: boolean }) => {
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+
+  const scroll = (direction: 'left' | 'right') => {
+    if (scrollContainerRef.current) {
+      const scrollAmount = 350;
+      scrollContainerRef.current.scrollBy({ left: direction === 'left' ? -scrollAmount : scrollAmount, behavior: 'smooth' });
+    }
+  };
+
   if (tests.length === 0) return null;
   return (
-    <div className="mb-14">
+    <div className="mb-14 relative group">
       <div className="flex items-center gap-3 mb-6 px-4 md:px-0">
         {getIconForCategory(category)}
         <h3 className="text-2xl font-bold text-neutral-800 tracking-tight">
@@ -41,8 +51,16 @@ const CategoryRow = ({ category, tests, isComingSoon = false }: { category: stri
         </h3>
       </div>
       
+      {/* PC 가로 스크롤 좌측 버튼 */}
+      <button 
+        onClick={() => scroll('left')}
+        className="hidden md:flex absolute left-0 top-[55%] -translate-y-1/2 -ml-5 z-10 w-12 h-12 bg-white/95 border border-neutral-200 rounded-full shadow-lg items-center justify-center text-neutral-600 hover:text-primary hover:scale-110 transition-all opacity-0 group-hover:opacity-100"
+      >
+        <ChevronLeft size={24} />
+      </button>
+
       {/* 넷플릭스형 가로 스크롤 컨테이너 */}
-      <div className="flex overflow-x-auto pb-6 -mx-4 px-4 md:mx-0 md:px-2 space-x-6 snap-x snap-mandatory [&::-webkit-scrollbar]:hidden">
+      <div ref={scrollContainerRef} className="flex overflow-x-auto pb-6 -mx-4 px-4 md:mx-0 md:px-2 space-x-6 snap-x snap-mandatory [&::-webkit-scrollbar]:hidden scroll-smooth relative">
         {tests.map((test) => (
           <Card 
             key={test.id} 
@@ -88,6 +106,14 @@ const CategoryRow = ({ category, tests, isComingSoon = false }: { category: stri
           </Card>
         ))}
       </div>
+
+      {/* PC 가로 스크롤 우측 버튼 */}
+      <button 
+        onClick={() => scroll('right')}
+        className="hidden md:flex absolute right-0 top-[55%] -translate-y-1/2 -mr-5 z-10 w-12 h-12 bg-white/95 border border-neutral-200 rounded-full shadow-lg items-center justify-center text-neutral-600 hover:text-primary hover:scale-110 transition-all opacity-0 group-hover:opacity-100"
+      >
+        <ChevronRight size={24} />
+      </button>
     </div>
   )
 };

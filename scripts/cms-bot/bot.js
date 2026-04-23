@@ -157,6 +157,7 @@ bot.onText(/\/(newtest|newtes)\s+(.+)/, async (msg, match) => {
   "subtitle": "부제목 (호기심 유발)",
   "description": "테스트 소개 문구",
   "emoji": "대표 이모지 1개",
+  "seoArticle": "이 테스트의 심리학적 배경, 추천 대상, 분석 원리를 다루는 500자 이상의 구체적이고 전문적인 칼럼 텍스트 (반드시 문단 나누기 \n\n 포함)",
   "questions": [
     {
       "question": "구체적 상황이 담긴 질문 (반드시 ${targetQuestions}개 작성)",
@@ -170,7 +171,7 @@ bot.onText(/\/(newtest|newtes)\s+(.+)/, async (msg, match) => {
       "title": "유형 이름 (밈/유행어 활용)",
       "emoji": "이모지",
       "subtitle": "한줄 요약",
-      "description": "3~4문장의 뼈때리는 유형 설명",
+      "description": "해당 유형의 성격, 장단점, 연애스타일, 어울리는 사람 등을 다루는 300자 이상의 매우 상세하고 구체적인 설명",
       "characteristics": ["특징1", "특징2", "특징3", "특징4"],
       "coupangKeyword": "쿠팡에서 실제 검색 가능한 상품 키워드"
     }
@@ -328,14 +329,15 @@ bot.onText(/\/batch\s*(\d*)/, async (msg, match) => {
 
 [JSON 출력 형식]
 {
-  "testId": "camelCase 영문 ID",
+  "testId": "camelCase 영문 ID (반드시 매번 겹치지 않는 고유하고 랜덤한 영문 ID 생성)",
   "category": "HOT | LOVE | PERSONALITY | FUN | CAREER 중 택1",
   "title": "바이럴 제목",
   "subtitle": "부제목",
   "description": "소개",
   "emoji": "이모지 1개",
+  "seoArticle": "이 테스트의 심리학적 배경과 분석 원리를 다루는 500자 이상의 전문 칼럼 (문단 포함)",
   "questions": [{ "question": "구체적 상황 질문 (반드시 ${targetQuestions}개 작성)", "options": [{ "text": "구어체 선택지 (반드시 ${targetOptions}개)", "score": 1 }] }],
-  "results": { "유형키": { "title": "유형명", "emoji": "이모지", "subtitle": "한줄요약", "description": "설명", "characteristics": ["특징1","특징2","특징3","특징4"], "coupangKeyword": "상품 키워드" } }
+  "results": { "유형키": { "title": "유형명", "emoji": "이모지", "subtitle": "한줄요약", "description": "해당 유형의 장단점 및 특징을 다루는 300자 이상의 상세 설명", "characteristics": ["특징1","특징2","특징3","특징4"], "coupangKeyword": "상품 키워드" } }
 }
 JSON만 출력. 다른 텍스트 금지.`
           },
