@@ -7,12 +7,12 @@ import { CoupangRecommend } from "@/components/CoupangRecommend";
 import { ShareButtons } from "@/components/ShareButtons";
 import { AdSenseBlock } from "@/components/AdSenseBlock";
 import { ResultImageCard } from "@/components/ResultImageCard";
-import { calculateFriendshipCompatibilityTestLevel, friendshipCompatibilityResults } from "@/data/friendshipCompatibilityTypes";
-import { friendshipCompatibilityQuestions } from "@/data/friendshipCompatibilityQuestions";
+import { calculateSeasonalMoodTestTestLevel, seasonalMoodTestResults } from "@/data/seasonalMoodTestTypes";
+import { seasonalMoodTestQuestions } from "@/data/seasonalMoodTestQuestions";
 import { testTypes } from "@/data/testTypes";
 import { Loader2, RotateCcw, Zap, Sparkles } from "lucide-react";
 
-export default function FriendshipCompatibilityResults() {
+export default function SeasonalMoodTestResults() {
   const [location] = useLocation();
   const [score, setScore] = useState(0);
   const [isAnalyzing, setIsAnalyzing] = useState(true);
@@ -24,26 +24,26 @@ export default function FriendshipCompatibilityResults() {
       setIsAnalyzing(false);
       if (typeof window !== "undefined" && (window as any).gtag) {
         (window as any).gtag('event', 'test_completed', {
-          test_id: "friendshipCompatibility",
-          options_count: friendshipCompatibilityQuestions[0]?.options?.length || 2,
-          questions_count: friendshipCompatibilityQuestions.length
+          test_id: "seasonalMoodTest",
+          options_count: seasonalMoodTestQuestions[0]?.options?.length || 2,
+          questions_count: seasonalMoodTestQuestions.length
         });
       }
     }, 3000);
     return () => clearTimeout(timer);
   }, [location]);
 
-  const resultKey = calculateFriendshipCompatibilityTestLevel(score);
-  const allKeys = Object.keys(friendshipCompatibilityResults);
-  const result = friendshipCompatibilityResults[resultKey] || friendshipCompatibilityResults[allKeys[0]] || { title: "분석 완료", description: "당신만의 특별한 결과입니다!" };
+  const resultKey = calculateSeasonalMoodTestTestLevel(score);
+  const allKeys = Object.keys(seasonalMoodTestResults);
+  const result = seasonalMoodTestResults[resultKey] || seasonalMoodTestResults[allKeys[0]] || { title: "분석 완료", description: "당신만의 특별한 결과입니다!" };
 
   // Cross-link: random 3 other tests
-  const otherTests = testTypes.filter(t => t.id !== "friendshipCompatibility" && t.isAvailable).sort(() => Math.random() - 0.5).slice(0, 3);
+  const otherTests = testTypes.filter(t => t.id !== "seasonalMoodTest" && t.isAvailable).sort(() => Math.random() - 0.5).slice(0, 3);
 
   if (isAnalyzing) {
     return (
       <div className="min-h-screen bg-pink-50/30 flex flex-col font-sans">
-        <SEO title="너와 나의 우정, 얼마나 잘 맞을까? - 결과 분석 중" />
+        <SEO title="당신의 계절별 감정 상태는? - 결과 분석 중" />
         <Navigation />
         <main className="flex-grow flex flex-col items-center justify-center p-4">
           <Loader2 className="h-16 w-16 animate-spin text-pink-400 mb-8" />
@@ -61,12 +61,12 @@ export default function FriendshipCompatibilityResults() {
 
   return (
     <div className="min-h-screen bg-pink-50/30">
-      <SEO title={(result.title || "결과") + " | 너와 나의 우정, 얼마나 잘 맞을까?"} description={result.description} url={`https://mbtifinder.com/friendshipCompatibility-results?score=${score}`} />
+      <SEO title={(result.title || "결과") + " | 당신의 계절별 감정 상태는?"} description={result.description} url={`https://mbtifinder.com/seasonalMoodTest-results?score=${score}`} />
       <Navigation />
 
       <div className="bg-gradient-to-br from-pink-300 via-purple-300 to-indigo-300 text-white py-20 relative overflow-hidden">
         <div className="max-w-3xl mx-auto px-6 text-center relative z-10">
-          <h1 className="text-xl md:text-2xl font-semibold mb-4 tracking-wider opacity-90 drop-shadow-md">너와 나의 우정, 얼마나 잘 맞을까? 결과 💫</h1>
+          <h1 className="text-xl md:text-2xl font-semibold mb-4 tracking-wider opacity-90 drop-shadow-md">당신의 계절별 감정 상태는? 결과 💫</h1>
           <p className="text-lg opacity-80">당신의 진짜 유형은...</p>
         </div>
       </div>
@@ -86,7 +86,7 @@ export default function FriendshipCompatibilityResults() {
 
           {/* Result Image Card - saveable for Instagram Stories */}
           <ResultImageCard
-            testTitle="너와 나의 우정, 얼마나 잘 맞을까?"
+            testTitle="당신의 계절별 감정 상태는?"
             resultTitle={result.title}
             resultEmoji={result.emoji || "✨"}
             resultSubtitle={result.subtitle}
@@ -119,11 +119,11 @@ export default function FriendshipCompatibilityResults() {
           <AdSenseBlock adSlot="9922334455" />
 
           <div className="text-center space-y-5 mt-10">
-            <ShareButtons title="너와 나의 우정, 얼마나 잘 맞을까? 결과" shareText={`나의 검사 결과는 '${result.title}'! 너도 해봐 👉`} url="https://mbtifinder.com/friendshipCompatibility-test" />
+            <ShareButtons title="당신의 계절별 감정 상태는? 결과" shareText={`나의 검사 결과는 '${result.title}'! 너도 해봐 👉`} url="https://mbtifinder.com/seasonalMoodTest-test" />
           </div>
 
           <div className="mt-8 flex justify-center pb-4">
-            <Button onClick={() => { window.location.href = "/friendshipCompatibility-test"; }} className="bg-gradient-to-r from-pink-400 via-purple-400 to-indigo-400 text-white px-10 py-6 rounded-2xl text-[1.1rem] font-bold hover:shadow-lg transition-transform hover:-translate-y-1 border-2 border-white/50 w-full">
+            <Button onClick={() => { window.location.href = "/seasonalMoodTest-test"; }} className="bg-gradient-to-r from-pink-400 via-purple-400 to-indigo-400 text-white px-10 py-6 rounded-2xl text-[1.1rem] font-bold hover:shadow-lg transition-transform hover:-translate-y-1 border-2 border-white/50 w-full">
               <RotateCcw size={20} className="mr-2" /> 테스트 다시하기
             </Button>
           </div>
@@ -135,7 +135,7 @@ export default function FriendshipCompatibilityResults() {
         </div>
         <div className="grid sm:grid-cols-2 gap-4">
           {allKeys.map((key) => {
-            const type = friendshipCompatibilityResults[key];
+            const type = seasonalMoodTestResults[key];
             return (
               <div key={key} className={`p-6 rounded-[1.5rem] bg-white border-2 transition-all duration-300 shadow-sm hover:shadow-md cursor-default ${key === resultKey ? "border-pink-400 shadow-pink-100" : "border-white hover:border-pink-200"}`}>
                 <div className="flex items-center space-x-4 mb-3">

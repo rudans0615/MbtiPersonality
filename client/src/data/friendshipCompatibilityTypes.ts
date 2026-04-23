@@ -12,42 +12,55 @@ export const calculateFriendshipCompatibilityTestLevel = (score: number) => {
 
 export const friendshipCompatibilityResults: Record<string, any> = {
   "typeA": {
-    "title": "베스트 프렌드형",
-    "emoji": "💖",
-    "subtitle": "진정한 마이 프렌드!",
-    "description": "체크한 걸 보니, 너랑 친구는 마음이 깊이 맞는 좋은 대화 상대인 것 같아. 서로를 완벽하게 이해하는 그런 우정!",
+    "title": "소중한 친구",
+    "emoji": "💕",
+    "subtitle": "너와 친구는 정말 잘 맞는 사이!",
+    "description": "서로를 잘 이해하고 지지하는 관계야. 어떤 상황에서도 힘이 되어줄 친구!",
     "characteristics": [
-      "서로의 생각을 잘 이해해",
-      "비밀 보장이 철저해",
-      "서로의 감정을 돌봐줘",
-      "어디서나 편안한 친구"
+      "서로의 비밀을 지킬 수 있어",
+      "서로에게 솔직한 편",
+      "함께하는 시간을 소중히 여김",
+      "서로를 존중하고 지지해줌"
     ],
-    "coupangKeyword": "우정 관련 아이템"
+    "coupangKeyword": "우정선물"
   },
   "typeB": {
-    "title": "우연한 친구형",
-    "emoji": "😅",
-    "subtitle": "서로 존중하는 사이!",
-    "description": "우연히 인연이 된 사이인 것 같아. 때로는 맞지 않을 때도 있지만, 서로 존중하며 삶을 나누는 친구!",
+    "title": "이해심 많은 친구",
+    "emoji": "✨",
+    "subtitle": "서로를 이해해주는 친구!",
+    "description": "어려운 상황에서도 함께 해주는 친구야. 서로를 잘 챙겨주는 사이!",
     "characteristics": [
-      "지극히 밀착하지 않아",
-      "서로의 공간을 존중해",
-      "생각은 양쪽에서 다름",
-      "재미있는 에피소드 많음"
+      "서로의 감정을 소중히 여김",
+      "서로의 고민을 잘 들어줌",
+      "시간에 따라 더욱 가까워짐",
+      "믿음이 깊은 관계"
     ],
-    "coupangKeyword": "친구 간 관계 개선"
+    "coupangKeyword": "친구케어"
   },
   "typeC": {
-    "title": "가벼운 관계형",
-    "emoji": "😜",
-    "subtitle": "가끔은 재밌고 가끔은 불편!",
-    "description": "실제로 모든 것을 이야기하지 않는 친구일지도 몰라. 약속도 가끔 소중하고 중요한 애인으로 느낄 때가 있어.",
+    "title": "편안한 친구",
+    "emoji": "🌼",
+    "subtitle": "함께 하는 것만으로도 좋아!",
+    "description": "서로의 존재가 편안한 친구야. 무심코 흘러가는 일상도 함께 공유해!",
     "characteristics": [
-      "존중과 이해 더 필요해",
-      "비밀 지키기 약간 아쉬워",
-      "가끔 너에게 궤도를 벗어남",
-      "상냥한 언행 많이 해도"
+      "자유로운 관계",
+      "서로의 개성을 존중함",
+      "서로의 소소한 것에 즐거움을 느낌",
+      "가벼운 대화도 소중히 여김"
     ],
-    "coupangKeyword": "소소한 우정 선물"
+    "coupangKeyword": "소소한우정"
+  },
+  "typeD": {
+    "title": "서로 존중하는 친구",
+    "emoji": "🌟",
+    "subtitle": "서로를 존중하는 건강한 우정!",
+    "description": "각자의 공간과 시간을 존중하며, 서로에게 최선을 다하는 친구야.",
+    "characteristics": [
+      "서로의 독립성을 존중함",
+      "자신의 감정을 표현할 줄 아는 편",
+      "서로에게 애정이 깊음",
+      "필요할 때 도움을 줄 준비가 되어있음"
+    ],
+    "coupangKeyword": "우정존중"
   }
 };

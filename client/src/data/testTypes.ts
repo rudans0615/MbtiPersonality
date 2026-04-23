@@ -17,6 +17,34 @@ export interface TestType {
 
 export const testTypes: TestType[] = [
   {
+    id: "workLifeBalanceTest",
+    category: "CAREER",
+    title: "너의 직장 생활, 적성 테스트!",
+    subtitle: "퇴사 후의 삶은 어떤 모습일까?",
+    description: "너의 직장 생활 스타일과 퇴사 후 꿈을 알아보는 테스트야! 같이 해보면서 ‘ㅋㅋㅋ 이거 완전 나잖아’ 하는 순간을 찾아봐!",
+    emoji: "💼",
+    color: "from-purple-500 to-pink-500",
+    duration: "약 3분",
+    questions: 12,
+    href: "/workLifeBalanceTest-test",
+    features: ["AI 맞춤 분석", "나만의 결과지", "궁합 확인"],
+    isAvailable: true
+  },
+  {
+    id: "seasonalMoodTest",
+    category: "PERSONALITY",
+    title: "당신의 계절별 감정 상태는?",
+    subtitle: "어떤 계절에 더 우울해지거나 행복한지 알아보자!",
+    description: "계절에 따라 감정이 어떻게 변하는지 궁금하지 않아? 이 테스트를 통해 당신의 계절별 감정 상태를 확인해보고, 나와 비슷한 친구들과 공유해봐!",
+    emoji: "🍂",
+    color: "from-purple-500 to-pink-500",
+    duration: "약 3분",
+    questions: 12,
+    href: "/seasonalMoodTest-test",
+    features: ["AI 맞춤 분석", "나만의 결과지", "궁합 확인"],
+    isAvailable: true
+  },
+  {
     id: "travelFriendCompatibility",
     category: "FUN",
     title: "내 MBTI로 알아보는 최애 여행지 친구 궁합✈️",
