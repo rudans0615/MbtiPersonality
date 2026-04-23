@@ -17,6 +17,20 @@ export interface TestType {
 
 export const testTypes: TestType[] = [
   {
+    id: "travelFriendCompatibility",
+    category: "FUN",
+    title: "내 MBTI로 알아보는 최애 여행지 친구 궁합✈️",
+    subtitle: "너의 성격에 맞는 여행지와 친구의 조화는?",
+    description: "내 MBTI 성향에 따라 최애 여행지와 그곳에서 잘 맞는 친구 유형을 알아보자! 여행을 떠나고 싶은 그날, 어떤 친구와 함께하면 좋을지 체크해보세요!",
+    emoji: "🌍",
+    color: "from-purple-500 to-pink-500",
+    duration: "약 3분",
+    questions: 8,
+    href: "/travelFriendCompatibility-test",
+    features: ["AI 맞춤 분석", "나만의 결과지", "궁합 확인"],
+    isAvailable: true
+  },
+  {
     id: "socialMediaHabitsTest",
     category: "FUN",
     title: "너의 SNS 소비 스타일은?",
