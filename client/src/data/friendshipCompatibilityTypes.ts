@@ -12,42 +12,55 @@ export const calculateFriendshipCompatibilityTestLevel = (score: number) => {
 
 export const friendshipCompatibilityResults: Record<string, any> = {
   "typeA": {
-    "title": "베스트 프렌드형",
+    "title": "완벽한 찰떡궁합",
     "emoji": "💖",
-    "subtitle": "진정한 마이 프렌드!",
-    "description": "체크한 걸 보니, 너랑 친구는 마음이 깊이 맞는 좋은 대화 상대인 것 같아. 서로를 완벽하게 이해하는 그런 우정!",
+    "subtitle": "우린 완벽한 친구!",
+    "description": "너와 내 친구는 서로를 잘 이해하고, 끈끈한 우정을 자랑해. 언제나 서로의 곁에 있어줄 준비가 되어 있어!",
     "characteristics": [
-      "서로의 생각을 잘 이해해",
-      "비밀 보장이 철저해",
-      "서로의 감정을 돌봐줘",
-      "어디서나 편안한 친구"
+      "서로 잘 맞는 성격",
+      "많은 추억 공유",
+      "상호 존중과 이해",
+      "서로의 귀찮음을 감내"
     ],
-    "coupangKeyword": "우정 관련 아이템"
+    "coupangKeyword": "친구 선물 세트"
   },
   "typeB": {
-    "title": "우연한 친구형",
-    "emoji": "😅",
-    "subtitle": "서로 존중하는 사이!",
-    "description": "우연히 인연이 된 사이인 것 같아. 때로는 맞지 않을 때도 있지만, 서로 존중하며 삶을 나누는 친구!",
+    "title": "이해는 하되 다름",
+    "emoji": "🌀",
+    "subtitle": "상반된 매력을 가진 친구!",
+    "description": "너와 친구는 서로 다른 성격이지만, 그게 오히려 매력이야. 서로 보완하며, 다름 속에서 친밀감을 느끼고 있어!",
     "characteristics": [
-      "지극히 밀착하지 않아",
-      "서로의 공간을 존중해",
-      "생각은 양쪽에서 다름",
-      "재미있는 에피소드 많음"
+      "서로 다른 성향",
+      "자주 의견 충돌",
+      "다른 점에서 배우기",
+      "각자 존중해 주기"
     ],
-    "coupangKeyword": "친구 간 관계 개선"
+    "coupangKeyword": "친구와의 요리 클래스"
   },
   "typeC": {
-    "title": "가벼운 관계형",
-    "emoji": "😜",
-    "subtitle": "가끔은 재밌고 가끔은 불편!",
-    "description": "실제로 모든 것을 이야기하지 않는 친구일지도 몰라. 약속도 가끔 소중하고 중요한 애인으로 느낄 때가 있어.",
+    "title": "조금의 간섭 필요",
+    "emoji": "🌱",
+    "subtitle": "서로 노력 중인 친구!",
+    "description": "너와 친구는 서로에게 조금씩 간섭이 필요해. 더 깊은 이해를 하고 싶다면, 소통을 늘려봐!",
     "characteristics": [
-      "존중과 이해 더 필요해",
-      "비밀 지키기 약간 아쉬워",
-      "가끔 너에게 궤도를 벗어남",
-      "상냥한 언행 많이 해도"
+      "서로의 마음 잘 몰라",
+      "가끔의 오해",
+      "꾸준한 대화 필요",
+      "소중한 유대감"
     ],
-    "coupangKeyword": "소소한 우정 선물"
+    "coupangKeyword": "우정 소통 게임"
+  },
+  "typeD": {
+    "title": "서로의 소중함 잊지 말자",
+    "emoji": "🌼",
+    "subtitle": "친구라도 소중해!",
+    "description": "너와 친구는 서로의 소중함을 잊고 있는 것 같아. 좀 더 관심을 가져보고, 서로의 가치를 다시 한번 확인해보는 게 좋겠어!",
+    "characteristics": [
+      "소홀해진 관계",
+      "서로의 아픔 무관심",
+      "다시 가까워질 방법 모색",
+      "소통의 필요성"
+    ],
+    "coupangKeyword": "우정 회복 책"
   }
 };

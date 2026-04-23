@@ -5,9 +5,9 @@ import SEO from "@/components/SEO";
 import { Button } from "@/components/ui/button";
 import { AdSenseBlock } from "@/components/AdSenseBlock";
 import { ArrowLeft, Loader2 } from "lucide-react";
-import { friendshipCompatibilityQuestions } from "@/data/friendshipCompatibilityQuestions";
+import { loveLifeChoiceQuestions } from "@/data/loveLifeChoiceQuestions";
 
-export default function FriendshipCompatibilityTest() {
+export default function LoveLifeChoiceTest() {
   const [, setLocation] = useLocation();
   const [hasStarted, setHasStarted] = useState(false);
   const [currentStep, setCurrentStep] = useState(0);
@@ -18,9 +18,9 @@ export default function FriendshipCompatibilityTest() {
     setHasStarted(true);
     if (typeof window !== "undefined" && (window as any).gtag) {
       (window as any).gtag('event', 'test_started', {
-        test_id: "friendshipCompatibility",
-        options_count: friendshipCompatibilityQuestions[0]?.options?.length || 2,
-        questions_count: friendshipCompatibilityQuestions.length
+        test_id: "loveLifeChoice",
+        options_count: loveLifeChoiceQuestions[0]?.options?.length || 2,
+        questions_count: loveLifeChoiceQuestions.length
       });
     }
   };
@@ -29,8 +29,8 @@ export default function FriendshipCompatibilityTest() {
     const newHistory = [...scoreHistory.slice(0, currentStep), points];
     setScoreHistory(newHistory);
 
-    // Q6 interstitial: show "analyzing" screen with ad
-    if (currentStep === 6 - 1) {
+    // Q4 interstitial: show "analyzing" screen with ad
+    if (currentStep === 4 - 1) {
       setShowInterstitial(true);
       setTimeout(() => {
         setShowInterstitial(false);
@@ -40,11 +40,11 @@ export default function FriendshipCompatibilityTest() {
     }
 
     setTimeout(() => {
-      if (currentStep < friendshipCompatibilityQuestions.length - 1) {
+      if (currentStep < loveLifeChoiceQuestions.length - 1) {
         setCurrentStep(curr => curr + 1);
       } else {
         const totalScore = newHistory.reduce((a, b) => a + b, 0);
-        setLocation("/friendshipCompatibility-results?score=" + totalScore);
+        setLocation("/loveLifeChoice-results?score=" + totalScore);
       }
     }, 300);
   };
@@ -55,8 +55,8 @@ export default function FriendshipCompatibilityTest() {
     }
   };
 
-  const question = friendshipCompatibilityQuestions[currentStep];
-  const progress = Math.round(((currentStep + 1) / friendshipCompatibilityQuestions.length) * 100);
+  const question = loveLifeChoiceQuestions[currentStep];
+  const progress = Math.round(((currentStep + 1) / loveLifeChoiceQuestions.length) * 100);
 
   // Interstitial ad screen at midpoint
   if (showInterstitial) {
@@ -77,22 +77,22 @@ export default function FriendshipCompatibilityTest() {
 
   return (
     <div className="min-h-screen bg-pink-50/30">
-      <SEO title="너와 내 친구, 우리는 진짜 잘 맞는 걸까?" description="친구와의 사이가 진짜 잘 맞는지, 혹은 뭔가 부족한지 알아보는 재미있는 심리 테스트! 솔직하게 답하고 나서 내 친구와의 관계를 다시 생각해보는 기회가 될 거야. 친구에게 공유하면 더욱 재밌어지는 효과 만점!" url="https://mbtifinder.com/friendshipCompatibility-test" keywords="PERSONALITY, 너와, 내, 친구,, 우리는, 진짜, 잘, 맞는, 걸까?" />
+      <SEO title="내 연애 스타일은 어떤 걸까?" description="연애의 큐피드로부터 받은 선물은 어떤 스타일의 연애일까? 이 심리 테스트를 통해 나의 연애 방식을 재밌게 알아보고, SNS에 공유하고 싶어지는 결과를 찾아보자!" url="https://mbtifinder.com/loveLifeChoice-test" keywords="LOVE, 내, 연애, 스타일은, 어떤, 걸까?" />
       <Navigation />
       {!hasStarted ? (
         <main className="flex-grow max-w-3xl mx-auto w-full px-4 py-12 pb-24 flex flex-col items-center">
           <div className="bg-white/90 backdrop-blur-sm rounded-[2rem] p-8 md:p-12 shadow-xl border border-white/60 flex-col justify-center text-center w-full mb-10">
-            <div className="text-6xl mb-6">👭</div>
-            <h1 className="text-3xl md:text-5xl font-extrabold mb-6 tracking-tight text-neutral-900">너와 내 친구, 우리는 진짜 잘 맞는 걸까?</h1>
-            <p className="text-lg md:text-xl text-neutral-500 mb-10 leading-relaxed">우정의 궁합을 테스트해보자!</p>
+            <div className="text-6xl mb-6">💖</div>
+            <h1 className="text-3xl md:text-5xl font-extrabold mb-6 tracking-tight text-neutral-900">내 연애 스타일은 어떤 걸까?</h1>
+            <p className="text-lg md:text-xl text-neutral-500 mb-10 leading-relaxed">너의 연애 여정을 파헤쳐보자!</p>
             <Button onClick={handleStart} size="lg" className="w-full md:w-auto h-16 text-xl rounded-full px-16 bg-gradient-to-r from-pink-400 via-purple-400 to-indigo-400 hover:from-pink-500 hover:via-purple-500 hover:to-indigo-500 text-white shadow-xl hover:shadow-2xl transition-all border-2 border-white/50">
               지금 바로 알아보기 👉
             </Button>
           </div>
           <div className="bg-white/60 backdrop-blur-sm border border-white/60 rounded-2xl p-8 text-left w-full mt-8 prose prose-neutral max-w-none">
             <h2 className="text-xl font-bold mb-4">💡 이 테스트에 대하여</h2>
-            <p className="text-neutral-600 mb-4">너와 내 친구, 우리는 진짜 잘 맞는 걸까?는 당신의 심리를 깊이 있게 분석합니다. 친구와의 사이가 진짜 잘 맞는지, 혹은 뭔가 부족한지 알아보는 재미있는 심리 테스트! 솔직하게 답하고 나서 내 친구와의 관계를 다시 생각해보는 기회가 될 거야. 친구에게 공유하면 더욱 재밌어지는 효과 만점!</p>
-            <p className="text-neutral-600 mb-6">총 12개의 문항으로 이루어져 있으며, 직관적으로 가장 먼저 떠오르는 답변을 선택하는 것이 가장 정확합니다.</p>
+            <p className="text-neutral-600 mb-4">내 연애 스타일은 어떤 걸까?는 당신의 심리를 깊이 있게 분석합니다. 연애의 큐피드로부터 받은 선물은 어떤 스타일의 연애일까? 이 심리 테스트를 통해 나의 연애 방식을 재밌게 알아보고, SNS에 공유하고 싶어지는 결과를 찾아보자!</p>
+            <p className="text-neutral-600 mb-6">총 8개의 문항으로 이루어져 있으며, 직관적으로 가장 먼저 떠오르는 답변을 선택하는 것이 가장 정확합니다.</p>
           </div>
           <AdSenseBlock adSlot="1122334455" />
         </main>
@@ -104,7 +104,7 @@ export default function FriendshipCompatibilityTest() {
                 <div className="bg-gradient-to-r from-pink-400 via-purple-400 to-indigo-400 h-2.5 rounded-full transition-all duration-500" style={{ width: progress + "%" }}></div>
               </div>
               <p className="text-sm font-semibold tracking-wider text-pink-500 mt-3 text-center">
-                {currentStep + 1} / {friendshipCompatibilityQuestions.length}
+                {currentStep + 1} / {loveLifeChoiceQuestions.length}
               </p>
             </div>
           </div>
@@ -117,7 +117,7 @@ export default function FriendshipCompatibilityTest() {
                     Q{currentStep + 1}
                   </div>
                   <h2 className="text-2xl md:text-[1.7rem] font-bold text-neutral-800 leading-snug tracking-tight break-keep">
-                    {question?.question || question?.questionText || "너와 내 친구, 우리는 진짜 잘 맞는 걸까?"}
+                    {question?.question || question?.questionText || "내 연애 스타일은 어떤 걸까?"}
                   </h2>
                 </div>
                 <div className="space-y-4">

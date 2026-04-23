@@ -17,6 +17,34 @@ export interface TestType {
 
 export const testTypes: TestType[] = [
   {
+    id: "loveLifeChoice",
+    category: "LOVE",
+    title: "내 연애 스타일은 어떤 걸까?",
+    subtitle: "너의 연애 여정을 파헤쳐보자!",
+    description: "연애의 큐피드로부터 받은 선물은 어떤 스타일의 연애일까? 이 심리 테스트를 통해 나의 연애 방식을 재밌게 알아보고, SNS에 공유하고 싶어지는 결과를 찾아보자!",
+    emoji: "💖",
+    color: "from-purple-500 to-pink-500",
+    duration: "약 3분",
+    questions: 8,
+    href: "/loveLifeChoice-test",
+    features: ["AI 맞춤 분석", "나만의 결과지", "궁합 확인"],
+    isAvailable: true
+  },
+  {
+    id: "roommateCompatibility",
+    category: "PERSONALITY",
+    title: "내 룸메이트 성격 유형 테스트",
+    subtitle: "너와 잘 맞는 룸메이트는 누구일까?",
+    description: "룸메이트와의 생활은 생각보다 그 사람의 성격이 큰 영향을 미치잖아? 그럼, 너와 잘 맞는 룸메이트 타입을 알아보자! 솔직히 말해봐~",
+    emoji: "🏠",
+    color: "from-purple-500 to-pink-500",
+    duration: "약 3분",
+    questions: 8,
+    href: "/roommateCompatibility-test",
+    features: ["AI 맞춤 분석", "나만의 결과지", "궁합 확인"],
+    isAvailable: true
+  },
+  {
     id: "socialMediaHabitsTest",
     category: "FUN",
     title: "너의 SNS 소비 스타일은?",
