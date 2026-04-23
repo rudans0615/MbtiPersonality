@@ -31,6 +31,8 @@ import FriendshipCompatibilityTest from "@/pages/friendshipCompatibility-test";
 import FriendshipCompatibilityResults from "@/pages/friendshipCompatibility-results";
 import SocialMediaHabitsTestTest from "@/pages/socialMediaHabitsTest-test";
 import SocialMediaHabitsTestResults from "@/pages/socialMediaHabitsTest-results";
+import TravelFriendCompatibilityTest from "@/pages/travelFriendCompatibility-test";
+import TravelFriendCompatibilityResults from "@/pages/travelFriendCompatibility-results";
 import NotFound from "@/pages/not-found";
 
 import Footer from "@/components/Footer";
@@ -66,6 +68,8 @@ function Router() {
       <Route path="/friendshipCompatibility-results" component={FriendshipCompatibilityResults} />
       <Route path="/socialMediaHabitsTest-test" component={SocialMediaHabitsTestTest} />
       <Route path="/socialMediaHabitsTest-results" component={SocialMediaHabitsTestResults} />
+      <Route path="/travelFriendCompatibility-test" component={TravelFriendCompatibilityTest} />
+      <Route path="/travelFriendCompatibility-results" component={TravelFriendCompatibilityResults} />
       <Route component={NotFound} />
     </Switch>
   );
