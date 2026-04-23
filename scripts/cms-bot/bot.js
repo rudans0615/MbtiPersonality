@@ -231,7 +231,7 @@ JSON만 출력해. 다른 텍스트 절대 금지.`
     const branchName = `feat/ai-${aiData.testId}-${Date.now()}`;
     const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
     
-    exec(`git checkout -b ${branchName} && git add -A && git commit -m "feat(ai-content): add new test ${aiData.title}" && git push origin ${branchName}`, { cwd: repoRoot }, async (error, stdout, stderr) => {
+    exec(`git checkout main && git pull origin main && git checkout -b ${branchName} && git add -A && git commit -m "feat(ai-content): add new test ${aiData.title}" && git push origin ${branchName}`, { cwd: repoRoot }, async (error, stdout, stderr) => {
       // 작업 후 항상 main 브랜치로 복귀
       exec(`git checkout main`, { cwd: repoRoot });
       
@@ -387,7 +387,7 @@ JSON만 출력. 다른 텍스트 금지.`
     const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
     const branchName = `feat/ai-batch-${Date.now()}`;
 
-    exec(`git checkout -b ${branchName} && git add -A && git commit -m "feat(ai-batch): add ${successList.length} new tests" && git push origin ${branchName}`, { cwd: repoRoot }, async (error, stdout, stderr) => {
+    exec(`git checkout main && git pull origin main && git checkout -b ${branchName} && git add -A && git commit -m "feat(ai-batch): add ${successList.length} new tests" && git push origin ${branchName}`, { cwd: repoRoot }, async (error, stdout, stderr) => {
       exec(`git checkout main`, { cwd: repoRoot });
 
       if (error) {
