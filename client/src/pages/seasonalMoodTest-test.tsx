@@ -5,9 +5,9 @@ import SEO from "@/components/SEO";
 import { Button } from "@/components/ui/button";
 import { AdSenseBlock } from "@/components/AdSenseBlock";
 import { ArrowLeft, Loader2 } from "lucide-react";
-import { friendshipCompatibilityQuestions } from "@/data/friendshipCompatibilityQuestions";
+import { seasonalMoodTestQuestions } from "@/data/seasonalMoodTestQuestions";
 
-export default function FriendshipCompatibilityTest() {
+export default function SeasonalMoodTestTest() {
   const [, setLocation] = useLocation();
   const [hasStarted, setHasStarted] = useState(false);
   const [currentStep, setCurrentStep] = useState(0);
@@ -18,9 +18,9 @@ export default function FriendshipCompatibilityTest() {
     setHasStarted(true);
     if (typeof window !== "undefined" && (window as any).gtag) {
       (window as any).gtag('event', 'test_started', {
-        test_id: "friendshipCompatibility",
-        options_count: friendshipCompatibilityQuestions[0]?.options?.length || 2,
-        questions_count: friendshipCompatibilityQuestions.length
+        test_id: "seasonalMoodTest",
+        options_count: seasonalMoodTestQuestions[0]?.options?.length || 2,
+        questions_count: seasonalMoodTestQuestions.length
       });
     }
   };
@@ -40,11 +40,11 @@ export default function FriendshipCompatibilityTest() {
     }
 
     setTimeout(() => {
-      if (currentStep < friendshipCompatibilityQuestions.length - 1) {
+      if (currentStep < seasonalMoodTestQuestions.length - 1) {
         setCurrentStep(curr => curr + 1);
       } else {
         const totalScore = newHistory.reduce((a, b) => a + b, 0);
-        setLocation("/friendshipCompatibility-results?score=" + totalScore);
+        setLocation("/seasonalMoodTest-results?score=" + totalScore);
       }
     }, 300);
   };
@@ -55,8 +55,8 @@ export default function FriendshipCompatibilityTest() {
     }
   };
 
-  const question = friendshipCompatibilityQuestions[currentStep];
-  const progress = Math.round(((currentStep + 1) / friendshipCompatibilityQuestions.length) * 100);
+  const question = seasonalMoodTestQuestions[currentStep];
+  const progress = Math.round(((currentStep + 1) / seasonalMoodTestQuestions.length) * 100);
 
   // Interstitial ad screen at midpoint
   if (showInterstitial) {
@@ -77,21 +77,21 @@ export default function FriendshipCompatibilityTest() {
 
   return (
     <div className="min-h-screen bg-pink-50/30">
-      <SEO title="너와 나의 우정, 얼마나 잘 맞을까?" description="너와 친구의 우정이 얼마나 잘 맞는지 알아보는 심리 테스트! 12개의 질문에 답하면, 너희의 우정 궁합이 어떤지 알 수 있어. 친구와 함께 공유해서 서로의 결과를 비교해보자!" url="https://mbtifinder.com/friendshipCompatibility-test" keywords="PERSONALITY, 너와, 나의, 우정,, 얼마나, 잘, 맞을까?" />
+      <SEO title="당신의 계절별 감정 상태는?" description="계절에 따라 감정이 어떻게 변하는지 궁금하지 않아? 이 테스트를 통해 당신의 계절별 감정 상태를 확인해보고, 나와 비슷한 친구들과 공유해봐!" url="https://mbtifinder.com/seasonalMoodTest-test" keywords="PERSONALITY, 당신의, 계절별, 감정, 상태는?" />
       <Navigation />
       {!hasStarted ? (
         <main className="flex-grow max-w-3xl mx-auto w-full px-4 py-12 pb-24 flex flex-col items-center">
           <div className="bg-white/90 backdrop-blur-sm rounded-[2rem] p-8 md:p-12 shadow-xl border border-white/60 flex-col justify-center text-center w-full mb-10">
-            <div className="text-6xl mb-6">🤝</div>
-            <h1 className="text-3xl md:text-5xl font-extrabold mb-6 tracking-tight text-neutral-900">너와 나의 우정, 얼마나 잘 맞을까?</h1>
-            <p className="text-lg md:text-xl text-neutral-500 mb-10 leading-relaxed">우정의 진실을 알아보자!</p>
+            <div className="text-6xl mb-6">🍂</div>
+            <h1 className="text-3xl md:text-5xl font-extrabold mb-6 tracking-tight text-neutral-900">당신의 계절별 감정 상태는?</h1>
+            <p className="text-lg md:text-xl text-neutral-500 mb-10 leading-relaxed">어떤 계절에 더 우울해지거나 행복한지 알아보자!</p>
             <Button onClick={handleStart} size="lg" className="w-full md:w-auto h-16 text-xl rounded-full px-16 bg-gradient-to-r from-pink-400 via-purple-400 to-indigo-400 hover:from-pink-500 hover:via-purple-500 hover:to-indigo-500 text-white shadow-xl hover:shadow-2xl transition-all border-2 border-white/50">
               지금 바로 알아보기 👉
             </Button>
           </div>
           <div className="bg-white/60 backdrop-blur-sm border border-white/60 rounded-2xl p-8 text-left w-full mt-8 prose prose-neutral max-w-none">
             <h2 className="text-xl font-bold mb-4">💡 이 테스트에 대하여</h2>
-            <p className="text-neutral-600 mb-4">너와 나의 우정, 얼마나 잘 맞을까?는 당신의 심리를 깊이 있게 분석합니다. 너와 친구의 우정이 얼마나 잘 맞는지 알아보는 심리 테스트! 12개의 질문에 답하면, 너희의 우정 궁합이 어떤지 알 수 있어. 친구와 함께 공유해서 서로의 결과를 비교해보자!</p>
+            <p className="text-neutral-600 mb-4">당신의 계절별 감정 상태는?는 당신의 심리를 깊이 있게 분석합니다. 계절에 따라 감정이 어떻게 변하는지 궁금하지 않아? 이 테스트를 통해 당신의 계절별 감정 상태를 확인해보고, 나와 비슷한 친구들과 공유해봐!</p>
             <p className="text-neutral-600 mb-6">총 12개의 문항으로 이루어져 있으며, 직관적으로 가장 먼저 떠오르는 답변을 선택하는 것이 가장 정확합니다.</p>
           </div>
           <AdSenseBlock adSlot="1122334455" />
@@ -104,7 +104,7 @@ export default function FriendshipCompatibilityTest() {
                 <div className="bg-gradient-to-r from-pink-400 via-purple-400 to-indigo-400 h-2.5 rounded-full transition-all duration-500" style={{ width: progress + "%" }}></div>
               </div>
               <p className="text-sm font-semibold tracking-wider text-pink-500 mt-3 text-center">
-                {currentStep + 1} / {friendshipCompatibilityQuestions.length}
+                {currentStep + 1} / {seasonalMoodTestQuestions.length}
               </p>
             </div>
           </div>
@@ -117,7 +117,7 @@ export default function FriendshipCompatibilityTest() {
                     Q{currentStep + 1}
                   </div>
                   <h2 className="text-2xl md:text-[1.7rem] font-bold text-neutral-800 leading-snug tracking-tight break-keep">
-                    {question?.question || question?.questionText || "너와 나의 우정, 얼마나 잘 맞을까?"}
+                    {question?.question || question?.questionText || "당신의 계절별 감정 상태는?"}
                   </h2>
                 </div>
                 <div className="space-y-4">
