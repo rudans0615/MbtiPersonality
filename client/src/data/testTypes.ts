@@ -17,6 +17,48 @@ export interface TestType {
 
 export const testTypes: TestType[] = [
   {
+    id: "friendshipVibes1234",
+    category: "PERSONALITY",
+    title: "너의 우정 스타일을 알아보자!",
+    subtitle: "어떤 친구들과 잘 어울리게 될까?",
+    description: "네가 어떤 스타일의 친구를 좋아하는지, 또 그런 친구들이 너한테 어떤 영향을 미치는지 알아보는 재미있는 테스트야. 마음속에 있는 너의 우정 감성을 꺼내보자!",
+    emoji: "👭",
+    color: "from-purple-500 to-pink-500",
+    duration: "약 3분",
+    questions: 12,
+    href: "/friendshipVibes1234-test",
+    features: ["AI 맞춤 분석", "나만의 결과지", "궁합 확인"],
+    isAvailable: true
+  },
+  {
+    id: "shoppingHabit2023",
+    category: "FUN",
+    title: "당신의 숨겨진 쇼핑 스타일은?",
+    subtitle: "당신은 어떤 소비 형태로 지갑을 지킬까?",
+    description: "생활 속에서 당신의 쇼핑 습관을 살펴보며, 평소의 소비 성향을 파악해보세요! 이 테스트를 통해 자신의 쇼핑 스타일을 발견하고, 친구들과 공유해보는 것도 재미있을 거예요.",
+    emoji: "🛍️",
+    color: "from-purple-500 to-pink-500",
+    duration: "약 3분",
+    questions: 8,
+    href: "/shoppingHabit2023-test",
+    features: ["AI 맞춤 분석", "나만의 결과지", "궁합 확인"],
+    isAvailable: true
+  },
+  {
+    id: "foodPreference2023",
+    category: "FUN",
+    title: "너의 배달앱 최애 메뉴는?",
+    subtitle: "당신의 진짜 취향을 파헤쳐보자!",
+    description: "배달의 민족, 요기요, 또는 쿠팡이츠에서 어떤 메뉴를 가장 많이 시켜 먹는지 궁금하지? 이 테스트를 통해 너의 먹방 취향을 알아보자! 친구들과 공유하고 나와 비슷한 취향인 사람들을 찾아보는 것도 재밌을 거야!",
+    emoji: "🍕",
+    color: "from-purple-500 to-pink-500",
+    duration: "약 3분",
+    questions: 8,
+    href: "/foodPreference2023-test",
+    features: ["AI 맞춤 분석", "나만의 결과지", "궁합 확인"],
+    isAvailable: true
+  },
+  {
     id: "travelFriendCompatibility",
     category: "FUN",
     title: "내 MBTI로 알아보는 최애 여행지 친구 궁합✈️",
