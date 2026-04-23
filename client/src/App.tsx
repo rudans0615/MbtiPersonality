@@ -33,6 +33,12 @@ import SocialMediaHabitsTestTest from "@/pages/socialMediaHabitsTest-test";
 import SocialMediaHabitsTestResults from "@/pages/socialMediaHabitsTest-results";
 import TravelFriendCompatibilityTest from "@/pages/travelFriendCompatibility-test";
 import TravelFriendCompatibilityResults from "@/pages/travelFriendCompatibility-results";
+import FoodPreference2023Test from "@/pages/foodPreference2023-test";
+import FoodPreference2023Results from "@/pages/foodPreference2023-results";
+import ShoppingHabit2023Test from "@/pages/shoppingHabit2023-test";
+import ShoppingHabit2023Results from "@/pages/shoppingHabit2023-results";
+import FriendshipVibes1234Test from "@/pages/friendshipVibes1234-test";
+import FriendshipVibes1234Results from "@/pages/friendshipVibes1234-results";
 import NotFound from "@/pages/not-found";
 
 import Footer from "@/components/Footer";
@@ -70,6 +76,12 @@ function Router() {
       <Route path="/socialMediaHabitsTest-results" component={SocialMediaHabitsTestResults} />
       <Route path="/travelFriendCompatibility-test" component={TravelFriendCompatibilityTest} />
       <Route path="/travelFriendCompatibility-results" component={TravelFriendCompatibilityResults} />
+      <Route path="/foodPreference2023-test" component={FoodPreference2023Test} />
+      <Route path="/foodPreference2023-results" component={FoodPreference2023Results} />
+      <Route path="/shoppingHabit2023-test" component={ShoppingHabit2023Test} />
+      <Route path="/shoppingHabit2023-results" component={ShoppingHabit2023Results} />
+      <Route path="/friendshipVibes1234-test" component={FriendshipVibes1234Test} />
+      <Route path="/friendshipVibes1234-results" component={FriendshipVibes1234Results} />
       <Route component={NotFound} />
     </Switch>
   );
