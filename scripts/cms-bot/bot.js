@@ -36,7 +36,11 @@ bot.setMyCommands([
   { command: 'newblog', description: 'SEO 블로그 칼럼 자동 작성 및 배포 (예: /newblog INFP 연애)' },
 ]);
 
-bot.sendMessage(process.env.ADMIN_CHAT_ID || '', '🤖 콘텐츠 자동화 봇이 가동되었습니다.\n- 💡 /추천 : 요즘 유행하는 바이럴 테스트 기획안 받기\n- 🚀 /newtest [주제] : 기획안으로 테스트 자동배포 시작\n- ✍️ /newblog [주제] : 구글 SEO 타겟 심리학 칼럼 작성');
+bot.sendMessage(process.env.ADMIN_CHAT_ID || '', `🤖 콘텐츠 자동화 봇이 가동되었습니다.
+- 💡 /추천 : 요즘 유행하는 바이럴 테스트 기획안 스캔
+- 🚀 /newtest [주제] : 테스트 1개 기획/디자인/배포
+- 📦 /batch [숫자] : 여러 개의 테스트를 한 번에 묶음 자동 배포
+- ✍️ /newblog [주제] : 구글 SEO 타겟 심리학 칼럼 발행`);
 
 // DEBUG: Log all incoming messages for diagnosis
 bot.on('message', (msg) => {
