@@ -159,6 +159,7 @@ bot.onText(/\/(newtest|newtes)\s+(.+)/, async (msg, match) => {
   "description": "테스트 소개 문구",
   "emoji": "대표 이모지 1개",
   "seoArticle": "이 테스트의 심리학적 배경, 추천 대상, 분석 원리를 다루는 500자 이상의 구체적이고 전문적인 칼럼 텍스트 (반드시 문단 나누기 \n\n 포함)",
+  "promotionalCopy": "인스타 피드나 틱톡에 테스트를 홍보할 때 쓸 10~30대 타겟의 짧고 찰진 복붙용 멘트 (예: 뼈때림 주의 💥 내 번아웃 지수는 몇 프로일까? 친구 소환!)",
   "questions": [
     {
       "question": "구체적 상황이 담긴 질문 (반드시 ${targetQuestions}개 작성)",
@@ -267,14 +268,18 @@ JSON만 출력해. 다른 텍스트 절대 금지.`
         });
         
         bot.sendMessage(chatId, `
-📋 **[결재 요청] 신규 테스트 PR이 생성되었습니다!**
+✅ **[신규 테스트 배포 완료]** ${aiData.title}
 
-📌 테스트명: ${aiData.title}
-🔗 결재 링크: ${pr.data.html_url}
+👇 **즉시 복붙 가능한 인스타 업로드용 멘트:**
+"${aiData.promotionalCopy || aiData.description}"
 
-👆 위 링크에서 내용 확인 후:
-  ✅ 승인 → **Merge pull request** 클릭 → 자동 배포
-  ❌ 거절 → **Close pull request** 클릭`);
+📸 **홍보용 이미지 다운로드 링크:**
+- [인스타 스토리용 (9:16)](https://mbtifinder.com/api/og?testId=${aiData.testId}&type=story)
+- [인스타 피드용 (1:1)](https://mbtifinder.com/api/og?testId=${aiData.testId}&type=feed)
+- [카톡 공유용 (16:9)](https://mbtifinder.com/api/og?testId=${aiData.testId}&type=share)
+
+🔗 **결재 링크:** ${pr.data.html_url}
+👆 위 링크에서 내용 확인 후 **Merge pull request** 클릭 시 자동 배포됩니다.`);
       } catch (prError) {
         bot.sendMessage(chatId, `⚠️ PR 생성 실패: ${prError.message}\n(브랜치 ${branchName}은 정상 푸시됨)`);
       }
@@ -397,7 +402,11 @@ JSON만 출력. 다른 텍스트 금지.`
 
       const { injectCode } = await import('./developerAgent.js');
       await injectCode(aiData);
-      successList.push(aiData.title);
+      successList.push({
+        title: aiData.title,
+        testId: aiData.testId,
+        promo: aiData.promotionalCopy || aiData.description
+      });
 
     } catch (err) {
       console.error(`Batch item ${i + 1} failed:`, err);
@@ -424,9 +433,22 @@ JSON만 출력. 다른 텍스트 금지.`
           title: `[AI Batch] ${successList.length} new tests`,
           head: branchName,
           base: 'main',
-          body: `## AI Batch Results\n\n### Success (${successList.length})\n${successList.map((t, i) => `${i + 1}. ${t}`).join('\n')}\n\n${failList.length > 0 ? `### Failed (${failList.length})\n${failList.join('\n')}` : ''}`
+          body: `## AI Batch Results\n\n### Success (${successList.length})\n${successList.map((t, i) => `${i + 1}. ${t.title}`).join('\n')}\n\n${failList.length > 0 ? `### Failed (${failList.length})\n${failList.join('\n')}` : ''}`
         });
-        bot.sendMessage(chatId, `\n[Batch Complete!]\n\nSuccess: ${successList.length}\n${successList.map((t, i) => `  ${i + 1}. ${t}`).join('\n')}\n${failList.length > 0 ? `\nFailed: ${failList.length}` : ''}\n\nPR: ${pr.data.html_url}\n\nMerge to deploy!`);
+        bot.sendMessage(chatId, `
+✅ **[Batch Complete!]** ${successList.length}개의 테스트가 배포 대기 중입니다.
+
+${successList.map((t, i) => `
+🔥 ${i + 1}. **${t.title}**
+👇 인스타 업로드 멘트:
+"${t.promo}"
+📸 이미지:
+- [스토리용](https://mbtifinder.com/api/og?testId=${t.testId}&type=story) | [피드용](https://mbtifinder.com/api/og?testId=${t.testId}&type=feed) | [카톡용](https://mbtifinder.com/api/og?testId=${t.testId}&type=share)
+`).join('\n')}
+${failList.length > 0 ? `\n❌ Failed: ${failList.length}건\n${failList.join('\n')}` : ''}
+
+🔗 **PR 결재 링크:** ${pr.data.html_url}
+👆 위 링크에서 승인(Merge) 시 자동 배포됩니다.`);
       } catch (prErr) {
         const errMsg = prErr?.response?.data?.message || prErr?.message || JSON.stringify(prErr);
         bot.sendMessage(chatId, `⚠️ PR 생성 실패: ${errMsg}\n\n(브랜치 ${branchName}은 정상 푸시됨. GitHub에서 수동 PR 가능)`);
