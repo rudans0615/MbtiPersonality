@@ -281,6 +281,7 @@ JSON만 출력해. 다른 텍스트 절대 금지.`
 - [인스타 스토리용 (9:16)](https://mbtifinder.com/api/og?testId=${aiData.testId}&type=story)
 - [인스타 피드용 (1:1)](https://mbtifinder.com/api/og?testId=${aiData.testId}&type=feed)
 - [카톡 공유용 (16:9)](https://mbtifinder.com/api/og?testId=${aiData.testId}&type=share)
+*(※ 주의: 위 이미지 링크들은 아래 PR을 승인(Merge)하고 Vercel 배포가 끝나야만 정상적으로 보입니다!)*
 
 🔗 **결재 링크:** ${pr.data.html_url}
 👆 위 링크에서 내용 확인 후 **Merge pull request** 클릭 시 자동 배포됩니다.`);
@@ -449,6 +450,8 @@ ${successList.map((t, i) => `
 📸 이미지:
 - [스토리용](https://mbtifinder.com/api/og?testId=${t.testId}&type=story) | [피드용](https://mbtifinder.com/api/og?testId=${t.testId}&type=feed) | [카톡용](https://mbtifinder.com/api/og?testId=${t.testId}&type=share)
 `).join('\n')}
+*(※ 주의: 위 이미지 링크들은 아래 PR을 승인(Merge)해야만 정상적으로 열립니다!)*
+
 ${failList.length > 0 ? `\n❌ Failed: ${failList.length}건\n${failList.join('\n')}` : ''}
 
 🔗 **PR 결재 링크:** ${pr.data.html_url}
