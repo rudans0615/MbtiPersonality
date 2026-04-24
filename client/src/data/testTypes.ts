@@ -17,6 +17,48 @@ export interface TestType {
 
 export const testTypes: TestType[] = [
   {
+    id: "snsHabitTest2024",
+    category: "FUN",
+    title: "너의 SNS 중독도는 몇 %?",
+    subtitle: "당신의 SNS 습관을 알아보자!",
+    description: "SNS가 생활의 일부가 된 요즘, 내 SNS 중독도는 얼마나 될까? 매일 손에서 스마트폰을 놓지 못하는 너, 직장에서의 대화 주제는 항상 SNS 이야기! 이 테스트를 통해 너의 SNS 습관을 체크해보자. 과연 얼마나 중독됐을까? 결과를 친구들과 공유하고 모두 함께 웃어봐!",
+    emoji: "📱",
+    color: "from-purple-500 to-pink-500",
+    duration: "약 3분",
+    questions: 8,
+    href: "/snsHabitTest2024-test",
+    features: ["AI 맞춤 분석", "나만의 결과지", "궁합 확인"],
+    isAvailable: true
+  },
+  {
+    id: "workLifeMood1234",
+    category: "CAREER",
+    title: "당신의 직장 생활 적응력은 몇 점?",
+    subtitle: "상사와의 케미도 체크해보세요!",
+    description: "회사를 다니면서 겪는 다양한 상황에 따라 내 직장 생활 적응력을 알아보는 테스트! 당신은 어떤 유형인지, 또 상사와의 관계는 어떤지 확인해보세요.",
+    emoji: "💼",
+    color: "from-purple-500 to-pink-500",
+    duration: "약 3분",
+    questions: 8,
+    href: "/workLifeMood1234-test",
+    features: ["AI 맞춤 분석", "나만의 결과지", "궁합 확인"],
+    isAvailable: true
+  },
+  {
+    id: "loveVibe2023",
+    category: "LOVE",
+    title: "너의 연애 스타일은 뭐야?",
+    subtitle: "당신의 사랑 방식을 파헤쳐봐요!",
+    description: "연애에 대한 나만의 스타일, 알고 계신가요? 이 테스트를 통해 나의 연애 스타일과 감정 트렌드를 알아보고, 친구들과 공유해보세요. 우린 모두 다르니까요!",
+    emoji: "❤️",
+    color: "from-purple-500 to-pink-500",
+    duration: "약 3분",
+    questions: 8,
+    href: "/loveVibe2023-test",
+    features: ["AI 맞춤 분석", "나만의 결과지", "궁합 확인"],
+    isAvailable: true
+  },
+  {
     id: "workLifeBalanceTest",
     category: "CAREER",
     title: "너의 직장 생활, 적성 테스트!",

@@ -37,6 +37,12 @@ import SeasonalMoodTestTest from "@/pages/seasonalMoodTest-test";
 import SeasonalMoodTestResults from "@/pages/seasonalMoodTest-results";
 import WorkLifeBalanceTestTest from "@/pages/workLifeBalanceTest-test";
 import WorkLifeBalanceTestResults from "@/pages/workLifeBalanceTest-results";
+import LoveVibe2023Test from "@/pages/loveVibe2023-test";
+import LoveVibe2023Results from "@/pages/loveVibe2023-results";
+import WorkLifeMood1234Test from "@/pages/workLifeMood1234-test";
+import WorkLifeMood1234Results from "@/pages/workLifeMood1234-results";
+import SnsHabitTest2024Test from "@/pages/snsHabitTest2024-test";
+import SnsHabitTest2024Results from "@/pages/snsHabitTest2024-results";
 import NotFound from "@/pages/not-found";
 
 import Footer from "@/components/Footer";
@@ -78,6 +84,12 @@ function Router() {
       <Route path="/seasonalMoodTest-results" component={SeasonalMoodTestResults} />
       <Route path="/workLifeBalanceTest-test" component={WorkLifeBalanceTestTest} />
       <Route path="/workLifeBalanceTest-results" component={WorkLifeBalanceTestResults} />
+      <Route path="/loveVibe2023-test" component={LoveVibe2023Test} />
+      <Route path="/loveVibe2023-results" component={LoveVibe2023Results} />
+      <Route path="/workLifeMood1234-test" component={WorkLifeMood1234Test} />
+      <Route path="/workLifeMood1234-results" component={WorkLifeMood1234Results} />
+      <Route path="/snsHabitTest2024-test" component={SnsHabitTest2024Test} />
+      <Route path="/snsHabitTest2024-results" component={SnsHabitTest2024Results} />
       <Route component={NotFound} />
     </Switch>
   );
