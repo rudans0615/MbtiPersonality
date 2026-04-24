@@ -33,9 +33,10 @@ bot.setMyCommands([
   { command: 'suggest', description: '요즘 유행하는 바이럴 테스트 추천받기' },
   { command: 'newtest', description: '신규 테스트 자동 생성 및 배포 (예: /newtest 탕후루 취향)' },
   { command: 'batch', description: '한번에 여러 테스트 자동 생성 (예: /batch 3)' },
+  { command: 'newblog', description: 'SEO 블로그 칼럼 자동 작성 및 배포 (예: /newblog INFP 연애)' },
 ]);
 
-bot.sendMessage(process.env.ADMIN_CHAT_ID || '', '🤖 콘텐츠 자동화 봇이 가동되었습니다.\n- 💡 /추천 : 요즘 유행하는 바이럴 테스트 기획안 받기\n- 🚀 /newtest [주제] : 기획안으로 테스트 자동배포 시작');
+bot.sendMessage(process.env.ADMIN_CHAT_ID || '', '🤖 콘텐츠 자동화 봇이 가동되었습니다.\n- 💡 /추천 : 요즘 유행하는 바이럴 테스트 기획안 받기\n- 🚀 /newtest [주제] : 기획안으로 테스트 자동배포 시작\n- ✍️ /newblog [주제] : 구글 SEO 타겟 심리학 칼럼 작성');
 
 // DEBUG: Log all incoming messages for diagnosis
 bot.on('message', (msg) => {
@@ -434,3 +435,160 @@ JSON만 출력. 다른 텍스트 금지.`
     bot.sendMessage(chatId, `❌ 모든 테스트 생성에 실패했습니다.`);
   }
 });
+
+// 블로그 생성 및 배포 공통 함수
+async function generateAndPublishBlog(chatId, topic) {
+  let promptTopic = topic;
+  
+  if (!topic) {
+    // 자동 모드: 주제가 없으면 알아서 트렌디한 롱테일 키워드 생성
+    const angles = [
+      'MBTI 연애 궁합 팩폭', '직장생활 인간관계 스트레스', '2030 여성 자존감 및 멘탈케어',
+      '회피형/불안형 애착유형 연애', '소개팅/썸 카톡 심리', '테토-에겐 호르몬 심리',
+      '번아웃 증후군 극복', '무기력증과 도파민 중독'
+    ];
+    const angle = angles[Math.floor(Math.random() * angles.length)];
+    promptTopic = `"${angle}"와 관련된, 구글 검색량이 많을 것 같은 세부적인 롱테일 키워드(예: INFP가 읽씹하는 진짜 이유, 회피형 남친과 잘 지내는 법 등) 중 하나를 임의로 선정하여`;
+    bot.sendMessage(chatId, `🤖 [Auto-Pilot] 오늘의 자동 블로그 포스팅을 시작합니다.\n선정된 테마: ${angle}\n(약 1~2분 소요)`);
+  } else {
+    bot.sendMessage(chatId, `✍️ [${topic}] 주제로 SEO 최적화 블로그 칼럼 작성을 시작합니다...\n(약 1~2분 소요)`);
+  }
+
+  try {
+    const blogCompletion = await openai.chat.completions.create({
+      model: "gpt-4o-mini",
+      temperature: 0.85,
+      response_format: { type: "json_object" },
+      messages: [
+        {
+          role: "system",
+          content: `너는 심리학, MBTI, 연애 심리 분야의 전문 칼럼니스트이자 완벽한 구글 SEO 최적화 전문가야.
+독자들이 흥미롭게 읽으면서도 구글 검색 상위 노출 기준을 완벽하게 만족하는 장문(1,500자 이상)의 블로그 포스트를 작성해야 해.
+
+[SEO 블로그 작성 절대 규칙]
+1. H2(<h2>)와 H3(<h3>) 태그를 명확한 계층 구조로 사용하여 문단을 나누어 가독성을 높일 것.
+2. 각 H2, H3 제목 아래에는 충분히 길고 깊이 있는 내용의 문단(<p>)을 작성할 것.
+3. 리스트(<ul>, <li>), 강조(<strong>) 등을 적절히 사용하여 글의 가독성을 높일 것.
+4. "이 글에서는~", "안녕하세요~" 같은 뻔한 서론 금지. 즉시 호기심을 유발하는 본론으로 들어갈 것.
+5. 전문적인 심리학 지식과 대중적인 공감 포인트(예시, 비유)를 적절히 믹스할 것.
+6. 글의 전체 분량은 최소 1,500자 이상이 되도록 매우 상세하게 작성할 것.
+
+[JSON 출력 형식 - 반드시 준수]
+{
+  "title": "검색엔진에서 클릭을 유도하는 후킹하고 명확한 제목 (50자 이내)",
+  "excerpt": "검색결과에 노출될 매력적인 메타 디스크립션 요약 (100자 내외)",
+  "category": "심층분석 | 관계심리 | 커리어 | 호르몬 성격학 중 가장 어울리는 것 1택",
+  "tags": ["키워드1", "키워드2", "키워드3", "키워드4"],
+  "content": "HTML 형태의 본문 코드 (반드시 <h2>, <h3>, <p>, <ul>, <strong> 등을 사용하여 구조화할 것. 백틱(\`) 사용 금지, 쌍따옴표 이스케이프 철저히 할 것.)"
+}
+
+JSON 형식 외에 어떤 말도 출력하지 마.`
+        },
+        {
+          role: "user",
+          content: `다음 주제로 검색엔진 상위 노출을 노리는 깊이 있는 심리학 칼럼을 작성해줘: ${promptTopic}`
+        }
+      ]
+    });
+
+    const aiData = JSON.parse(blogCompletion.choices[0].message.content);
+    
+    bot.sendMessage(chatId, `✅ 칼럼 작성 완료! [${aiData.title}]\n로컬 코드에 주입을 시작합니다...`);
+
+    const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
+    const { exec } = await import('child_process');
+    const util = await import('util');
+    const execPromise = util.promisify(exec);
+    
+    try {
+      await execPromise('git stash && git checkout main && git pull origin main', { cwd: repoRoot });
+    } catch (e) {
+      console.error('Git update error:', e);
+    }
+
+    const { injectBlogPost } = await import('./blogAgent.js');
+    const newId = await injectBlogPost(aiData);
+
+    bot.sendMessage(chatId, `⚙️ 코드 주입 완료! GitHub PR(결재 요청)을 생성합니다...`);
+
+    const branchName = `feat/blog-${newId}-${Date.now()}`;
+    
+    exec(`git checkout -b ${branchName} && git add -A && git commit -m "docs(blog): add post ${newId} - ${aiData.title}" && git push origin ${branchName}`, { cwd: repoRoot }, async (error, stdout, stderr) => {
+      exec(`git checkout main`, { cwd: repoRoot });
+      
+      if (error) {
+         bot.sendMessage(chatId, `⚠️ GitHub 전송 실패.\nSTDERR: ${stderr}\nERROR: ${error.code}`);
+         return;
+      }
+      
+      try {
+        const pr = await octokit.pulls.create({
+          owner,
+          repo,
+          title: `📝 [신규 블로그] ${aiData.title}`,
+          head: branchName,
+          base: 'main',
+          body: `## 📋 SEO 블로그 칼럼 결재 요청\n\n- **제목**: ${aiData.title}\n- **요약**: ${aiData.excerpt}\n- **카테고리**: ${aiData.category}\n- **태그**: ${aiData.tags.join(', ')}\n\n---\n> ✅ **승인(Merge) 시 자동으로 사이트에 배포되며, 구글 검색엔진에 노출됩니다.**`
+        });
+        
+        bot.sendMessage(chatId, `
+📝 **[블로그 결재 요청] 새 칼럼 PR이 생성되었습니다!**
+
+📌 제목: ${aiData.title}
+🔗 결재 링크: ${pr.data.html_url}
+
+👆 위 링크에서 내용 확인 후 Merge 버튼을 눌러 배포하세요!`);
+      } catch (prError) {
+        bot.sendMessage(chatId, `⚠️ PR 생성 실패: ${prError.message}`);
+      }
+    });
+
+  } catch (error) {
+    console.error(error);
+    bot.sendMessage(chatId, `❌ 에러 발생: ${error.message}`);
+  }
+}
+
+// /newblog 명령어 핸들러 (수동 트리거)
+bot.onText(/\/(newblog)\s+(.+)/, async (msg, match) => {
+  const chatId = msg.chat.id;
+  const topic = match[2];
+  await generateAndPublishBlog(chatId, topic);
+});
+
+// 매일 정해진 시간(예: 오전 10시)에 자동으로 블로그를 발행하는 스케줄러
+function scheduleDailyBlog() {
+  const now = new Date();
+  const targetHour = 10; // 오전 10시
+  const targetMinute = 0;
+  
+  const nextRun = new Date(now.getFullYear(), now.getMonth(), now.getDate(), targetHour, targetMinute, 0, 0);
+  
+  // 이미 오늘 10시가 지났다면 내일 10시로 설정
+  if (now.getTime() >= nextRun.getTime()) {
+    nextRun.setDate(nextRun.getDate() + 1);
+  }
+  
+  const delay = nextRun.getTime() - now.getTime();
+  
+  console.log(`🤖 Auto-Pilot 스케줄러 세팅 완료: 다음 포스팅까지 ${Math.floor(delay / 1000 / 60)}분 남았습니다.`);
+  
+  setTimeout(() => {
+    const adminChatId = process.env.ADMIN_CHAT_ID;
+    if (adminChatId) {
+      generateAndPublishBlog(adminChatId, null);
+    }
+    
+    // 이후에는 24시간마다 반복
+    setInterval(() => {
+      if (adminChatId) {
+        generateAndPublishBlog(adminChatId, null);
+      }
+    }, 24 * 60 * 60 * 1000);
+    
+  }, delay);
+}
+
+// 스케줄러 시작
+scheduleDailyBlog();
+
