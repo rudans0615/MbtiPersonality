@@ -223,16 +223,26 @@ JSON만 출력해. 다른 텍스트 절대 금지.`
 
     // 2. 개발자 에이전트 파일 생셩 및 주입 (Full-stack AST Code Injection)
     bot.sendMessage(chatId, `🚀 기획안 승인 완료! 풀스택 에이전트가 로컬 React 코드를 자동 작성 중입니다...`);
+    
+    const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
+    const { exec } = await import('child_process');
+    const util = await import('util');
+    const execPromise = util.promisify(exec);
+    
+    try {
+      await execPromise('git stash && git checkout main && git pull origin main', { cwd: repoRoot });
+    } catch (e) {
+      console.error('Git update error:', e);
+    }
+
     const { injectCode } = await import('./developerAgent.js');
     await injectCode(aiData);
 
-    const { exec } = await import('child_process');
     bot.sendMessage(chatId, `⚙️ 코드 작성 완료! GitHub PR(결재 요청)을 생성합니다...`);
 
     const branchName = `feat/ai-${aiData.testId}-${Date.now()}`;
-    const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
     
-    exec(`git checkout main && git pull origin main && git checkout -b ${branchName} && git add -A && git commit -m "feat(ai-content): add new test ${aiData.title}" && git push origin ${branchName}`, { cwd: repoRoot }, async (error, stdout, stderr) => {
+    exec(`git checkout -b ${branchName} && git add -A && git commit -m "feat(ai-content): add new test ${aiData.title}" && git push origin ${branchName}`, { cwd: repoRoot }, async (error, stdout, stderr) => {
       // 작업 후 항상 main 브랜치로 복귀
       exec(`git checkout main`, { cwd: repoRoot });
       
@@ -280,6 +290,17 @@ bot.onText(/\/batch\s*(\d*)/, async (msg, match) => {
   const count = Math.min(parseInt(match[1] || '3', 10), 5); // 최대 5개
 
   bot.sendMessage(chatId, `📦 [배치 모드] ${count}개의 신규 테스트를 자동 기획합니다...\n(테스트당 약 1분 소요, 총 ${count}분 예상)`);
+
+  const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
+  const { exec } = await import('child_process');
+  const util = await import('util');
+  const execPromise = util.promisify(exec);
+
+  try {
+    await execPromise('git stash && git checkout main && git pull origin main', { cwd: repoRoot });
+  } catch (e) {
+    console.error('Git update error:', e);
+  }
 
   const angles = [
     '연애/썸/소개팅/이별 감정',
@@ -385,11 +406,9 @@ JSON만 출력. 다른 텍스트 금지.`
   // 모든 테스트 생성 후 한번에 Git push + PR
   if (successList.length > 0) {
     bot.sendMessage(chatId, `\n�\ude80 ${successList.length}개 테스트 코드 작성 완료! GitHub PR 생성 중...`);
-    const { exec } = await import('child_process');
-    const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
     const branchName = `feat/ai-batch-${Date.now()}`;
 
-    exec(`git checkout main && git pull origin main && git checkout -b ${branchName} && git add -A && git commit -m "feat(ai-batch): add ${successList.length} new tests" && git push origin ${branchName}`, { cwd: repoRoot }, async (error, stdout, stderr) => {
+    exec(`git checkout -b ${branchName} && git add -A && git commit -m "feat(ai-batch): add ${successList.length} new tests" && git push origin ${branchName}`, { cwd: repoRoot }, async (error, stdout, stderr) => {
       exec(`git checkout main`, { cwd: repoRoot });
 
       if (error) {
