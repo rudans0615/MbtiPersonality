@@ -17,6 +17,48 @@ export interface TestType {
 
 export const testTypes: TestType[] = [
   {
+    id: "travelMood2023",
+    category: "FUN",
+    title: "지금 당신의 여행 스타일은?",
+    subtitle: "내가 찾는 힐링의 순간은 어떤 걸까?",
+    description: "바쁜 일상 속에서 잠깐의 여유와 힐링이 필요한 순간! 내 여행 스타일을 알아보고, 진정한 나만의 휴식법을 찾아보세요. 너무 다양한 방법들이 있으니, 당신에게 꼭 맞는 여행 방법을 발견하는 재미를 느껴보세요!",
+    emoji: "🌍",
+    color: "from-purple-500 to-pink-500",
+    duration: "약 3분",
+    questions: 8,
+    href: "/travelMood2023-test",
+    features: ["AI 맞춤 분석", "나만의 결과지", "궁합 확인"],
+    isAvailable: true
+  },
+  {
+    id: "socialMediaHabitTest2024",
+    category: "FUN",
+    title: "내가 어떤 SNS 중독자인지 알아보자!",
+    subtitle: "소셜 미디어 사용 습관 진단해볼 사람?",
+    description: "내 SNS 사용 스타일을 파헤쳐 볼 시간! 친구와 함께 공유하고, 제일 잘 맞는 유형을 찾아보세요. 내 SNS 중독이 어떤 모습인지 재밌게 알아볼 수 있어요!",
+    emoji: "📱",
+    color: "from-purple-500 to-pink-500",
+    duration: "약 3분",
+    questions: 12,
+    href: "/socialMediaHabitTest2024-test",
+    features: ["AI 맞춤 분석", "나만의 결과지", "궁합 확인"],
+    isAvailable: true
+  },
+  {
+    id: "shoppingMoodTest1234",
+    category: "FUN",
+    title: "당신의 쇼핑 기분은 어떤 타입?",
+    subtitle: "소비를 통해 드러나는 내 마음의 소리",
+    description: "너의 쇼핑 기분을 알아보자! 어떤 상황에서 소비를 하게 되면 나의 진짜 감정이 드러나는 걸까? 이 테스트를 통해 네가 어떤 소비 습관을 가지고 있는지, 그리고 그 기분에 따라 어떤 행동을 하는지 확인해보자. 친구들과 함께 해보고, 서로의 쇼핑 타입을 비교해보는 것도 재미있을 거야!",
+    emoji: "🛍️",
+    color: "from-purple-500 to-pink-500",
+    duration: "약 3분",
+    questions: 12,
+    href: "/shoppingMoodTest1234-test",
+    features: ["AI 맞춤 분석", "나만의 결과지", "궁합 확인"],
+    isAvailable: true
+  },
+  {
     id: "workLifeBalanceTest",
     category: "CAREER",
     title: "너의 직장 생활, 적성 테스트!",
