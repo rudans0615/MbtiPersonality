@@ -17,6 +17,20 @@ export interface TestType {
 
 export const testTypes: TestType[] = [
   {
+    id: "myPetHealingStyle",
+    category: "PERSONALITY",
+    title: "너와 내 반려동물의 힐링 조화 체크해볼까?",
+    subtitle: "누구보다 반려동물과의 힐링 스타일을 알고 싶다면?",
+    description: "너의 반려동물과의 소중한 시간을 통해 나의 힐링 스타일을 알아보자! 이 테스트는 너와 너의 반려동물 간의 조화를 분석해줄 거야. 테스트를 통해 힐링하는 방법과 나만의 휴식 스타일을 찾아보자!",
+    emoji: "🐾",
+    color: "from-purple-500 to-pink-500",
+    duration: "약 3분",
+    questions: 12,
+    href: "/myPetHealingStyle",
+    features: ["AI 맞춤 분석", "나만의 결과지", "궁합 확인"],
+    isAvailable: true
+  },
+  {
     id: "petStressRelief",
     category: "FUN",
     title: "너의 반려동물로 보는 스트레스 해소 유형은?",
