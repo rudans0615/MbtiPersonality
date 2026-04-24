@@ -111,7 +111,10 @@ function ResultsContent({ testId, testInfo, allKeys, resultsData, qLen }: any) {
           )}
 
           <div className="mt-12 mb-8">
-            <CoupangRecommend keyword={result.coupangKeyword || result.title} title={`🎀 ${result.title}를 위한 찰떡 추천템`} />
+            <CoupangRecommend 
+              keyword={result.coupangKeyword || result.title} 
+              title={result.coupangHook || `🎀 ${result.title}를 위한 찰떡 추천템`} 
+            />
           </div>
 
           <AdSenseBlock adSlot="9922334455" />

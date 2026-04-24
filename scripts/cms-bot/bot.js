@@ -174,7 +174,8 @@ bot.onText(/\/(newtest|newtes)\s+(.+)/, async (msg, match) => {
       "subtitle": "한줄 요약",
       "description": "해당 유형의 성격, 장단점, 연애스타일, 어울리는 사람 등을 다루는 300자 이상의 매우 상세하고 구체적인 설명",
       "characteristics": ["특징1", "특징2", "특징3", "특징4"],
-      "coupangKeyword": "쿠팡에서 실제 검색 가능한 상품 키워드"
+      "coupangKeyword": "고관여/고단가 제품 위주의 구체적인 구매 검색어 (예: 센트룸 멀티비타민, 오쏘몰 이뮨, 무선 마사지건, 고급 디퓨저 등). 단순 책/문구류 절대 금지.",
+      "coupangHook": "쿠팡 추천 영역 상단에 띄울 20자 내외의 구매 자극 후킹 멘트 (예: 스트레스 폭발 직전인 당신, 오늘 밤엔 딥슬립 꿀잠템 어때요?)"
     }
   }
 }
@@ -183,7 +184,7 @@ bot.onText(/\/(newtest|newtes)\s+(.+)/, async (msg, match) => {
 - [ ] 모든 question에 구체적 상황이 있는가? ("이런 경우" 류 없는가?)
 - [ ] 문법 오류가 없는가? ("어떤를", "것인가요" 등)
 - [ ] 10~30대 여성이 "ㅋㅋㅋ 이거 나" 할 만한 공감 포인트가 있는가?
-- [ ] results의 각 유형에 emoji, characteristics 배열, coupangKeyword가 있는가?
+- [ ] results의 각 유형에 emoji, characteristics 배열, coupangKeyword, coupangHook이 있는가?
 - [ ] 선택지가 자연스러운 구어체인가?
 
 JSON만 출력해. 다른 텍스트 절대 금지.`
