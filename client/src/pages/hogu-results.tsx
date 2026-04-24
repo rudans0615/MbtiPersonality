@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { ShareButtons } from "@/components/ShareButtons";
 import { calculateHoguLevel, hoguResults } from "@/data/hoguTestTypes";
 import { AdSenseBlock } from "@/components/AdSenseBlock";
+import RelatedTests from "@/components/RelatedTests";
 import { CoupangRecommend } from "@/components/CoupangRecommend";
 import { useABTesting } from "@/hooks/useABTesting";
 import { trackEvent } from "@/lib/analytics";

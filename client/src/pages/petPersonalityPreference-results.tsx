@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { CoupangRecommend } from "@/components/CoupangRecommend";
 import { ShareButtons } from "@/components/ShareButtons";
 import { AdSenseBlock } from "@/components/AdSenseBlock";
+import RelatedTests from "@/components/RelatedTests";
 import { calculatePetPersonalityPreferenceTestLevel, petPersonalityPreferenceResults } from "@/data/petPersonalityPreferenceTypes";
 import { Loader2, RotateCcw, Zap } from "lucide-react";
 

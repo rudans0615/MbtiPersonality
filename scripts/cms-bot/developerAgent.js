@@ -201,6 +201,7 @@ import { Button } from "@/components/ui/button";
 import { CoupangRecommend } from "@/components/CoupangRecommend";
 import { ShareButtons } from "@/components/ShareButtons";
 import { AdSenseBlock } from "@/components/AdSenseBlock";
+import RelatedTests from "@/components/RelatedTests";
 import { ResultImageCard } from "@/components/ResultImageCard";
 import { calculate${capitalizedId}Level, ${testId}Results } from "@/data/${testId}Types";
 import { ${testId}Questions } from "@/data/${testId}Questions";
@@ -232,8 +233,7 @@ export default function ${capitalizedResults}() {
   const allKeys = Object.keys(${testId}Results);
   const result = ${testId}Results[resultKey] || ${testId}Results[allKeys[0]] || { title: "\ubd84\uc11d \uc644\ub8cc", description: "\ub2f9\uc2e0\ub9cc\uc758 \ud2b9\ubcc4\ud55c \uacb0\uacfc\uc785\ub2c8\ub2e4!" };
 
-  // Cross-link: random 3 other tests
-  const otherTests = testTypes.filter(t => t.id !== "${testId}" && t.isAvailable).sort(() => Math.random() - 0.5).slice(0, 3);
+  // (Related tests are now handled by <RelatedTests />)
 
   if (isAnalyzing) {
     return (
@@ -346,27 +346,7 @@ export default function ${capitalizedResults}() {
           })}
         </div>
 
-        {/* Cross-link: Recommended other tests */}
-        {otherTests.length > 0 && (
-          <div className="mt-16 mb-8">
-            <div className="text-center mb-8">
-              <h3 className="text-2xl font-bold text-neutral-800 flex items-center justify-center">
-                <Sparkles className="mr-2 text-pink-400" size={24} />
-                \uc774\ub7f0 \ud14c\uc2a4\ud2b8\ub3c4 \uc7ac\ubc0c\uc5b4\uc694!
-              </h3>
-              <p className="text-neutral-500 mt-2">\uce5c\uad6c\ub4e4\uc774 \ub9ce\uc774 \ud574\ubcf8 \uc778\uae30 \ud14c\uc2a4\ud2b8</p>
-            </div>
-            <div className="grid sm:grid-cols-3 gap-4">
-              {otherTests.map((test) => (
-                <a key={test.id} href={test.href} className="block p-6 bg-white rounded-2xl border-2 border-white hover:border-pink-200 shadow-sm hover:shadow-md transition-all duration-300 transform hover:-translate-y-1 text-center no-underline">
-                  <div className="text-4xl mb-3">{test.emoji}</div>
-                  <h4 className="font-bold text-neutral-800 text-sm leading-snug mb-2">{test.title}</h4>
-                  <p className="text-xs text-pink-400 font-semibold">\ud14c\uc2a4\ud2b8 \ud558\ub7ec\uac00\uae30 \u2192</p>
-                </a>
-              ))}
-            </div>
-          </div>
-        )}
+        <RelatedTests currentTestId="${testId}" />
 
         <AdSenseBlock adSlot="1133557799" />
       </div>

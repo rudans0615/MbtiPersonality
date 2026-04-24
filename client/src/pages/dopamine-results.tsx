@@ -8,6 +8,7 @@ import { CoupangRecommend } from "@/components/CoupangRecommend";
 import { ShareButtons } from "@/components/ShareButtons";
 import Navigation from "@/components/Navigation";
 import { AdSenseBlock } from "@/components/AdSenseBlock";
+import RelatedTests from "@/components/RelatedTests";
 import { ResultImageCard } from "@/components/ResultImageCard";
 import { testTypes } from "@/data/testTypes";
 
@@ -283,31 +284,7 @@ export default function DopamineResults() {
           ))}
         </div>
 
-        {/* Cross-link: Recommended other tests */}
-        {(() => {
-          const otherTests = testTypes.filter(t => t.id !== "dopamine" && t.isAvailable).sort(() => Math.random() - 0.5).slice(0, 3);
-          if (otherTests.length === 0) return null;
-          return (
-            <div className="mt-16 mb-8">
-              <div className="text-center mb-8">
-                <h3 className="text-2xl font-bold text-neutral-800 flex items-center justify-center">
-                  <Sparkles className="mr-2 text-pink-400" size={24} />
-                  이런 테스트도 재밌어요!
-                </h3>
-                <p className="text-neutral-500 mt-2">친구들이 많이 해본 인기 테스트</p>
-              </div>
-              <div className="grid sm:grid-cols-3 gap-4">
-                {otherTests.map((test) => (
-                  <a key={test.id} href={test.href} className="block p-6 bg-white rounded-2xl border-2 border-white hover:border-pink-200 shadow-sm hover:shadow-md transition-all duration-300 transform hover:-translate-y-1 text-center no-underline">
-                    <div className="text-4xl mb-3">{test.emoji}</div>
-                    <h4 className="font-bold text-neutral-800 text-sm leading-snug mb-2">{test.title}</h4>
-                    <p className="text-xs text-pink-400 font-semibold">테스트 하러가기 →</p>
-                  </a>
-                ))}
-              </div>
-            </div>
-          );
-        })()}
+        <RelatedTests currentTestId="dopamine" />
 
         <AdSenseBlock adSlot="1133557799" />
       </div>
