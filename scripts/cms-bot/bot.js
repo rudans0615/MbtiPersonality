@@ -366,7 +366,17 @@ ${report.performance.coupangText}
 ${report.visual.storyboard.map(s => `  [${s.page}장] ${s.text} (${s.visualIdea})`).join('\n')}
 `;
 
-    bot.sendMessage(chatId, finalMessage, { parse_mode: 'Markdown' });
+    if (report.imageUrl) {
+      bot.sendPhoto(chatId, report.imageUrl, {
+        caption: finalMessage.length > 1024 ? "🎉 **[Antigravity Agency] 바이럴 마케팅 애셋 완성!** (내용이 길어 다음 메시지에 첨부합니다.)" : finalMessage,
+        parse_mode: 'Markdown'
+      });
+      if (finalMessage.length > 1024) {
+        bot.sendMessage(chatId, finalMessage, { parse_mode: 'Markdown' });
+      }
+    } else {
+      bot.sendMessage(chatId, finalMessage, { parse_mode: 'Markdown' });
+    }
 
   } catch (error) {
     console.error(error);

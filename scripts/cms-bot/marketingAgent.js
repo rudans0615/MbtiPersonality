@@ -109,6 +109,24 @@ export async function generateMarketingCampaign(testData, openai, progressCallba
 
   const visualReport = JSON.parse(visualCompletion.choices[0].message.content);
 
+  // 3-5. DALL-E 3를 이용한 인스타그램 배경/썸네일 이미지 자동 생성
+  if (progressCallback) progressCallback("📸 디자이너가 DALL-E 3를 활용해 카드뉴스 썸네일/배경 이미지를 그리고 있습니다 (약 15초 소요)...");
+  
+  let imageUrl = null;
+  try {
+    const imageResponse = await openai.images.generate({
+      model: "dall-e-3",
+      prompt: `A highly engaging, stylish, and modern background image for an Instagram card news post. Theme: ${testData.title}. Mood/Style: ${visualReport.colorPalette}. Concept: ${visualReport.storyboard[0].visualIdea}. The image should be abstract, aesthetic, and visually appealing without any text or typography, leaving empty space in the center for text overlay.`,
+      n: 1,
+      size: "1024x1024",
+      quality: "standard"
+    });
+    imageUrl = imageResponse.data[0].url;
+  } catch (imgError) {
+    console.error("DALL-E image generation failed:", imgError);
+    if (progressCallback) progressCallback("⚠️ 이미지 생성 중 오류가 발생하여 텍스트 리포트만 전송합니다.");
+  }
+
   // 4. Performance Marketer (퍼포먼스 마케터 '맥스')
   if (progressCallback) progressCallback("📈 [4/4] 퍼포먼스 마케터 '맥스'가 수익화(ROI) 및 전환(CTA) 전략을 세팅 중입니다...");
 
@@ -147,6 +165,7 @@ export async function generateMarketingCampaign(testData, openai, progressCallba
     visual: visualReport,
     performance: performanceReport,
     testTitle: testData.title,
-    testId: testData.id
+    testId: testData.id,
+    imageUrl: imageUrl
   };
 }
