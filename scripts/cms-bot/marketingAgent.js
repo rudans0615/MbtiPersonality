@@ -110,7 +110,8 @@ export async function generateMarketingCampaign(testData, openai, progressCallba
   const visualReport = JSON.parse(visualCompletion.choices[0].message.content);
 
   // 3-5. 실제 테스트의 OG 이미지를 제공 (DALL-E 생성 제거)
-  const imageUrl = `https://mbtifinder.com/api/og?title=${encodeURIComponent(testData.title)}`;
+  // 인스타그램 피드용으로 최적화된 1:1 비율(type=feed)의 이미지를 호출합니다.
+  const imageUrl = `https://mbtifinder.com/api/og?testId=${testData.id}&type=feed`;
   
   // 4. Performance Marketer (퍼포먼스 마케터 '맥스')
   if (progressCallback) progressCallback("📈 [4/4] 퍼포먼스 마케터 '맥스'가 수익화(ROI) 및 전환(CTA) 전략을 세팅 중입니다...");
