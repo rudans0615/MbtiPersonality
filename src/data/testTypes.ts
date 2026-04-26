@@ -242,7 +242,7 @@ export const testTypes: TestType[] = [
     isAvailable: true
   },
   {
-    id: "self-awareness",
+    id: "drunk",
     category: "FUN",
     title: "나는 지금 어떤 상태일까?",
     subtitle: "현재 컨디션 자가진단",
