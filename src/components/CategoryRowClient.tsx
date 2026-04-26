@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef } from "react";
+import { useRef, useState, useEffect } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -31,12 +31,62 @@ const getTitleForCategory = (cat: string) => {
 
 export default function CategoryRowClient({ category, tests, isComingSoon = false }: { category: string, tests: any[], isComingSoon?: boolean }) {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
+  
+  // Drag to scroll state
+  const [isDragging, setIsDragging] = useState(false);
+  const [startX, setStartX] = useState(0);
+  const [scrollLeft, setScrollLeft] = useState(0);
+  const [scrollProgress, setScrollProgress] = useState(0);
+
+  const handleScroll = () => {
+    if (scrollContainerRef.current) {
+      const { scrollLeft, scrollWidth, clientWidth } = scrollContainerRef.current;
+      const maxScroll = scrollWidth - clientWidth;
+
+      if (maxScroll <= 0) {
+        setScrollProgress(0);
+      } else {
+        // limit between 0 and 100
+        const progress = Math.min(Math.max((scrollLeft / maxScroll) * 100, 0), 100);
+        setScrollProgress(progress);
+      }
+    }
+  };
+
+  useEffect(() => {
+    handleScroll(); // initialize
+    window.addEventListener('resize', handleScroll);
+    return () => window.removeEventListener('resize', handleScroll);
+  }, [tests]);
 
   const scroll = (direction: 'left' | 'right') => {
     if (scrollContainerRef.current) {
       const scrollAmount = 350;
       scrollContainerRef.current.scrollBy({ left: direction === 'left' ? -scrollAmount : scrollAmount, behavior: 'smooth' });
     }
+  };
+
+  const handleMouseDown = (e: React.MouseEvent) => {
+    setIsDragging(true);
+    if (!scrollContainerRef.current) return;
+    setStartX(e.pageX - scrollContainerRef.current.offsetLeft);
+    setScrollLeft(scrollContainerRef.current.scrollLeft);
+  };
+
+  const handleMouseLeave = () => {
+    setIsDragging(false);
+  };
+
+  const handleMouseUp = () => {
+    setIsDragging(false);
+  };
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (!isDragging || !scrollContainerRef.current) return;
+    e.preventDefault();
+    const x = e.pageX - scrollContainerRef.current.offsetLeft;
+    const walk = (x - startX) * 2; // Scroll speed multiplier
+    scrollContainerRef.current.scrollLeft = scrollLeft - walk;
   };
 
   if (tests.length === 0) return null;
@@ -58,7 +108,15 @@ export default function CategoryRowClient({ category, tests, isComingSoon = fals
       </button>
 
       {/* 넷플릭스형 가로 스크롤 컨테이너 */}
-      <div ref={scrollContainerRef} className="flex overflow-x-auto pb-6 -mx-4 px-4 md:mx-0 md:px-2 space-x-6 snap-x snap-mandatory [&::-webkit-scrollbar]:hidden scroll-smooth relative">
+      <div 
+        ref={scrollContainerRef} 
+        onScroll={handleScroll}
+        onMouseDown={handleMouseDown}
+        onMouseLeave={handleMouseLeave}
+        onMouseUp={handleMouseUp}
+        onMouseMove={handleMouseMove}
+        className={`flex overflow-x-auto pb-6 -mx-4 px-4 md:mx-0 md:px-2 space-x-6 snap-x snap-mandatory [&::-webkit-scrollbar]:hidden relative touch-pan-x ${isDragging ? 'cursor-grabbing snap-none' : 'cursor-grab'}`}
+      >
         {tests.map((test) => (
           <Card 
             key={test.id} 
@@ -92,7 +150,7 @@ export default function CategoryRowClient({ category, tests, isComingSoon = fals
                     오픈 대기 중...
                   </Button>
                 ) : (
-                  <Link href={test.href}>
+                  <Link href={test.href} draggable={false}>
                     <Button className="w-full bg-neutral-900 text-white hover:bg-neutral-800 rounded-xl group-hover:shadow-lg transition-all">
                       시작하기
                       <ArrowRight size={16} className="ml-2 group-hover:translate-x-1 transition-transform" />
@@ -112,6 +170,16 @@ export default function CategoryRowClient({ category, tests, isComingSoon = fals
       >
         <ChevronRight size={24} />
       </button>
+
+      {/* 모바일 스크롤 인디케이터 (Progress Bar) - 카드가 2개 이상일 때만 표시 */}
+      {tests.length > 1 && (
+        <div className="md:hidden mt-2 mb-4 mx-auto w-24 h-1 bg-neutral-200 rounded-full overflow-hidden">
+          <div 
+            className="h-full bg-purple-500 rounded-full"
+            style={{ width: '40%', transform: `translateX(${(scrollProgress / 100) * 150}%)` }}
+          />
+        </div>
+      )}
     </div>
   )
 }

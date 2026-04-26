@@ -9,6 +9,7 @@ import { getAvailableTests, TestType } from '@/data/testTypes';
 export default function Navigation() {
   const [isOpen, setIsOpen] = useState(false);
   const [isMegaMenuOpen, setIsMegaMenuOpen] = useState(false);
+  const [expandedCategory, setExpandedCategory] = useState<string | null>('HOT');
   const location = usePathname() || '/';
 
   // 모든 사용 가능한 테스트를 가져오고, 카테고리별로 그룹화합니다.
@@ -45,7 +46,8 @@ export default function Navigation() {
   }, []);
 
   return (
-    <nav className={`fixed w-full top-0 z-50 transition-all duration-300 ${
+    <>
+      <nav className={`fixed w-full top-0 z-50 transition-all duration-300 ${
       scrolled || isMegaMenuOpen ? 'bg-neutral-900/90 backdrop-blur-xl border-b border-white/10 shadow-lg' : 'bg-neutral-900/50 backdrop-blur-md border-b border-white/5'
     }`}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -162,6 +164,8 @@ export default function Navigation() {
         </div>
       </div>
 
+      </nav>
+
       {/* Mobile Drawer Overlay */}
       {isOpen && (
         <div className="md:hidden fixed inset-0 z-[100]">
@@ -187,34 +191,52 @@ export default function Navigation() {
               </Button>
             </div>
 
-            <div className="flex-1 overflow-y-auto custom-scrollbar p-4 space-y-6">
+            <div className="flex-1 overflow-y-auto custom-scrollbar p-4 space-y-4">
               {/* Mobile Mega Menu Representation */}
               <div>
                 <h3 className="text-xs font-bold text-neutral-500 uppercase tracking-widest mb-3 px-2">전체 테스트</h3>
-                <div className="space-y-6">
+                <div className="space-y-2">
                   {Object.keys(categoryNames).map(catKey => {
                     const tests = groupedByCategory[catKey];
                     if (!tests || tests.length === 0) return null;
+                    const isExpanded = expandedCategory === catKey;
+
                     return (
-                      <div key={catKey}>
-                        <h4 className="text-sm font-semibold text-purple-400 mb-2 px-2">{categoryNames[catKey]}</h4>
-                        <div className="space-y-1">
-                          {tests.map((test) => (
-                            <Link key={test.href} href={test.href}>
-                              <div 
-                                className={`flex items-center space-x-3 px-3 py-2.5 text-base font-medium transition-all rounded-xl cursor-pointer ${
-                                  isActive(test.href) 
-                                    ? 'text-white bg-white/10' 
-                                    : 'text-neutral-300 hover:text-white hover:bg-white/5'
-                                }`}
-                                onClick={() => setIsOpen(false)}
-                              >
-                                <span className="text-xl bg-white/5 w-8 h-8 rounded-lg flex items-center justify-center">{test.emoji}</span>
-                                <span className="flex-1 line-clamp-1">{test.title}</span>
-                              </div>
-                            </Link>
-                          ))}
-                        </div>
+                      <div key={catKey} className="border border-white/5 rounded-xl overflow-hidden bg-white/5">
+                        <button 
+                          onClick={() => setExpandedCategory(isExpanded ? null : catKey)}
+                          className="w-full flex items-center justify-between px-4 py-3 text-sm font-semibold text-white bg-transparent hover:bg-white/5 transition-colors"
+                        >
+                          <span className="text-purple-400">{categoryNames[catKey]}</span>
+                          <svg 
+                            className={`w-4 h-4 text-neutral-400 transition-transform duration-300 ${isExpanded ? 'rotate-180' : ''}`} 
+                            fill="none" 
+                            viewBox="0 0 24 24" 
+                            stroke="currentColor"
+                          >
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                          </svg>
+                        </button>
+                        
+                        {isExpanded && (
+                          <div className="px-2 pb-2 space-y-1 animate-in slide-in-from-top-2 duration-200">
+                            {tests.map((test) => (
+                              <Link key={test.href} href={test.href}>
+                                <div 
+                                  className={`flex items-center space-x-3 px-3 py-2 text-sm font-medium transition-all rounded-lg cursor-pointer ${
+                                    isActive(test.href) 
+                                      ? 'text-white bg-white/10' 
+                                      : 'text-neutral-300 hover:text-white hover:bg-white/5'
+                                  }`}
+                                  onClick={() => setIsOpen(false)}
+                                >
+                                  <span className="text-lg bg-white/5 w-7 h-7 rounded-md flex items-center justify-center">{test.emoji}</span>
+                                  <span className="flex-1 line-clamp-1">{test.title}</span>
+                                </div>
+                              </Link>
+                            ))}
+                          </div>
+                        )}
                       </div>
                     );
                   })}
@@ -251,6 +273,6 @@ export default function Navigation() {
           </div>
         </div>
       )}
-    </nav>
+    </>
   );
 }
