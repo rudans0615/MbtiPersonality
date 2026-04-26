@@ -58,12 +58,14 @@ export async function generateMarketingCampaign(testData, openai, progressCallba
 1. 존댓말과 반말을 적절히 섞어 친근한 10~30대 구어체 사용.
 2. 첫 줄은 무조건 시선을 멈추는 후킹 문구.
 3. 절대 딱딱하거나 작위적인 광고톤 금지.
+4. 부연 설명이나 "이렇게 작성했습니다" 같은 말 없이 오직 **'즉시 복붙 가능한 최종 텍스트'**만 출력해. 링크가 들어갈 자리는 [테스트 링크] 로 표시해.
 
 [JSON 출력 형식]
 {
-  "instagramFeed": "인스타 피드용 장문 캡션 (이모지 포함, 줄바꿈 필수, 친구 태그 유도)",
-  "threadsCopy": "스레드(Threads)용 짧고 팩폭성 강한 텍스트 (2~3문장)",
-  "tiktokHook": "쇼츠/릴스 영상 도입부 3초에 들어갈 강렬한 텍스트 훅"
+  "instagramFeed": "인스타 피드용 캡션 (이모지, 줄바꿈, [테스트 링크], 해시태그 포함 최종 완성본)",
+  "instagramStory": "인스타 스토리용 짧은 문구 (클릭 유도 포함)",
+  "threadsCopy": "스레드(Threads)용 짧고 팩폭성 강한 텍스트 ([테스트 링크] 포함)",
+  "tiktokHook": "쇼츠/릴스 캡션용 텍스트 ([테스트 링크] 포함)"
 }`
       },
       {
@@ -122,8 +124,8 @@ export async function generateMarketingCampaign(testData, openai, progressCallba
 
 [JSON 출력 형식]
 {
-  "callToAction": "게시물 마지막에 넣을 강력한 링크 클릭 유도 멘트 (예: 프로필 링크 클릭해서 확인!)",
-  "coupangStrategy": "이 테스트를 마친 유저에게 추천하면 구매율이 높을 쿠팡 제품 카테고리와 구체적인 추천 멘트",
+  "callToAction": "게시물 마지막에 넣을 강력한 링크 클릭 유도 멘트 (최종 텍스트)",
+  "coupangText": "테스트 결과 아래에 달아놓을 쿠팡 파트너스 추천 멘트 (부연 설명 없이 바로 쓸 수 있는 최종 텍스트, 예: '연애 고민 해결해줄 필독서 👉 [쿠팡 링크]')",
   "expectedROI": "이 캠페인의 예상 수익화 강점 분석 (1~2문장)"
 }`
       },

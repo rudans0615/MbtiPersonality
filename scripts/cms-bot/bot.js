@@ -337,37 +337,34 @@ bot.onText(/\/(market)\s+(.+)/, async (msg, match) => {
 
     // 3. 최종 결과 포매팅 및 전송
     const finalMessage = `
-🎉 **[Antigravity Agency] 바이럴 마케팅 리포트 완성!**
+🎉 **[Antigravity Agency] 바이럴 마케팅 애셋 완성!**
 📌 타겟 테스트: **${report.testTitle}**
 
-📊 **1. 트렌드 분석 (by 제이)**
-- 🎯 타겟: ${report.analyst.targetAudience}
-- 💥 트리거: ${report.analyst.viralTrigger}
-- 💡 메시지: ${report.analyst.coreMessage}
-
-✍️ **2. 카피라이팅 (by 레이첼)**
-*👇 인스타 피드 복붙용:*
+━━━━━━━━━━━━━━━━━━━
+📱 **[인스타그램 피드 복붙용]**
 ${report.copywriter.instagramFeed}
-*해시태그:* ${report.analyst.recommendedHashtags.join(' ')}
 
-*👇 스레드/트위터 팩폭:*
+📸 **[인스타그램 스토리 복붙용]**
+${report.copywriter.instagramStory}
+
+🧵 **[스레드 / 트위터 복붙용]**
 ${report.copywriter.threadsCopy}
 
-*👇 릴스/쇼츠 3초 훅:*
-"${report.copywriter.tiktokHook}"
+🎵 **[틱톡 / 릴스 복붙용 (3초 훅 포함)]**
+${report.copywriter.tiktokHook}
 
-🎨 **3. 비주얼 디렉팅 (by 샘)**
-- 🎨 컬러: ${report.visual.colorPalette}
-- 💥 썸네일 텍스트: "${report.visual.thumbnailText}"
-- 📖 스토리보드:
+🛍️ **[수익화: 쿠팡 파트너스 복붙용 문구]**
+${report.performance.coupangText}
+
+━━━━━━━━━━━━━━━━━━━
+*(내부 기획용 요약)*
+- 🎯 타겟: ${report.analyst.targetAudience}
+- 🎨 컬러/비주얼: ${report.visual.colorPalette}
+- 💥 썸네일 카피: "${report.visual.thumbnailText}"
+- 💡 핵심 메시지: ${report.analyst.coreMessage}
+- 📖 스토리보드 요약:
 ${report.visual.storyboard.map(s => `  [${s.page}장] ${s.text} (${s.visualIdea})`).join('\n')}
-
-📈 **4. 수익화 전략 (by 맥스)**
-- 🛒 쿠팡 픽: ${report.performance.coupangStrategy}
-- 🔗 CTA: "${report.performance.callToAction}"
-- 💰 예상 ROI: ${report.performance.expectedROI}
-
-🚀 지금 바로 SNS에 업로드하여 트래픽을 폭발시키세요!`;
+`;
 
     bot.sendMessage(chatId, finalMessage, { parse_mode: 'Markdown' });
 
