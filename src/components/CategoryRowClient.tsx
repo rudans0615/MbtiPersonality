@@ -8,7 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Clock, Users, ArrowRight, Sparkles, Heart, Brain, Laugh, Rocket, ChevronLeft, ChevronRight } from "lucide-react";
 
 const getIconForCategory = (cat: string) => {
-  switch(cat) {
+  switch (cat) {
     case 'HOT': return <Sparkles className="text-yellow-500 w-6 h-6" />;
     case 'LOVE': return <Heart className="text-pink-500 w-6 h-6" />;
     case 'PERSONALITY': return <Brain className="text-blue-500 w-6 h-6" />;
@@ -19,7 +19,7 @@ const getIconForCategory = (cat: string) => {
 };
 
 const getTitleForCategory = (cat: string) => {
-  switch(cat) {
+  switch (cat) {
     case 'HOT': return '지금 가장 뜨거운 테스트 🔥';
     case 'LOVE': return '달콤쌉싸름한 연애 진단 💕';
     case 'PERSONALITY': return '나를 찾아가는 심리 분석 🧠';
@@ -31,7 +31,7 @@ const getTitleForCategory = (cat: string) => {
 
 export default function CategoryRowClient({ category, tests, isComingSoon = false }: { category: string, tests: any[], isComingSoon?: boolean }) {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
-  
+
   // Drag to scroll state
   const [isDragging, setIsDragging] = useState(false);
   const [startX, setStartX] = useState(0);
@@ -98,9 +98,9 @@ export default function CategoryRowClient({ category, tests, isComingSoon = fals
           {isComingSoon ? "곧 출시할 신규 테스트 🚧" : getTitleForCategory(category)}
         </h3>
       </div>
-      
+
       {/* PC 가로 스크롤 좌측 버튼 */}
-      <button 
+      <button
         onClick={() => scroll('left')}
         className="hidden md:flex absolute left-0 top-[55%] -translate-y-1/2 -ml-5 z-10 w-12 h-12 bg-white/95 border border-neutral-200 rounded-full shadow-lg items-center justify-center text-neutral-600 hover:text-primary hover:scale-110 transition-all opacity-0 group-hover:opacity-100"
       >
@@ -108,8 +108,8 @@ export default function CategoryRowClient({ category, tests, isComingSoon = fals
       </button>
 
       {/* 넷플릭스형 가로 스크롤 컨테이너 */}
-      <div 
-        ref={scrollContainerRef} 
+      <div
+        ref={scrollContainerRef}
         onScroll={handleScroll}
         onMouseDown={handleMouseDown}
         onMouseLeave={handleMouseLeave}
@@ -118,8 +118,8 @@ export default function CategoryRowClient({ category, tests, isComingSoon = fals
         className={`flex overflow-x-auto pb-6 -mx-4 px-4 md:mx-0 md:px-2 space-x-6 snap-x snap-mandatory [&::-webkit-scrollbar]:hidden relative touch-pan-x ${isDragging ? 'cursor-grabbing snap-none' : 'cursor-grab'}`}
       >
         {tests.map((test) => (
-          <Card 
-            key={test.id} 
+          <Card
+            key={test.id}
             className={`min-w-[300px] max-w-[300px] md:min-w-[340px] md:max-w-[340px] snap-center snap-always bg-white rounded-2xl shadow-md hover:shadow-2xl transition-all duration-300 overflow-hidden group flex flex-col ${isComingSoon ? 'opacity-70 border-dashed border-2' : ''}`}
           >
             <div className={`h-3 bg-gradient-to-r ${test.color || 'from-neutral-200 to-neutral-300'}`}></div>
@@ -164,7 +164,7 @@ export default function CategoryRowClient({ category, tests, isComingSoon = fals
       </div>
 
       {/* PC 가로 스크롤 우측 버튼 */}
-      <button 
+      <button
         onClick={() => scroll('right')}
         className="hidden md:flex absolute right-0 top-[55%] -translate-y-1/2 -mr-5 z-10 w-12 h-12 bg-white/95 border border-neutral-200 rounded-full shadow-lg items-center justify-center text-neutral-600 hover:text-primary hover:scale-110 transition-all opacity-0 group-hover:opacity-100"
       >
@@ -174,7 +174,7 @@ export default function CategoryRowClient({ category, tests, isComingSoon = fals
       {/* 모바일 스크롤 인디케이터 (Progress Bar) - 카드가 2개 이상일 때만 표시 */}
       {tests.length > 1 && (
         <div className="md:hidden mt-2 mb-4 mx-auto w-24 h-1 bg-neutral-200 rounded-full overflow-hidden">
-          <div 
+          <div
             className="h-full bg-purple-500 rounded-full"
             style={{ width: '40%', transform: `translateX(${(scrollProgress / 100) * 150}%)` }}
           />
