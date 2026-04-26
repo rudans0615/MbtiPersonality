@@ -34,13 +34,15 @@ bot.setMyCommands([
   { command: 'newtest', description: '신규 테스트 자동 생성 및 배포 (예: /newtest 탕후루 취향)' },
   { command: 'batch', description: '한번에 여러 테스트 자동 생성 (예: /batch 3)' },
   { command: 'newblog', description: 'SEO 블로그 칼럼 자동 작성 및 배포 (예: /newblog INFP 연애)' },
+  { command: 'market', description: '마케팅 에이전시 파이프라인 가동 (예: /market hogu)' },
 ]);
 
 bot.sendMessage(process.env.ADMIN_CHAT_ID || '', `🤖 콘텐츠 자동화 봇이 가동되었습니다.
 - 💡 /추천 : 요즘 유행하는 바이럴 테스트 기획안 스캔
 - 🚀 /newtest [주제] : 테스트 1개 기획/디자인/배포
 - 📦 /batch [숫자] : 여러 개의 테스트를 한 번에 묶음 자동 배포
-- ✍️ /newblog [주제] : 구글 SEO 타겟 심리학 칼럼 발행`);
+- ✍️ /newblog [주제] : 구글 SEO 타겟 심리학 칼럼 발행
+- 📈 /market [testId] : SNS 바이럴 마케팅 회사 (분석/카피/비주얼/수익화) 가동`);
 
 // DEBUG: Log all incoming messages for diagnosis
 bot.on('message', (msg) => {
@@ -293,6 +295,85 @@ JSON만 출력해. 다른 텍스트 절대 금지.`
   } catch (error) {
     console.error(error);
     bot.sendMessage(chatId, `❌ 에러 발생: ${error.message}`);
+  }
+});
+
+// /market 명령어 핸들러 (마케팅 에이전시 파이프라인)
+bot.onText(/\/(market)\s+(.+)/, async (msg, match) => {
+  const chatId = msg.chat.id;
+  const testId = match[2];
+
+  bot.sendMessage(chatId, `🏢 **Antigravity Marketing Agency** 가동 준비...\n[${testId}] 테스트의 바이럴 캠페인 기획을 시작합니다.`);
+
+  try {
+    // 1. 기존 테스트 데이터 로드 (정적 파일 또는 동적 임포트)
+    const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
+    const testTypesPath = path.join(repoRoot, 'src/data/testTypes.ts');
+    const fs = await import('fs');
+    
+    // 단순 파싱을 위해 정규식 사용 (실제 모듈 임포트는 어려우므로)
+    const fileContent = fs.readFileSync(testTypesPath, 'utf-8');
+    
+    // 객체 배열 추출 로직 (매우 단순화된 파싱)
+    // 좀 더 안전하게 정규식으로 testId에 해당하는 타이틀/설명을 찾음
+    const idRegex = new RegExp(`id:\\s*["']${testId}["']\\s*,[\\s\\S]*?title:\\s*["']([^"']+)["']\\s*,[\\s\\S]*?description:\\s*["']([^"']+)["']`);
+    const matchData = idRegex.exec(fileContent);
+    
+    let testData = { id: testId, title: testId, description: "알 수 없는 테스트", category: "기타" };
+    if (matchData) {
+      testData.title = matchData[1];
+      testData.description = matchData[2];
+    } else {
+      // testTypes에서 못 찾으면 그냥 입력값으로 진행
+      bot.sendMessage(chatId, `⚠️ testTypes.ts에서 '${testId}'를 찾지 못해 기본 데이터로 진행합니다.`);
+    }
+
+    // 2. 마케팅 에이전시 실행
+    const { generateMarketingCampaign } = await import('./marketingAgent.js');
+    
+    const report = await generateMarketingCampaign(testData, openai, (progressMsg) => {
+      bot.sendMessage(chatId, progressMsg);
+    });
+
+    // 3. 최종 결과 포매팅 및 전송
+    const finalMessage = `
+🎉 **[Antigravity Agency] 바이럴 마케팅 리포트 완성!**
+📌 타겟 테스트: **${report.testTitle}**
+
+📊 **1. 트렌드 분석 (by 제이)**
+- 🎯 타겟: ${report.analyst.targetAudience}
+- 💥 트리거: ${report.analyst.viralTrigger}
+- 💡 메시지: ${report.analyst.coreMessage}
+
+✍️ **2. 카피라이팅 (by 레이첼)**
+*👇 인스타 피드 복붙용:*
+${report.copywriter.instagramFeed}
+*해시태그:* ${report.analyst.recommendedHashtags.join(' ')}
+
+*👇 스레드/트위터 팩폭:*
+${report.copywriter.threadsCopy}
+
+*👇 릴스/쇼츠 3초 훅:*
+"${report.copywriter.tiktokHook}"
+
+🎨 **3. 비주얼 디렉팅 (by 샘)**
+- 🎨 컬러: ${report.visual.colorPalette}
+- 💥 썸네일 텍스트: "${report.visual.thumbnailText}"
+- 📖 스토리보드:
+${report.visual.storyboard.map(s => `  [${s.page}장] ${s.text} (${s.visualIdea})`).join('\n')}
+
+📈 **4. 수익화 전략 (by 맥스)**
+- 🛒 쿠팡 픽: ${report.performance.coupangStrategy}
+- 🔗 CTA: "${report.performance.callToAction}"
+- 💰 예상 ROI: ${report.performance.expectedROI}
+
+🚀 지금 바로 SNS에 업로드하여 트래픽을 폭발시키세요!`;
+
+    bot.sendMessage(chatId, finalMessage, { parse_mode: 'Markdown' });
+
+  } catch (error) {
+    console.error(error);
+    bot.sendMessage(chatId, `❌ 마케팅 에이전시 실행 중 에러 발생: ${error.message}`);
   }
 });
 
