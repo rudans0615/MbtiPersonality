@@ -16,6 +16,7 @@ export default function Home() {
   const loveTests = testTypes.filter(t => t.category === 'LOVE' && t.isAvailable);
   const personalityTests = testTypes.filter(t => t.category === 'PERSONALITY' && t.isAvailable);
   const funTests = testTypes.filter(t => t.category === 'FUN' && t.isAvailable);
+  const careerTests = testTypes.filter(t => t.category === 'CAREER' && t.isAvailable);
   const comingSoonTests = testTypes.filter(t => !t.isAvailable);
 
   return (
@@ -52,6 +53,7 @@ export default function Home() {
         <CategoryRowClient category="LOVE" tests={loveTests} />
         <CategoryRowClient category="PERSONALITY" tests={personalityTests} />
         <CategoryRowClient category="FUN" tests={funTests} />
+        <CategoryRowClient category="CAREER" tests={careerTests} />
         
         {/* Coming Soon */}
         <div className="mt-20 pt-16 border-t border-neutral-200">
