@@ -27,7 +27,7 @@ export default function Blog() {
       const matchesCategory = selectedCategory === "all" || post.category === selectedCategory;
 
       return matchesSearch && matchesCategory;
-    });
+    }).sort((a,b) => b.id - a.id);
   }, [searchTerm, selectedCategory]);
 
   // Pagination logic
