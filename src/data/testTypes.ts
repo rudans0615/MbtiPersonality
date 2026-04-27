@@ -17,6 +17,20 @@ export interface TestType {
 
 export const testTypes: TestType[] = [
   {
+    id: "workplacePartyStyle",
+    category: "CAREER",
+    title: "회식에서 드러나는 당신의 상사 스타일은?",
+    subtitle: "상사와의 회식, 당신은 어떤 유형?",
+    description: "직장 내 회식은 상사와의 관계를 잘 보여주는 중요한 순간이에요. 내 상사와의 회식에서 당신이 어떤 스타일인지 알아보는 테스트를 통해, 나의 직장생활에서의 행동과 특징을 파악해보세요!",
+    emoji: "🍻",
+    color: "from-purple-500 to-pink-500",
+    duration: "약 3분",
+    questions: 8,
+    href: "/workplacePartyStyle",
+    features: ["AI 맞춤 분석", "나만의 결과지", "궁합 확인"],
+    isAvailable: true
+  },
+  {
     id: "myPetHealingStyle",
     category: "PERSONALITY",
     title: "너와 내 반려동물의 힐링 조화 체크해볼까?",
