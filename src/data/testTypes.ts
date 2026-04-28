@@ -17,6 +17,20 @@ export interface TestType {
 
 export const testTypes: TestType[] = [
   {
+    id: "roommateAirQuality",
+    category: "PERSONALITY",
+    title: "룸메의 공기질로 알아보는 나의 흑역사 유형은?",
+    subtitle: "너도 몰랐던 내 과거의 흔적들!",
+    description: "룸메와 생활하면서 느꼈던 다양한 공기질 상황을 통해 나의 흑역사 유형을 알아보는 테스트야! 재밌게 풀어보고 친구들과 공유해봐~",
+    emoji: "🌬️",
+    color: "from-purple-500 to-pink-500",
+    duration: "약 3분",
+    questions: 8,
+    href: "/roommateAirQuality",
+    features: ["AI 맞춤 분석", "나만의 결과지", "궁합 확인"],
+    isAvailable: true
+  },
+  {
     id: "myPetHealingStyle",
     category: "PERSONALITY",
     title: "너와 내 반려동물의 힐링 조화 체크해볼까?",
