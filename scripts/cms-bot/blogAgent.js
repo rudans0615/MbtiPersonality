@@ -42,8 +42,8 @@ ${content.replace(/`/g, '\\`')}
     \`
   }`;
 
-  // 파일의 마지막 '];' 를 찾아 앞에 새로운 객체를 쉼표와 함께 주입
-  const lastBracketIndex = fileContent.lastIndexOf('];');
+  // 파일의 마지막 '].sort' 를 찾아 앞에 새로운 객체를 쉼표와 함께 주입
+  const lastBracketIndex = fileContent.lastIndexOf('].sort');
   if (lastBracketIndex !== -1) {
     // 맨 끝 객체 뒤에 쉼표가 없을 수도 있으므로, 배열의 끝부분을 찾아서 안전하게 교체
     // 마지막 객체가 끝나는 '}' 의 인덱스를 찾습니다.
@@ -54,10 +54,10 @@ ${content.replace(/`/g, '\\`')}
       beforeBracket += ',';
     }
     
-    const newFileContent = beforeBracket + '\n' + newPostObject + '\n];\n';
+    const newFileContent = beforeBracket + '\n' + newPostObject + '\n].sort((a, b) => b.id - a.id);\n';
     fs.writeFileSync(blogPostsPath, newFileContent, 'utf-8');
   } else {
-    throw new Error('blogPosts.ts 파일에서 닫는 괄호(];)를 찾을 수 없습니다.');
+    throw new Error('blogPosts.ts 파일에서 닫는 괄호(].sort)를 찾을 수 없습니다.');
   }
   
   return newId;
