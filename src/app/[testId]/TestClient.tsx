@@ -120,7 +120,7 @@ export default function TestClient({ testId, testInfo, questions, seoArticle }: 
                     Q{currentStep + 1}
                   </div>
                   <h2 className="text-2xl md:text-[1.7rem] font-bold text-neutral-800 leading-snug tracking-tight break-keep">
-                    {question?.question || question?.questionText || testInfo.title}
+                    {question?.question || question?.questionText || question?.text || testInfo.title}
                   </h2>
                 </div>
                 <div className="space-y-4">
