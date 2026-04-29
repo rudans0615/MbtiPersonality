@@ -107,6 +107,9 @@ export default function CategoryRowClient({ category, tests, isComingSoon = fals
         <ChevronLeft size={24} />
       </button>
 
+      {/* 모바일 스크롤 가능 시각적 힌트 (페이드 효과) */}
+      <div className="absolute right-0 top-[80px] bottom-10 w-12 bg-gradient-to-l from-neutral-50 to-transparent z-10 md:hidden pointer-events-none" />
+
       {/* 넷플릭스형 가로 스크롤 컨테이너 */}
       <div
         ref={scrollContainerRef}
@@ -115,7 +118,8 @@ export default function CategoryRowClient({ category, tests, isComingSoon = fals
         onMouseLeave={handleMouseLeave}
         onMouseUp={handleMouseUp}
         onMouseMove={handleMouseMove}
-        className={`flex overflow-x-auto pb-6 -mx-4 px-4 md:mx-0 md:px-2 space-x-6 snap-x snap-mandatory [&::-webkit-scrollbar]:hidden relative touch-pan-x ${isDragging ? 'cursor-grabbing snap-none' : 'cursor-grab'}`}
+        className={`flex overflow-x-auto pb-6 -mx-4 px-4 md:mx-0 md:px-2 space-x-6 snap-x snap-mandatory scrollbar-hide relative touch-pan-x ${isDragging ? 'cursor-grabbing snap-none' : 'cursor-grab'}`}
+        style={{ scrollbarWidth: 'none' }}
       >
         {tests.map((test) => (
           <Card

@@ -29,7 +29,7 @@ export default function TetoEgenTest() {
   const handleNext = () => {
     const result = goToNext();
     if (result === 'COMPLETE') {
-      router.push('/teto-egen-results');
+      router.push('/teto-egen/results');
     }
   };
 
@@ -82,7 +82,7 @@ export default function TetoEgenTest() {
                     setTimeout(() => {
                       const result = goToNext(answer.value);
                       if (result === 'COMPLETE') {
-                        router.push('/teto-egen-results');
+                        router.push('/teto-egen/results');
                       }
                     }, 200);
                   }}

@@ -40,11 +40,11 @@ export default async function ResultsPage({ params }: { params: Promise<{ testId
     return <div className="min-h-screen flex items-center justify-center">Result Data Not Found</div>;
   }
 
-  const resultsDataKey = Object.keys(typesData).find(key => key.endsWith('Results')) || `${testId}Results`;
-  const resultsData = typesData[resultsDataKey];
+  const resultsDataKey = Object.keys(typesData).find(key => key.endsWith('Results') || key.endsWith('Types')) || `${testId}Results`;
+  const resultsData = typesData[resultsDataKey] || typesData[`${testId}Types`];
   
   const calculateLevelKey = Object.keys(typesData).find(key => key.startsWith('calculate'));
-  const calculateLevel = calculateLevelKey ? typesData[calculateLevelKey] : () => Object.keys(resultsData)[0];
+  const calculateLevel = calculateLevelKey ? typesData[calculateLevelKey] : null;
   const allKeys = Object.keys(resultsData || {});
   const questions = questionsData[`${testId}Questions`] || [];
 

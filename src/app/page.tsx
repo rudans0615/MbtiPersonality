@@ -75,7 +75,7 @@ export default function Home() {
               size="lg"
               className="bg-white text-neutral-900 hover:bg-neutral-200 px-8 py-6 text-lg font-bold rounded-full shadow-lg transition-all duration-300"
             >
-              어떤 테스트들이 있나요? 👀
+              대표 MBTI 검사 시작하기 🚀
             </Button>
           </Link>
         </div>

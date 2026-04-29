@@ -218,6 +218,25 @@ export const testTypes: TestType[] = [
     isAvailable: true
   },
   {
+    id: "sbti",
+    category: "HOT",
+    title: "SBTI 풍자형 성격 테스트",
+    subtitle: "팩폭 주의! 내 안의 광기 지수",
+    description: "진지한 MBTI는 가라! 통장 잔고, 카톡 읽씹 등 일상 속 찌질한 속마음을 찌르는 마라맛 팩폭 테스트입니다.",
+    emoji: "🤪",
+    color: "from-pink-500 to-orange-500",
+    duration: "약 3분",
+    questions: 12,
+    href: "/sbti",
+    features: [
+      "4가지 매운맛 캐릭터 분석",
+      "뼈때리는 팩트폭력 특징",
+      "상극/찰떡 궁합 유형",
+      "맞춤 생존 아이템 추천"
+    ],
+    isAvailable: true
+  },
+  {
     id: "mbti",
     category: "PERSONALITY",
     title: "MBTI 성격유형 검사",
