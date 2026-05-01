@@ -690,10 +690,10 @@ JSON 형식 외에 어떤 말도 출력하지 마.`
   }
 }
 
-// /newblog 명령어 핸들러 (수동 트리거)
-bot.onText(/\/(newblog)\s+(.+)/, async (msg, match) => {
+// /newblog 명령어 핸들러 (수동 트리거 및 자동 모드 지원)
+bot.onText(/\/(newblog)(?:\s+(.+))?/, async (msg, match) => {
   const chatId = msg.chat.id;
-  const topic = match[2];
+  const topic = match[2] || null;
   await generateAndPublishBlog(chatId, topic);
 });
 
