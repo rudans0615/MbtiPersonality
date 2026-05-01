@@ -637,7 +637,6 @@ JSON 형식 외에 어떤 말도 출력하지 마.`
 
     bot.sendMessage(chatId, `✅ 칼럼 작성 완료! [${aiData.title}]\n로컬 코드에 주입을 시작합니다...`);
 
-    const repoRoot = path.resolve(scriptDir, '../..');
     const { exec } = await import('child_process');
     const util = await import('util');
     const execPromise = util.promisify(exec);
