@@ -7,7 +7,7 @@ import { fileURLToPath } from 'url';
 
 dotenv.config();
 
-const moduleDir = path.dirname(fileURLToPath(import.meta.url));
+const scriptDir = path.dirname(fileURLToPath(import.meta.url));
 
 // 환경변수 체크
 const requiredEnvs = ['TELEGRAM_BOT_TOKEN', 'GITHUB_TOKEN', 'GITHUB_OWNER', 'GITHUB_REPO', 'OPENAI_API_KEY'];
@@ -107,10 +107,10 @@ bot.onText(/\/(suggest|추천|idea)/, async (msg) => {
         }
       ]
     });
-    
+
     const replyMessage = `🔥 **[최신 바이럴 테스트 추천 3선]** 🔥\n\n${completion.choices[0].message.content}\n\n👉 마음에 드는 주제가 있다면 \`/newtest [주제]\` 명령어로 즉각 개발을 지시하세요!`;
     bot.sendMessage(chatId, replyMessage, { parse_mode: 'Markdown' });
-  } catch(e) {
+  } catch (e) {
     bot.sendMessage(chatId, `❌ 추천 실패: ${e.message}`);
   }
 });
@@ -204,7 +204,7 @@ JSON만 출력해. 다른 텍스트 절대 금지.`
     });
 
     const rawDraft = draftCompletion.choices[0].message.content;
-    
+
     bot.sendMessage(chatId, `🔍 초안 생성 완료! AI 검수 에이전트가 오타 및 문맥을 교정 중입니다...`);
 
     // 2. 검수 에이전트 (Validation)
@@ -227,17 +227,17 @@ JSON만 출력해. 다른 텍스트 절대 금지.`
     });
 
     const aiData = JSON.parse(validationCompletion.choices[0].message.content);
-    
+
     bot.sendMessage(chatId, `✅ 검수 및 기획 완료! GitHub PR 생성을 준비합니다.\n- 테스트명: ${aiData.title}`);
 
     // 2. 개발자 에이전트 파일 생셩 및 주입 (Full-stack AST Code Injection)
     bot.sendMessage(chatId, `🚀 기획안 승인 완료! 풀스택 에이전트가 로컬 React 코드를 자동 작성 중입니다...`);
-    
+
     const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
     const { exec } = await import('child_process');
     const util = await import('util');
     const execPromise = util.promisify(exec);
-    
+
     try {
       await execPromise('git stash && git checkout main && git pull origin main', { cwd: repoRoot });
     } catch (e) {
@@ -250,18 +250,18 @@ JSON만 출력해. 다른 텍스트 절대 금지.`
     bot.sendMessage(chatId, `⚙️ 코드 작성 완료! GitHub PR(결재 요청)을 생성합니다...`);
 
     const branchName = `feat/ai-${aiData.testId}-${Date.now()}`;
-    
+
     exec(`git checkout -b ${branchName} && git add -A && git commit -m "feat(ai-content): add new test ${aiData.title}" && git push origin ${branchName}`, { cwd: repoRoot }, async (error, stdout, stderr) => {
       // 작업 후 항상 main 브랜치로 복귀
       exec(`git checkout main`, { cwd: repoRoot });
-      
+
       if (error) {
-         console.error("GIT STDOUT:", stdout);
-         console.error("GIT STDERR:", stderr);
-         bot.sendMessage(chatId, `⚠️ GitHub 전송 실패.\nSTDERR: ${stderr || '(없음)'}\nERROR: ${error.code}`);
-         return;
+        console.error("GIT STDOUT:", stdout);
+        console.error("GIT STDERR:", stderr);
+        bot.sendMessage(chatId, `⚠️ GitHub 전송 실패.\nSTDERR: ${stderr || '(없음)'}\nERROR: ${error.code}`);
+        return;
       }
-      
+
       try {
         // GitHub PR 생성
         const pr = await octokit.pulls.create({
@@ -272,7 +272,7 @@ JSON만 출력해. 다른 텍스트 절대 금지.`
           base: 'main',
           body: `## 📋 AI 자동 생성 테스트 결재 요청\n\n- **테스트명**: ${aiData.title}\n- **부제**: ${aiData.subtitle || ''}\n- **카테고리**: ${aiData.category || 'HOT'}\n- **문항 수**: ${aiData.questions?.length || 12}문항\n\n---\n> ✅ **대표님 승인(Merge) 후 자동 배포됩니다.**\n> ❌ 거절 시 Close 버튼을 눌러주세요.`
         });
-        
+
         bot.sendMessage(chatId, `
 ✅ **[신규 테스트 배포 완료]** ${aiData.title}
 
@@ -310,15 +310,15 @@ bot.onText(/\/(market)\s+(.+)/, async (msg, match) => {
     const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
     const testTypesPath = path.join(repoRoot, 'src/data/testTypes.ts');
     const fs = await import('fs');
-    
+
     // 단순 파싱을 위해 정규식 사용 (실제 모듈 임포트는 어려우므로)
     const fileContent = fs.readFileSync(testTypesPath, 'utf-8');
-    
+
     // 객체 배열 추출 로직 (매우 단순화된 파싱)
     // 좀 더 안전하게 정규식으로 testId에 해당하는 타이틀/설명을 찾음
     const idRegex = new RegExp(`id:\\s*["']${testId}["']\\s*,[\\s\\S]*?title:\\s*["']([^"']+)["']\\s*,[\\s\\S]*?description:\\s*["']([^"']+)["']`);
     const matchData = idRegex.exec(fileContent);
-    
+
     let testData = { id: testId, title: testId, description: "알 수 없는 테스트", category: "기타" };
     if (matchData) {
       testData.title = matchData[1];
@@ -330,7 +330,7 @@ bot.onText(/\/(market)\s+(.+)/, async (msg, match) => {
 
     // 2. 마케팅 에이전시 실행
     const { generateMarketingCampaign } = await import('./marketingAgent.js');
-    
+
     const report = await generateMarketingCampaign(testData, openai, (progressMsg) => {
       bot.sendMessage(chatId, progressMsg);
     });
@@ -557,7 +557,7 @@ ${failList.length > 0 ? `\n❌ Failed: ${failList.length}건\n${failList.join('\
 // 블로그 생성 및 배포 공통 함수
 async function generateAndPublishBlog(chatId, topic) {
   let promptTopic = topic;
-  
+
   if (!topic) {
     // 자동 모드: 주제가 없으면 알아서 트렌디한 롱테일 키워드 생성
     const angles = [
@@ -573,7 +573,7 @@ async function generateAndPublishBlog(chatId, topic) {
   }
 
   try {
-    const repoRoot = path.resolve(moduleDir, '../..');
+    const repoRoot = path.resolve(scriptDir, '../..');
     const blogPostsPath = path.join(repoRoot, 'src/data/blogPosts.ts');
     let existingPostsContext = "기존에 작성된 블로그 포스트가 없습니다.";
     const fs = await import('fs');
@@ -634,14 +634,14 @@ JSON 형식 외에 어떤 말도 출력하지 마.`
     });
 
     const aiData = JSON.parse(blogCompletion.choices[0].message.content);
-    
+
     bot.sendMessage(chatId, `✅ 칼럼 작성 완료! [${aiData.title}]\n로컬 코드에 주입을 시작합니다...`);
 
-    const repoRoot = path.resolve(moduleDir, '../..');
+    const repoRoot = path.resolve(scriptDir, '../..');
     const { exec } = await import('child_process');
     const util = await import('util');
     const execPromise = util.promisify(exec);
-    
+
     try {
       await execPromise('git stash && git checkout main && git pull origin main', { cwd: repoRoot });
     } catch (e) {
@@ -654,15 +654,15 @@ JSON 형식 외에 어떤 말도 출력하지 마.`
     bot.sendMessage(chatId, `⚙️ 코드 주입 완료! GitHub PR(결재 요청)을 생성합니다...`);
 
     const branchName = `feat/blog-${newId}-${Date.now()}`;
-    
+
     exec(`git checkout -b ${branchName} && git add -A && git commit -m "docs(blog): add post ${newId} - ${aiData.title}" && git push origin ${branchName}`, { cwd: repoRoot }, async (error, stdout, stderr) => {
       exec(`git checkout main`, { cwd: repoRoot });
-      
+
       if (error) {
-         bot.sendMessage(chatId, `⚠️ GitHub 전송 실패.\nSTDERR: ${stderr}\nERROR: ${error.code}`);
-         return;
+        bot.sendMessage(chatId, `⚠️ GitHub 전송 실패.\nSTDERR: ${stderr}\nERROR: ${error.code}`);
+        return;
       }
-      
+
       try {
         const pr = await octokit.pulls.create({
           owner,
@@ -672,7 +672,7 @@ JSON 형식 외에 어떤 말도 출력하지 마.`
           base: 'main',
           body: `## 📋 SEO 블로그 칼럼 결재 요청\n\n- **제목**: ${aiData.title}\n- **요약**: ${aiData.excerpt}\n- **카테고리**: ${aiData.category}\n- **태그**: ${aiData.tags.join(', ')}\n\n---\n> ✅ **승인(Merge) 시 자동으로 사이트에 배포되며, 구글 검색엔진에 노출됩니다.**`
         });
-        
+
         bot.sendMessage(chatId, `
 📝 **[블로그 결재 요청] 새 칼럼 PR이 생성되었습니다!**
 
@@ -703,31 +703,31 @@ function scheduleDailyBlog() {
   const now = new Date();
   const targetHour = 10; // 오전 10시
   const targetMinute = 0;
-  
+
   const nextRun = new Date(now.getFullYear(), now.getMonth(), now.getDate(), targetHour, targetMinute, 0, 0);
-  
+
   // 이미 오늘 10시가 지났다면 내일 10시로 설정
   if (now.getTime() >= nextRun.getTime()) {
     nextRun.setDate(nextRun.getDate() + 1);
   }
-  
+
   const delay = nextRun.getTime() - now.getTime();
-  
+
   console.log(`🤖 Auto-Pilot 스케줄러 세팅 완료: 다음 포스팅까지 ${Math.floor(delay / 1000 / 60)}분 남았습니다.`);
-  
+
   setTimeout(() => {
     const adminChatId = process.env.ADMIN_CHAT_ID;
     if (adminChatId) {
       generateAndPublishBlog(adminChatId, null);
     }
-    
+
     // 이후에는 24시간마다 반복
     setInterval(() => {
       if (adminChatId) {
         generateAndPublishBlog(adminChatId, null);
       }
     }, 24 * 60 * 60 * 1000);
-    
+
   }, delay);
 }
 
