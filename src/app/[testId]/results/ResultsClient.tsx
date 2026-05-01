@@ -14,6 +14,7 @@ import { Loader2, RotateCcw, Zap, Sparkles } from "lucide-react";
 function ResultsContent({ testId, testInfo, allKeys, resultsData, qLen }: any) {
   const searchParams = useSearchParams();
   const [score, setScore] = useState(0);
+  const [typeResultKey, setTypeResultKey] = useState<string | null>(null);
   const [isAnalyzing, setIsAnalyzing] = useState(true);
   const [calculateLevel, setCalculateLevel] = useState<((score: number) => string) | null>(null);
 
@@ -28,8 +29,23 @@ function ResultsContent({ testId, testInfo, allKeys, resultsData, qLen }: any) {
   }, [testId]);
 
   useEffect(() => {
-    const s = parseInt(searchParams.get("score") || "0", 10);
-    setScore(s);
+    // 유형 기반 테스트: ?types= 파라미터가 있으면 빈도 기반으로 결과 산출
+    const typesParam = searchParams.get("types");
+    if (typesParam) {
+      const typeArr = decodeURIComponent(typesParam).split(",").filter(Boolean);
+      const freq: Record<string, number> = {};
+      typeArr.forEach(t => { freq[t] = (freq[t] || 0) + 1; });
+      // 가장 많이 선택된 유형을 결과로 결정
+      const sorted = Object.entries(freq).sort((a, b) => b[1] - a[1]);
+      if (sorted.length > 0) {
+        setTypeResultKey(sorted[0][0]);
+      }
+    } else {
+      // 점수 기반 테스트: 기존 로직
+      const s = parseInt(searchParams.get("score") || "0", 10);
+      setScore(s);
+    }
+
     const timer = setTimeout(() => {
       setIsAnalyzing(false);
       if (typeof window !== "undefined" && (window as any).gtag) {
@@ -43,7 +59,10 @@ function ResultsContent({ testId, testInfo, allKeys, resultsData, qLen }: any) {
     return () => clearTimeout(timer);
   }, [searchParams, testId, qLen]);
 
-  const resultKey = calculateLevel ? calculateLevel(score) : allKeys[0];
+  // 유형 기반이면 typeResultKey 사용, 아니면 기존 점수 기반 로직
+  const resultKey = typeResultKey
+    ? typeResultKey
+    : (calculateLevel ? calculateLevel(score) : allKeys[0]);
   const result = resultsData[resultKey] || resultsData[allKeys[0]] || { title: "분석 완료", description: "당신만의 특별한 결과입니다!" };
 
   if (isAnalyzing) {

@@ -11,7 +11,12 @@ export default function TestClient({ testId, testInfo, questions, seoArticle }: 
   const [hasStarted, setHasStarted] = useState(false);
   const [currentStep, setCurrentStep] = useState(0);
   const [scoreHistory, setScoreHistory] = useState<number[]>([]);
+  const [typeHistory, setTypeHistory] = useState<string[]>([]);
   const [showInterstitial, setShowInterstitial] = useState(false);
+
+  // 유형 기반 테스트 자동 감지: 옵션에 type 필드가 있고 score 필드가 없으면 유형 기반
+  const isTypeBased = questions[0]?.options?.[0]?.type !== undefined
+    && questions[0]?.options?.[0]?.score === undefined;
 
   const qLen = questions.length;
   const midPoint = Math.floor(qLen / 2);
@@ -27,9 +32,14 @@ export default function TestClient({ testId, testInfo, questions, seoArticle }: 
     }
   };
 
-  const handleAnswer = (points: number) => {
-    const newHistory = [...scoreHistory.slice(0, currentStep), points];
-    setScoreHistory(newHistory);
+  const handleAnswer = (points: number, optType?: string) => {
+    // 점수 기반 히스토리 (기존 테스트용)
+    const newScoreHistory = [...scoreHistory.slice(0, currentStep), points];
+    setScoreHistory(newScoreHistory);
+
+    // 유형 기반 히스토리 (SBTI, Dopamine 등)
+    const newTypeHistory = [...typeHistory.slice(0, currentStep), optType || ''];
+    setTypeHistory(newTypeHistory);
 
     if (currentStep === midPoint - 1) {
       setShowInterstitial(true);
@@ -44,8 +54,15 @@ export default function TestClient({ testId, testInfo, questions, seoArticle }: 
       if (currentStep < qLen - 1) {
         setCurrentStep(curr => curr + 1);
       } else {
-        const totalScore = newHistory.reduce((a, b) => a + b, 0);
-        router.push(`/${testId}/results?score=${totalScore}`);
+        if (isTypeBased) {
+          // 유형 기반: type 배열을 쉼표 구분 문자열로 전달
+          const typesParam = newTypeHistory.join(',');
+          router.push(`/${testId}/results?types=${encodeURIComponent(typesParam)}`);
+        } else {
+          // 점수 기반: 기존 로직 유지
+          const totalScore = newScoreHistory.reduce((a, b) => a + b, 0);
+          router.push(`/${testId}/results?score=${totalScore}`);
+        }
       }
     }, 300);
   };
@@ -127,8 +144,9 @@ export default function TestClient({ testId, testInfo, questions, seoArticle }: 
                   {question?.options?.map((opt: any, idx: number) => {
                     const text = typeof opt === "string" ? opt : opt.text;
                     const val = typeof opt === "string" ? 1 : (opt.score ?? 1);
+                    const optType = typeof opt === "object" ? opt.type : undefined;
                     return (
-                      <button key={idx} onClick={() => handleAnswer(val as number)} className="w-full p-5 text-left rounded-2xl border-2 border-neutral-100 hover:border-pink-200 hover:bg-pink-50/30 shadow-sm transition-all duration-300 transform hover:-translate-y-1">
+                      <button key={idx} onClick={() => handleAnswer(val as number, optType)} className="w-full p-5 text-left rounded-2xl border-2 border-neutral-100 hover:border-pink-200 hover:bg-pink-50/30 shadow-sm transition-all duration-300 transform hover:-translate-y-1">
                         <div className="font-medium text-neutral-700 text-[1.05rem] leading-relaxed">{text}</div>
                       </button>
                     );
