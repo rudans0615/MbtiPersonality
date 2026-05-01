@@ -12,6 +12,7 @@ export interface SbtiQuestion {
 }
 
 export const sbtiQuestions: SbtiQuestion[] = [
+  // --- 기존 12문항 ---
   {
     id: 1,
     text: "월급날 통장에 돈이 꽂혔다! 나의 첫 행동은?",
@@ -130,6 +131,128 @@ export const sbtiQuestions: SbtiQuestion[] = [
       { text: "회사 당장 그만두고 우리 회사 경쟁사 인수해버리는 상상함", type: "WORKAHOLIC" },
       { text: "애인한테 외제차 뽑아주고 스몰 웨딩으로 성대하게(?) 결혼함", type: "LOVE_BLIND" },
       { text: "돈벼락 맞은 거 들키면 사기당할까 봐 불안해서 가족한테도 숨김", type: "WORRY_MACHINE" }
+    ]
+  },
+  
+  // --- 신규 12문항 (13~24번) ---
+  {
+    id: 13,
+    text: "유튜브 알고리즘에 내가 평소 사고 싶었던 물건 리뷰가 떴을 때",
+    options: [
+      { text: "'이건 운명이야' 하면서 영상 다 보기도 전에 결제창으로 넘어감", type: "MONEY_WASTER" },
+      { text: "영상 보면서 맥주 한 캔 따고 안주 먹방으로 자체 변질시킴", type: "ALCOHOLIC" },
+      { text: "이게 요즘 인싸템이라고? 나도 당장 사서 스토리 올려야지", type: "TREND_SLAVE" },
+      { text: "리뷰 영상 끝난 뒤 끝없는 쇼츠의 늪으로 빠져서 물건 사는 건 까먹음", type: "DOPAMINE_ADDICT" }
+    ]
+  },
+  {
+    id: 14,
+    text: "친구들과의 약속 시간에 늦었을 때 나의 대처법은?",
+    options: [
+      { text: "가기 귀찮았는데 잘됐다 싶어서 '나 오늘 몸이 좀 안 좋네...' 핑계 댐", type: "LAZY_BED" },
+      { text: "카톡 알림 몰래 훔쳐보고 애들이 '어디냐'고 화낼 때까지 안 읽씹 유지", type: "SOCIAL_GHOST" },
+      { text: "'미안 좀 늦음 먼저 먹고 있어' 당당하게 통보하고 천천히 걸어감", type: "MY_WAY" },
+      { text: "버스 기사님이 신호 걸릴 때마다 혼자 속으로 열불 터져서 씩씩댐", type: "ANGRY_BIRD" }
+    ]
+  },
+  {
+    id: 15,
+    text: "별로 안 친한 동료가 뜬금없이 모바일 청첩장을 보냈을 때",
+    options: [
+      { text: "축의금 액수별 기준표 엑셀로 만들어서 얼마 낼지 과학적으로 계산함", type: "FAKE_PLANNER" },
+      { text: "그날 주말 출근이나 야근 핑계 대고 돈만 살짝 보내고 빠짐", type: "WORKAHOLIC" },
+      { text: "청첩장 사진 보면서 '내 결혼식은 이거보다 예뻐야지' 망상 시작함", type: "LOVE_BLIND" },
+      { text: "'안 가면 뒤에서 욕하려나? 가면 또 뻘쭘할 텐데' 하루 종일 혼자 고민함", type: "WORRY_MACHINE" }
+    ]
+  },
+  {
+    id: 16,
+    text: "다이어트 중인데 밤 11시에 치킨 냄새가 진동할 때",
+    options: [
+      { text: "'다이어트는 내일부터' 외치며 요기요 VVIP 쿠폰으로 제일 비싼 세트 지름", type: "MONEY_WASTER" },
+      { text: "'치킨엔 생맥이지' 냉장고에서 남은 캔맥주 꺼내서 바로 세팅함", type: "ALCOHOLIC" },
+      { text: "기왕 먹을 거면 요즘 제일 핫한 신메뉴 치킨으로 시켜서 인스타 올림", type: "TREND_SLAVE" },
+      { text: "배달 기다리는 동안 먹방 유튜버 치킨 먹는 쇼츠 보면서 도파민 충전", type: "DOPAMINE_ADDICT" }
+    ]
+  },
+  {
+    id: 17,
+    text: "썸남/썸녀가 '나 오늘 우울해서 머리 잘랐어'라고 카톡을 보냈을 때",
+    options: [
+      { text: "'어어 그래...' 하고 답장 쓰기 귀찮아서 그냥 하트나 하나 찍고 맘", type: "LAZY_BED" },
+      { text: "T답게 '우울한데 머리는 왜 자름?' 보냈다가 분위기 싸해질까 봐 안 읽씹함", type: "SOCIAL_GHOST" },
+      { text: "'난 파마하는 게 더 예쁘던데' 팩폭 날리며 마이웨이로 답장함", type: "MY_WAY" },
+      { text: "'누가 널 우울하게 만들었어!!' 급발진하며 대신 화내줌", type: "ANGRY_BIRD" }
+    ]
+  },
+  {
+    id: 18,
+    text: "내일까지 끝내야 하는 과제/업무가 산더미일 때",
+    options: [
+      { text: "완벽하게 끝내는 타임라인 짜다가 시간 다 보내고 결국 벼락치기함", type: "FAKE_PLANNER" },
+      { text: "카페인 수혈하고 전투 모드 돌입, 밤새워서라도 남들보다 완벽하게 끝냄", type: "WORKAHOLIC" },
+      { text: "애인한테 전화해서 '나 너무 힘들어 찡찡' 거리고 위로받느라 1시간 날림", type: "LOVE_BLIND" },
+      { text: "'이거 못 끝내면 잘리는 거 아냐?' 극단적인 상상하며 식은땀 흘림", type: "WORRY_MACHINE" }
+    ]
+  },
+  {
+    id: 19,
+    text: "주말에 갑자기 10만 원짜리 공돈이 생겼다!",
+    options: [
+      { text: "이건 신이 주신 용돈! 바로 평소에 사고 싶었던 무쓸모 굿즈 결제함", type: "MONEY_WASTER" },
+      { text: "'오늘 술값 굳었다!' 당장 친구들 불러서 고급 안주에 소맥 콸콸 마심", type: "ALCOHOLIC" },
+      { text: "요즘 예약하기 빡세다는 한강 뷰 레스토랑 당장 예약하고 자랑함", type: "TREND_SLAVE" },
+      { text: "평소 하던 모바일 게임에 가챠 현질해서 도파민 풀충전함", type: "DOPAMINE_ADDICT" }
+    ]
+  },
+  {
+    id: 20,
+    text: "모처럼 주어진 황금 같은 3일 연휴의 계획은?",
+    options: [
+      { text: "이불 밖으로 한 발짝도 나가지 않고 넷플릭스 정주행하며 침대와 한 몸 됨", type: "LAZY_BED" },
+      { text: "카톡 방해금지 모드 켜고 누구의 연락도 받지 않는 나만의 동굴 생활 시작", type: "SOCIAL_GHOST" },
+      { text: "남들 다 가는 여행지는 패스, 나 혼자 훌쩍 아무도 모르는 곳으로 떠남", type: "MY_WAY" },
+      { text: "어딜 가나 차 막히고 사람 많은 꼴 보면 승질나서 그냥 집에 있음", type: "ANGRY_BIRD" }
+    ]
+  },
+  {
+    id: 21,
+    text: "인스타 스토리에 게시물을 올리는 나의 빈도와 스타일은?",
+    options: [
+      { text: "운동, 독서, 미라클 모닝 등 '갓생 사는 나'의 모습을 주로 올림 (실제론 아님)", type: "FAKE_PLANNER" },
+      { text: "밤 11시에 모니터 화면 찍어 올리며 '오늘도 야근...' 노예 인증함", type: "WORKAHOLIC" },
+      { text: "애인과 찍은 네컷 사진, 커플템 등 하루 종일 럽스타그램으로 도배함", type: "LOVE_BLIND" },
+      { text: "'이거 올리면 애들이 관종이라 욕할까?' 1시간 고민하다가 결국 안 올림", type: "WORRY_MACHINE" }
+    ]
+  },
+  {
+    id: 22,
+    text: "사람이 바글바글한 회식/모임 자리에서 나의 포지션은?",
+    options: [
+      { text: "내 돈 아니니까 이럴 때 비싼 메뉴 시키자며 제일 비싼 소고기 주문함", type: "MONEY_WASTER" },
+      { text: "쉬지 않고 남의 잔 채워주고 내 잔도 채우며 건배사 주도하는 술의 신", type: "ALCOHOLIC" },
+      { text: "요즘 릴스에서 유행하는 신상 폭탄주 제조법 시연하며 인싸력 뽐냄", type: "TREND_SLAVE" },
+      { text: "구석에서 폰 만지작거리며 웃긴 쇼츠나 보면서 몰래 딴짓함", type: "DOPAMINE_ADDICT" }
+    ]
+  },
+  {
+    id: 23,
+    text: "미용실에서 머리를 자를 때 나의 스타일은?",
+    options: [
+      { text: "말하는 것도 귀찮아서 '그냥 깔끔하게 다듬어주세요' 하고 꾸벅꾸벅 졺", type: "LAZY_BED" },
+      { text: "디자이너 선생님이 스몰톡 걸어오면 심박수 올라가면서 단답형으로 뚝딱거림", type: "SOCIAL_GHOST" },
+      { text: "연예인 사진 딱 보여주고 '무조건 이렇게 해주세요' 단호하게 요구함", type: "MY_WAY" },
+      { text: "머리 망한 것 같으면 그 자리에서 표정 관리 못하고 정색하며 따짐", type: "ANGRY_BIRD" }
+    ]
+  },
+  {
+    id: 24,
+    text: "통장 잔고가 10만 원밖에 안 남았을 때 나의 심정은?",
+    options: [
+      { text: "가계부 앱 켜서 남은 10만 원을 어떻게 쪼개 쓸지 과학적인(?) 예산 짬", type: "FAKE_PLANNER" },
+      { text: "안 되겠다 싶어서 당장 주말 알바나 단기 투잡 공고 미친 듯이 뒤짐", type: "WORKAHOLIC" },
+      { text: "'이번 주말 데이트 비용 어떡하지...' 애인 실망시킬까 봐 그게 제일 걱정임", type: "LOVE_BLIND" },
+      { text: "'이러다 길거리에 나앉는 거 아냐?' 파산해서 굶어 죽는 상상하며 오열함", type: "WORRY_MACHINE" }
     ]
   }
 ];
