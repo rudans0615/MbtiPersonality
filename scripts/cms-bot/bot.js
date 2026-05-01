@@ -7,7 +7,7 @@ import { fileURLToPath } from 'url';
 
 dotenv.config();
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const moduleDir = path.dirname(fileURLToPath(import.meta.url));
 
 // 환경변수 체크
 const requiredEnvs = ['TELEGRAM_BOT_TOKEN', 'GITHUB_TOKEN', 'GITHUB_OWNER', 'GITHUB_REPO', 'OPENAI_API_KEY'];
@@ -573,7 +573,7 @@ async function generateAndPublishBlog(chatId, topic) {
   }
 
   try {
-    const repoRoot = path.resolve(__dirname, '../..');
+    const repoRoot = path.resolve(moduleDir, '../..');
     const blogPostsPath = path.join(repoRoot, 'src/data/blogPosts.ts');
     let existingPostsContext = "기존에 작성된 블로그 포스트가 없습니다.";
     const fs = await import('fs');
@@ -637,7 +637,7 @@ JSON 형식 외에 어떤 말도 출력하지 마.`
     
     bot.sendMessage(chatId, `✅ 칼럼 작성 완료! [${aiData.title}]\n로컬 코드에 주입을 시작합니다...`);
 
-    const repoRoot = path.resolve(__dirname, '../..');
+    const repoRoot = path.resolve(moduleDir, '../..');
     const { exec } = await import('child_process');
     const util = await import('util');
     const execPromise = util.promisify(exec);
