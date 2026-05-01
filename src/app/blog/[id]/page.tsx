@@ -154,6 +154,29 @@ export default async function BlogPostPage({ params }: { params: Promise<{ id: s
           </div>
         </div>
 
+        {/* Related Posts */}
+        <div className="max-w-3xl mx-auto px-6 mt-12 mb-8 pt-8 border-t border-neutral-200">
+          <h3 className="text-xl font-bold text-neutral-900 mb-6">📝 함께 읽으면 좋은 관련 글</h3>
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+            {blogPosts
+              .filter(p => p.category === post.category && p.id !== post.id)
+              .sort(() => 0.5 - Math.random()) // 간단한 랜덤 셔플
+              .slice(0, 3)
+              .map(relatedPost => (
+                <Link key={relatedPost.id} href={`/blog/${relatedPost.id}`} className="group block">
+                  <div className="p-4 rounded-xl border border-neutral-200 hover:border-pink-300 hover:shadow-md transition-all h-full bg-white flex flex-col">
+                    <h4 className="font-bold text-neutral-800 group-hover:text-pink-600 line-clamp-2 mb-2 leading-tight">
+                      {relatedPost.title}
+                    </h4>
+                    <p className="text-sm text-neutral-500 line-clamp-2 mt-auto">
+                      {relatedPost.excerpt}
+                    </p>
+                  </div>
+                </Link>
+              ))}
+          </div>
+        </div>
+
         {/* AdSense Bottom */}
         <div className="max-w-3xl mx-auto px-6 mt-8">
            <AdSenseBlock adSlot="0987654321" />

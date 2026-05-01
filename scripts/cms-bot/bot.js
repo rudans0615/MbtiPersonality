@@ -573,6 +573,24 @@ async function generateAndPublishBlog(chatId, topic) {
   }
 
   try {
+    const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
+    const blogPostsPath = path.join(repoRoot, 'src/data/blogPosts.ts');
+    let existingPostsContext = "기존에 작성된 블로그 포스트가 없습니다.";
+    const fs = await import('fs');
+    if (fs.existsSync(blogPostsPath)) {
+      const content = fs.readFileSync(blogPostsPath, 'utf-8');
+      const titleRegex = /id:\s*(\d+),\s*title:\s*"([^"]+)"/g;
+      let match;
+      const posts = [];
+      while ((match = titleRegex.exec(content)) !== null) {
+        posts.push({ id: match[1], title: match[2] });
+      }
+      if (posts.length > 0) {
+        // 최신 15개 정도만 컨텍스트로 제공
+        existingPostsContext = posts.slice(-15).map(p => `- 제목: "${p.title}" (링크 URL: /blog/${p.id})`).join('\n');
+      }
+    }
+
     const blogCompletion = await openai.chat.completions.create({
       model: "gpt-4o-mini",
       temperature: 0.85,
@@ -590,6 +608,12 @@ async function generateAndPublishBlog(chatId, topic) {
 4. "이 글에서는~", "안녕하세요~" 같은 뻔한 서론 금지. 즉시 호기심을 유발하는 본론으로 들어갈 것.
 5. 전문적인 심리학 지식과 대중적인 공감 포인트(예시, 비유)를 적절히 믹스할 것.
 6. 글의 전체 분량은 최소 1,500자 이상이 되도록 매우 상세하게 작성할 것.
+7. [매우 중요: 내부 링크] 아래 <기존 블로그 목록>을 참고하여, 현재 작성 중인 본문 내용과 문맥이 자연스럽게 이어지는 글이 있다면 1~2개 이상을 반드시 본문 내에 하이퍼링크로 삽입할 것. 
+   - 사용 예시: <a href="/blog/18" class="text-pink-500 font-bold hover:underline">INFP가 읽씹하는 진짜 이유</a>를 참고해보세요.
+
+<기존 블로그 목록>
+${existingPostsContext}
+</기존 블로그 목록>
 
 [JSON 출력 형식 - 반드시 준수]
 {
