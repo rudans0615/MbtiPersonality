@@ -7,8 +7,13 @@ import { testTypes } from "@/data/testTypes";
 import CategoryRowClient from "@/components/CategoryRowClient"; // We need to extract the client component part
 
 export const metadata = {
-  title: "MBTI 성격유형 검사 | 재미있는 심리테스트 모음",
+  title: {
+    absolute: "MBTI 성격유형 검사 | 재미있는 심리테스트 모음 - MBTI Finder",
+  },
   description: "MBTI 16가지 성격유형 검사, 호르몬 진단, 연애 호구력 테스트 등 재미있고 정확한 무료 심리테스트를 지금 바로 해보세요!",
+  alternates: {
+    canonical: '/',
+  },
 };
 
 export default function Home() {

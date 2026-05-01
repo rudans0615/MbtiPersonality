@@ -7,6 +7,14 @@ import Link from 'next/link';
 import { ArrowLeft, Calendar, Clock } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 
+// 한국어 날짜 문자열을 ISO 8601로 변환 (예: "2026년 5월 1일" → "2026-05-01")
+function parseDateToISO(dateStr: string): string {
+  const match = dateStr.match(/(\d{4})년\s*(\d{1,2})월\s*(\d{1,2})일/);
+  if (!match) return new Date().toISOString().split('T')[0];
+  const [, y, m, d] = match;
+  return `${y}-${m.padStart(2, '0')}-${d.padStart(2, '0')}`;
+}
+
 // 빌드 타임에 모든 블로그 글의 라우팅 경로를 미리 생성합니다 (SSG)
 export async function generateStaticParams() {
   return blogPosts.map((post) => ({
@@ -24,10 +32,14 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
   return {
     title: `${post.title} | MBTI Finder 성격분석 블로그`,
     description: post.excerpt,
+    alternates: {
+      canonical: `/blog/${id}`,
+    },
     openGraph: {
       title: `${post.title} | MBTI Finder`,
       description: post.excerpt,
       type: 'article',
+      url: `https://mbtifinder.com/blog/${id}`,
       authors: ['MBTI Finder'],
       tags: post.tags,
     }
@@ -53,8 +65,36 @@ export default async function BlogPostPage({ params }: { params: Promise<{ id: s
     );
   }
 
+  // JSON-LD Article 구조화 데이터
+  const jsonLdArticle = {
+    '@context': 'https://schema.org',
+    '@type': 'Article',
+    headline: post.title,
+    description: post.excerpt,
+    author: {
+      '@type': 'Organization',
+      name: 'MBTI Finder',
+      url: 'https://mbtifinder.com',
+    },
+    publisher: {
+      '@type': 'Organization',
+      name: 'MBTI Finder',
+      url: 'https://mbtifinder.com',
+    },
+    datePublished: parseDateToISO(post.date),
+    dateModified: parseDateToISO(post.date),
+    mainEntityOfPage: `https://mbtifinder.com/blog/${id}`,
+    keywords: post.tags.join(', '),
+    articleSection: post.category,
+    inLanguage: 'ko',
+  };
+
   return (
     <div className="min-h-screen bg-neutral-50 flex flex-col font-sans">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdArticle) }}
+      />
       <SEO 
         title={`${post.title} | MBTI Finder 성격분석 블로그`} 
         description={post.excerpt} 
