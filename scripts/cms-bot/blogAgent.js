@@ -29,6 +29,12 @@ export async function injectBlogPost(aiData) {
   const readTimeMin = Math.max(3, Math.ceil(plainTextLength / 400));
   const readTimeString = `${readTimeMin}분`;
   
+  // content 내 백틱(`) 및 ${} 이스케이프 처리 (템플릿 리터럴 깨짐 방지)
+  const safeContent = content
+    .replace(/\\/g, '\\\\')    // 백슬래시 먼저 이스케이프
+    .replace(/`/g, '\\`')     // 백틱 이스케이프
+    .replace(/\$\{/g, '\\${'); // 템플릿 리터럴 인터폴레이션 이스케이프
+
   const newPostObject = `  {
     id: ${newId},
     title: ${JSON.stringify(title)},
@@ -38,26 +44,40 @@ export async function injectBlogPost(aiData) {
     tags: ${JSON.stringify(tags)},
     category: ${JSON.stringify(category || '심층분석')},
     content: \`
-${content.replace(/`/g, '\\`')}
+${safeContent}
     \`
   }`;
 
-  // 파일의 마지막 '].sort' 를 찾아 앞에 새로운 객체를 쉼표와 함께 주입
-  const lastBracketIndex = fileContent.lastIndexOf('].sort');
-  if (lastBracketIndex !== -1) {
-    // 맨 끝 객체 뒤에 쉼표가 없을 수도 있으므로, 배열의 끝부분을 찾아서 안전하게 교체
-    // 마지막 객체가 끝나는 '}' 의 인덱스를 찾습니다.
-    let beforeBracket = fileContent.slice(0, lastBracketIndex).trimEnd();
+  // ].sort(...) 패턴을 정확히 찾아서, 그 앞에 새 항목을 삽입
+  // 정규식으로 파일 마지막의 ].sort((a, b) => b.id - a.id); 를 찾음
+  const closingPattern = /\]\s*\.sort\s*\(\s*\(a\s*,\s*b\)\s*=>\s*b\.id\s*-\s*a\.id\s*\)\s*;?\s*$/;
+  const closingMatch = fileContent.match(closingPattern);
+
+  if (closingMatch) {
+    const insertIndex = fileContent.lastIndexOf(closingMatch[0]);
+    const beforeClosing = fileContent.slice(0, insertIndex).trimEnd();
     
-    // 만약 쉼표로 안 끝난다면 쉼표 추가
-    if (!beforeBracket.endsWith(',')) {
-      beforeBracket += ',';
+    // 마지막 객체 뒤에 쉼표가 없으면 추가
+    const withComma = beforeClosing.endsWith(',') ? beforeClosing : beforeClosing + ',';
+    
+    const newFileContent = withComma + '\n' + newPostObject + '\n].sort((a, b) => b.id - a.id);\n';
+    
+    // 파일 쓰기 전 기본 검증: 기존 포스트들이 살아있는지 확인
+    const originalIdCount = (fileContent.match(/id:\s*\d+/g) || []).length;
+    const newIdCount = (newFileContent.match(/id:\s*\d+/g) || []).length;
+    
+    if (newIdCount < originalIdCount) {
+      throw new Error(`안전 검증 실패: 기존 ${originalIdCount}개 항목 중 ${originalIdCount - newIdCount}개가 누락되었습니다. 파일을 수정하지 않습니다.`);
     }
     
-    const newFileContent = beforeBracket + '\n' + newPostObject + '\n].sort((a, b) => b.id - a.id);\n';
+    // interface 정의가 존재하는지 확인
+    if (!newFileContent.includes('export interface BlogPost')) {
+      throw new Error('안전 검증 실패: BlogPost 인터페이스 정의가 없습니다. 파일을 수정하지 않습니다.');
+    }
+    
     fs.writeFileSync(blogPostsPath, newFileContent, 'utf-8');
   } else {
-    throw new Error('blogPosts.ts 파일에서 닫는 괄호(].sort)를 찾을 수 없습니다.');
+    throw new Error('blogPosts.ts 파일에서 닫는 패턴(].sort((a, b) => b.id - a.id))을 찾을 수 없습니다.');
   }
   
   return newId;
