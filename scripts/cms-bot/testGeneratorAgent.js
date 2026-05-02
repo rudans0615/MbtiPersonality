@@ -70,9 +70,35 @@ export async function generateViralTest(openai, bot, chatId, { topic, targetAudi
       response_format: zodResponseFormat(TestSchema, "test_schema")
     });
 
-    const parsedData = completion.choices[0].message.parsed;
+    let parsedData = completion.choices[0].message.parsed;
 
-    bot.sendMessage(chatId, `🔍 [Critic Agent] 1차 기획안(12문항/12유형) 도출 완료. 스키마 무결성 검증 통과!\n- 제목: ${parsedData.title}\n(이제 DB 주입용 포맷으로 변환 및 배포를 준비합니다...)`);
+    bot.sendMessage(chatId, `🔍 [Critic Agent] 1차 기획안(12문항/12유형) 도출 완료. 논리적 오류 검수 및 문맥 교정 중... (약 20초 소요)`);
+
+    // 2차 검수 (Critic Agent)
+    const qaCompletion = await openai.beta.chat.completions.parse({
+      model: "gpt-4o",
+      temperature: 0.3, // 낮은 온도로 보수적이고 논리적인 판단 유도
+      messages: [
+        {
+          role: "system",
+          content: `너는 한국어로 작성된 심리테스트를 검수하는 'QA 메인 검수자(Critic Agent)'야.
+주어진 테스트 JSON 데이터를 읽고 다음을 엄격히 수정해서 동일한 JSON 형식으로 반환해.
+
+[검수 가이드라인]
+1. 문맥의 논리적 오류: 앞뒤가 안 맞는 상황 (예: 누군가 나를 따라오는데, 내가 그를 천천히 따라간다 등)을 찾아내어 논리적으로 자연스럽게 수정해.
+2. 어색한 번역투/기계투: 너무 딱딱하거나 번역기 같은 말투를 한국 10~30대가 쓰는 자연스러운 구어체로 다듬어.
+3. 12개의 typeCode 및 선택지 개수 등 구조는 절대 변경하지 말고 오직 텍스트 내용만 교정해.`
+        },
+        {
+          role: "user",
+          content: JSON.stringify(parsedData)
+        }
+      ],
+      response_format: zodResponseFormat(TestSchema, "test_schema")
+    });
+
+    parsedData = qaCompletion.choices[0].message.parsed;
+    bot.sendMessage(chatId, `✨ [Critic Agent] 논리적 오류 검수 및 교정 완료! 스키마 무결성 검증 통과!\n- 제목: ${parsedData.title}\n(이제 DB 주입용 포맷으로 변환 및 배포를 준비합니다...)`);
 
     // developerAgent.js가 예상하는 포맷으로 변환
     // developerAgent.js는 results를 Object(Record<string, any>)로 기대함
