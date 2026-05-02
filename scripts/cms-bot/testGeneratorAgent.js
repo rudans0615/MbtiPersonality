@@ -25,8 +25,8 @@ export async function generateViralTest(openai, bot, chatId, { topic, targetAudi
         subtitle: z.string().describe("한줄 요약"),
         description: z.string().describe("장단점 및 뼈때리는 팩폭을 담은 300자 이상의 상세 설명"),
         characteristics: z.array(z.string()).length(4).describe("이 유형의 핵심 특징 4가지 (짧고 강렬하게)"),
-        coupangKeyword: z.string().describe("고관여/고단가 추천 상품 검색 키워드 (책/문구류 제외)"),
-        coupangHook: z.string().describe("쿠팡 추천 영역 상단 후킹 멘트 (20자 내외)")
+        coupangKeyword: z.string().describe("이 유형의 사람이 살 법한 실제 쿠팡 실물 상품 키워드 (예: '호신용 스프레이', '게이밍 의자', '숙취해소제' 등. 성향 이름 자체를 넣으면 절대 안 됨)"),
+        coupangHook: z.string().describe("이 상품을 사야 하는 이유를 담은 찰진 후킹 멘트 (20자 내외)")
       })).min(4).max(8).describe("주제에 맞게 4~8개의 서로 다른 고유한 결과 유형을 생성해야 함"),
 
       // 주제에 맞게 8~12개의 문항
@@ -87,7 +87,8 @@ export async function generateViralTest(openai, bot, chatId, { topic, targetAudi
 [검수 가이드라인]
 1. 문맥의 논리적 오류: 앞뒤가 안 맞는 상황 (예: 누군가 나를 따라오는데, 내가 그를 천천히 따라간다 등)을 찾아내어 논리적으로 자연스럽게 수정해.
 2. 어색한 번역투/기계투: 너무 딱딱하거나 번역기 같은 말투를 한국 10~30대가 쓰는 자연스러운 구어체로 다듬어.
-3. 설계된 typeCode 개수 및 선택지 개수 등 전체적인 JSON 구조는 절대 변경하지 말고 오직 텍스트 내용만 교정해.`
+3. 쿠팡 추천 키워드(coupangKeyword)가 추상적인 성향 이름(예: '전사', '평화주의자')으로 되어있다면, 반드시 실존하는 구체적인 실물 상품명(예: '샌드백', '인센스 스틱')으로 수정해.
+4. 설계된 typeCode 개수 및 선택지 개수 등 전체적인 JSON 구조는 절대 변경하지 말고 오직 텍스트 내용만 교정해.`
         },
         {
           role: "user",
