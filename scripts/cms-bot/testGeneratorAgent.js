@@ -6,7 +6,7 @@ export async function generateViralTest(openai, bot, chatId, { topic, targetAudi
   bot.sendMessage(chatId, `🚀 [Director Agent] 기획 시작...\n- 주제: ${topic}\n- 타겟: ${targetAudience}\n- 팩폭 수위: ${tone}\n(매트릭스 설계 중, 약 30초 소요)`);
 
   try {
-    // 12가지 성향(Type)과 12문항 4지선다를 엄격하게 강제하는 Zod 스키마
+    // 주제에 맞는 유연한 성향(Type)과 문항을 허용하는 Zod 스키마
     const TestSchema = z.object({
       testId: z.string().describe("camelCase 영문 고유 ID (예: blindLoveTest)"),
       category: z.enum(["HOT", "LOVE", "PERSONALITY", "FUN", "CAREER"]),
@@ -17,7 +17,7 @@ export async function generateViralTest(openai, bot, chatId, { topic, targetAudi
       seoArticle: z.string().describe("SEO 최적화를 위한 500자 이상의 심리학적 칼럼 텍스트 (단락 구분 포함)"),
       promotionalCopy: z.string().describe("인스타 피드용 홍보 복붙 멘트 (찰진 팩폭 멘트)"),
       
-      // 정확히 12개의 결과 유형
+      // 주제에 맞게 4~8개의 결과 유형
       results: z.array(z.object({
         typeCode: z.string().describe("영문 대문자 스네이크 케이스 (예: MONEY_WASTER)"),
         title: z.string().describe("유형 이름 (예: 통장파괴자)"),
@@ -27,16 +27,16 @@ export async function generateViralTest(openai, bot, chatId, { topic, targetAudi
         characteristics: z.array(z.string()).length(4).describe("이 유형의 핵심 특징 4가지 (짧고 강렬하게)"),
         coupangKeyword: z.string().describe("고관여/고단가 추천 상품 검색 키워드 (책/문구류 제외)"),
         coupangHook: z.string().describe("쿠팡 추천 영역 상단 후킹 멘트 (20자 내외)")
-      })).length(12).describe("반드시 12개의 서로 다른 고유한 결과 유형을 생성해야 함"),
+      })).min(4).max(8).describe("주제에 맞게 4~8개의 서로 다른 고유한 결과 유형을 생성해야 함"),
 
-      // 정확히 12개의 문항
+      // 주제에 맞게 8~12개의 문항
       questions: z.array(z.object({
         question: z.string().describe("구체적인 상황이 묘사된 질문 (예: 밤 11시 갑자기 친구가 나오라고 할 때)"),
         options: z.array(z.object({
           text: z.string().describe("자연스러운 구어체 선택지 (예: 귀찮아 안 나가)"),
-          typeCode: z.string().describe("선택 시 매핑될 결과 유형의 typeCode (results에 정의된 12개 중 하나)")
+          typeCode: z.string().describe("선택 시 매핑될 결과 유형의 typeCode (results에 정의된 유형 중 하나)")
         })).length(4).describe("반드시 4지선다형")
-      })).length(12).describe("반드시 12개의 질문을 생성해야 함")
+      })).min(8).max(12).describe("주제에 맞게 8~12개의 질문을 생성해야 함")
     });
 
     // Director & Creator 통합 프롬프트
@@ -49,10 +49,10 @@ export async function generateViralTest(openai, bot, chatId, { topic, targetAudi
           content: `너는 10~30대 한국 여성 대상 바이럴 테스트 제작 전문 'Multi-Agent 팀(디렉터+메인작가)'이야.
 
 [디렉터의 룰 - 매트릭스 설계]
-1. 반드시 12개의 서로 다른 고유한 결과 유형(typeCode)을 설계해라.
-2. 반드시 12개의 문항을 설계해라.
-3. 각 문항은 4지선다(options 4개)로 구성되며, 각 option은 위에서 설계한 12개의 typeCode 중 하나를 지목해야 한다.
-4. 12개 문항 × 4지선다 = 총 48개의 선택지가 존재한다. 12개의 typeCode가 각각 정확히 4번씩 선택지에 등장하도록 매트릭스를 완벽하게 분배해라. (한 문항 내에서 동일한 typeCode가 중복 등장하면 안 됨)
+1. 주제에 가장 적합한 고유한 결과 유형(typeCode)을 4~8개 사이로 설계해라.
+2. 위 결과를 정확히 판별해낼 수 있는 핵심 질문을 8~12개 사이로 설계해라.
+3. 각 문항은 4지선다(options 4개)로 구성되며, 각 option은 위에서 설계한 결과 유형(typeCode) 중 하나를 지목해야 한다.
+4. 옵션(typeCode) 매핑 시 특정 유형에 치우치지 않고 전체 질문을 통틀어 각 결과 유형이 골고루 분배되도록 논리적인 매트릭스를 구성해라.
 
 [메인 작가의 룰 - 콘텐츠 톤앤매너]
 1. 타겟 연령대: ${targetAudience}
@@ -72,7 +72,7 @@ export async function generateViralTest(openai, bot, chatId, { topic, targetAudi
 
     let parsedData = completion.choices[0].message.parsed;
 
-    bot.sendMessage(chatId, `🔍 [Critic Agent] 1차 기획안(12문항/12유형) 도출 완료. 논리적 오류 검수 및 문맥 교정 중... (약 20초 소요)`);
+    bot.sendMessage(chatId, `🔍 [Critic Agent] 1차 기획안 도출 완료. 논리적 오류 검수 및 문맥 교정 중... (약 20초 소요)`);
 
     // 2차 검수 (Critic Agent)
     const qaCompletion = await openai.beta.chat.completions.parse({
@@ -87,7 +87,7 @@ export async function generateViralTest(openai, bot, chatId, { topic, targetAudi
 [검수 가이드라인]
 1. 문맥의 논리적 오류: 앞뒤가 안 맞는 상황 (예: 누군가 나를 따라오는데, 내가 그를 천천히 따라간다 등)을 찾아내어 논리적으로 자연스럽게 수정해.
 2. 어색한 번역투/기계투: 너무 딱딱하거나 번역기 같은 말투를 한국 10~30대가 쓰는 자연스러운 구어체로 다듬어.
-3. 12개의 typeCode 및 선택지 개수 등 구조는 절대 변경하지 말고 오직 텍스트 내용만 교정해.`
+3. 설계된 typeCode 개수 및 선택지 개수 등 전체적인 JSON 구조는 절대 변경하지 말고 오직 텍스트 내용만 교정해.`
         },
         {
           role: "user",
