@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { getTests } from "@/lib/queries";
 import CategoryRowClient from "@/components/CategoryRowClient";
 
-export const revalidate = 3600;
+export const revalidate = 60; // ISR: 1분마다 재생성 (봇이 새 테스트 추가시 빠른 반영)
 
 export const metadata = {
   title: {

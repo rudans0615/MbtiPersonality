@@ -2,7 +2,7 @@ import { getTests, getTestById, getResultTypes, getQuestionsWithOptions } from "
 import ResultsClient from "./ResultsClient";
 import { notFound } from "next/navigation";
 
-export const revalidate = 3600;
+export const revalidate = 60;
 
 export async function generateStaticParams() {
   try {

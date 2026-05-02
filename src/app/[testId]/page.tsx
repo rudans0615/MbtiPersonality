@@ -2,7 +2,7 @@ import { getTests, getTestById, getQuestionsWithOptions } from "@/lib/queries";
 import TestClient from "./TestClient";
 import { notFound } from "next/navigation";
 
-export const revalidate = 3600; // ISR: 1시간마다 재생성
+export const revalidate = 60; // ISR: 1분마다 재생성
 
 export async function generateStaticParams() {
   try {
