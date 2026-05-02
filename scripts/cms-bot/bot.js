@@ -181,7 +181,7 @@ bot.on('callback_query', async (query) => {
     if (data === 'tone_spicy') state.tone = '매운맛 뼈때리는 팩폭';
     if (data === 'tone_extreme') state.tone = '마라맛 극딜 저격 (도파민 터지는)';
 
-    bot.editMessageText(`✅ 타겟: ${state.targetAudience}\n✅ 팩폭 수위: ${state.tone}\n\n🚀 모든 설정이 완료되었습니다! 12문항 / 12결과 매트릭스 생성을 시작합니다...`, {
+    bot.editMessageText(`✅ 타겟: ${state.targetAudience}\n✅ 팩폭 수위: ${state.tone}\n\n🚀 모든 설정이 완료되었습니다! 주제에 최적화된 유연한 매트릭스(4~8결과, 8~12문항) 생성을 시작합니다...`, {
       chat_id: chatId,
       message_id: query.message.message_id,
       parse_mode: 'Markdown'
