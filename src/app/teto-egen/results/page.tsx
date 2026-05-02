@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import SEO from "@/components/SEO";
 import { usePathname, useRouter } from "next/navigation";
-import { tetoEgenTypes, getCompatibilityDescription } from "@/data/tetoEgenTypes";
+import { tetoEgenTypes, getCompatibilityDescription } from "@/lib/customTests/tetoEgenTypes";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { CoupangRecommend } from "@/components/CoupangRecommend";

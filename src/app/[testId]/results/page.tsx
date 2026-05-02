@@ -1,60 +1,89 @@
-import { testTypes } from "@/data/testTypes";
+import { getTests, getTestById, getResultTypes, getQuestionsWithOptions } from "@/lib/queries";
 import ResultsClient from "./ResultsClient";
+import { notFound } from "next/navigation";
+
+export const revalidate = 3600;
 
 export async function generateStaticParams() {
-  return testTypes
-    .filter(test => test.isAvailable && test.id !== "mbti")
-    .map(test => ({
-      testId: test.id,
-    }));
+  try {
+    const tests = await getTests();
+    return tests
+      .filter(test => test.is_available && test.id !== "mbti")
+      .map(test => ({ testId: test.id }));
+  } catch {
+    return [];
+  }
 }
 
 export async function generateMetadata({ params }: { params: Promise<{ testId: string }> }) {
   const { testId } = await params;
-  const testInfo = testTypes.find(t => t.id === testId);
-  
-  if (!testInfo) {
+
+  try {
+    const testInfo = await getTestById(testId);
+    if (!testInfo) throw new Error("not found");
+    return {
+      title: `${testInfo.title} 결과`,
+      description: `나의 ${testInfo.title} 결과를 확인해보세요!`,
+    };
+  } catch {
     return { title: 'Results Not Found' };
   }
-
-  return {
-    title: `${testInfo.title} 결과`,
-    description: `나의 ${testInfo.title} 결과를 확인해보세요!`,
-  };
 }
 
 export default async function ResultsPage({ params }: { params: Promise<{ testId: string }> }) {
   const { testId } = await params;
-  const testInfo = testTypes.find(t => t.id === testId);
 
-  if (!testInfo) {
-    return <div className="min-h-screen flex items-center justify-center">Test Not Found</div>;
-  }
-
-  let typesData;
-  let questionsData;
+  // 1. DB에서 결과 유형 가져오기
   try {
-    typesData = await import(`@/data/${testId}Types`);
-    questionsData = await import(`@/data/${testId}Questions`);
-  } catch (e) {
-    return <div className="min-h-screen flex items-center justify-center">Result Data Not Found</div>;
+    const testInfo = await getTestById(testId);
+    const resultsData = await getResultTypes(testId);
+    const questions = await getQuestionsWithOptions(testId);
+
+    if (testInfo && Object.keys(resultsData).length > 0) {
+      const allKeys = Object.keys(resultsData);
+      const clientTestInfo = {
+        id: testInfo.id,
+        title: testInfo.title,
+        subtitle: testInfo.subtitle,
+        description: testInfo.description,
+        emoji: testInfo.emoji,
+        color: testInfo.color,
+        href: testInfo.href,
+        isAvailable: testInfo.is_available,
+        category: testInfo.category,
+      };
+
+      const allTests = await getTests();
+      const availableTests = allTests.map((t: any) => ({
+        id: t.id,
+        category: t.category,
+        title: t.title,
+        subtitle: t.subtitle,
+        description: t.description,
+        emoji: t.emoji,
+        color: t.color,
+        duration: t.duration,
+        questions: t.question_count,
+        href: t.href,
+        features: t.features,
+        isAvailable: t.is_available,
+        displayOrder: t.display_order,
+      }));
+
+      return (
+        <ResultsClient 
+          testId={testId}
+          testInfo={clientTestInfo}
+          allKeys={allKeys}
+          resultsData={resultsData}
+          qLen={questions.length}
+          availableTests={availableTests}
+        />
+      );
+    }
+  } catch {
+    // 에러 발생 시 notFound 로 리다이렉트
   }
 
-  const resultsDataKey = Object.keys(typesData).find(key => key.endsWith('Results') || key.endsWith('Types')) || `${testId}Results`;
-  const resultsData = typesData[resultsDataKey] || typesData[`${testId}Types`];
-  
-  const calculateLevelKey = Object.keys(typesData).find(key => key.startsWith('calculate'));
-  const calculateLevel = calculateLevelKey ? typesData[calculateLevelKey] : null;
-  const allKeys = Object.keys(resultsData || {});
-  const questions = questionsData[`${testId}Questions`] || [];
-
-  return (
-    <ResultsClient 
-      testId={testId}
-      testInfo={testInfo}
-      allKeys={allKeys}
-      resultsData={resultsData}
-      qLen={questions.length}
-    />
-  );
+  return notFound();
 }

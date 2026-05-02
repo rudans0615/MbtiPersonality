@@ -1,71 +1,83 @@
-import fs from 'fs';
-import path from 'path';
-import { fileURLToPath } from 'url';
-
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const srcDir = path.resolve(__dirname, '../../src');
+import { createClient } from '@supabase/supabase-js';
 
 export async function injectCode(aiData) {
   const { testId, title, subtitle, description, emoji, questions, results, category, seoArticle } = aiData;
-  const capitalizedId = testId.charAt(0).toUpperCase() + testId.slice(1) + 'Test';
-  const emojiChar = emoji || '✨';
-  const descText = description || '당신의 심리와 성향을 정확하게 분석해주는 흥미로운 테스트입니다.';
   const qLen = questions?.length || 12;
-  
-  // 1. Data Files Generation
-  const questionsContent = 'export const seoArticle = ' + JSON.stringify(seoArticle || '이 테스트는 심리적 성향을 알아볼 수 있는 흥미로운 분석을 제공합니다. 문항을 통해 당신의 심리를 깊이 있게 탐구해보세요.') + ';\nexport const ' + testId + 'Questions = ' + JSON.stringify(questions, null, 2) + ';';
-  fs.writeFileSync(path.join(srcDir, 'data/' + testId + 'Questions.ts'), questionsContent);
 
-  const resultsContent = [
-    'export const calculate' + capitalizedId + 'Level = (score: number) => {',
-    '  const keys = Object.keys(' + testId + 'Results);',
-    '  const numKeys = keys.length;',
-    '  if (numKeys === 0) return "";',
-    '  const maxScore = ' + qLen + ' * 4;',
-    '  const minScore = ' + qLen + ';',
-    '  const range = maxScore - minScore;',
-    '  const step = range / numKeys;',
-    '  const idx = Math.min(Math.floor((score - minScore) / step), numKeys - 1);',
-    '  return keys[Math.max(0, idx)];',
-    '};',
-    '',
-    'export const ' + testId + 'Results: Record<string, any> = ' + JSON.stringify(results, null, 2) + ';'
-  ].join('\n');
-  fs.writeFileSync(path.join(srcDir, 'data/' + testId + 'Types.ts'), resultsContent);
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL;
+  const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
-  // (No more React page generation, Next.js handles it via Dynamic Routing)
-
-  // 2. Inject into testTypes.ts
-  const typesPath = path.join(srcDir, 'data/testTypes.ts');
-  let typesFile = fs.readFileSync(typesPath, 'utf-8');
-  if (!typesFile.includes('id: "' + testId + '"')) {
-    const aiCat = category || 'HOT';
-    const newTestConfig = '\n  {\n' +
-      '    id: "' + testId + '",\n' +
-      '    category: "' + aiCat + '",\n' +
-      '    title: "' + title + '",\n' +
-      '    subtitle: "' + (subtitle || '') + '",\n' +
-      '    description: "' + descText.replace(/"/g, '\\"') + '",\n' +
-      '    emoji: "' + emojiChar + '",\n' +
-      '    color: "from-purple-500 to-pink-500",\n' +
-      '    duration: "약 3분",\n' +
-      '    questions: ' + qLen + ',\n' +
-      '    href: "/' + testId + '",\n' + // Next.js dynamic route
-      '    features: ["AI 맞춤 분석", "나만의 결과지", "궁합 확인"],\n' +
-      '    isAvailable: true\n' +
-      '  },';
-    typesFile = typesFile.replace(/export const testTypes: TestType\[\] = \[/, 'export const testTypes: TestType[] = [' + newTestConfig);
-    fs.writeFileSync(typesPath, typesFile);
+  if (!supabaseUrl || !supabaseKey) {
+    throw new Error('Supabase credentials are not set in the environment variables.');
   }
 
-  // 3. Inject into sitemap.xml
-  const sitemapPath = path.join(srcDir, '../public/sitemap.xml');
-  if (fs.existsSync(sitemapPath)) {
-    let sitemapFile = fs.readFileSync(sitemapPath, 'utf-8');
-    if (!sitemapFile.includes('/' + testId + '</loc>')) {
-      const newSitemapEntry = `  <url>\n    <loc>https://mbtifinder.com/${testId}</loc>\n    <changefreq>weekly</changefreq>\n    <priority>0.8</priority>\n  </url>\n</urlset>`;
-      sitemapFile = sitemapFile.replace('</urlset>', newSitemapEntry);
-      fs.writeFileSync(sitemapPath, sitemapFile);
-    }
+  const supabase = createClient(supabaseUrl, supabaseKey);
+
+  // 1. Insert into `tests`
+  const testRecord = {
+    id: testId,
+    category: category || 'HOT',
+    title,
+    subtitle: subtitle || '',
+    description: description || '당신의 심리와 성향을 정확하게 분석해주는 흥미로운 테스트입니다.',
+    emoji: emoji || '✨',
+    color: 'from-purple-500 to-pink-500',
+    duration: '약 3분',
+    question_count: qLen,
+    href: `/${testId}`,
+    features: ["AI 맞춤 분석", "나만의 결과지", "궁합 확인"],
+    is_available: true,
+  };
+
+  const { error: testError } = await supabase.from('tests').upsert(testRecord);
+  if (testError) throw new Error(`Failed to insert test: ${testError.message}`);
+
+  // 2. Insert questions and options
+  for (let i = 0; i < questions.length; i++) {
+    const q = questions[i];
+    const { data: qData, error: qError } = await supabase.from('questions').upsert({
+      test_id: testId,
+      question_number: i + 1,
+      text: q.question
+    }, { onConflict: 'test_id, question_number' }).select();
+
+    if (qError) throw new Error(`Failed to insert question ${i+1}: ${qError.message}`);
+    const questionId = qData[0].id;
+
+    const optionsToInsert = q.options.map((opt, optIdx) => ({
+      question_id: questionId,
+      option_index: optIdx,
+      text: opt.text,
+      type_code: opt.type || opt.type_code || null,
+      score: opt.score || 0
+    }));
+
+    const { error: oError } = await supabase.from('options').upsert(optionsToInsert, { onConflict: 'question_id, option_index' });
+    if (oError) throw new Error(`Failed to insert options for question ${i+1}: ${oError.message}`);
   }
+
+  // 3. Insert result types
+  const resultKeys = Object.keys(results);
+  for (const key of resultKeys) {
+    const r = results[key];
+    const { error: rError } = await supabase.from('result_types').upsert({
+      test_id: testId,
+      code: key,
+      title: r.title || key,
+      subtitle: r.subtitle || '',
+      description: r.description || '',
+      characteristics: r.characteristics || [],
+      celebrities: r.celebrities || [],
+      coupang_keyword: r.coupangKeyword || '',
+      compatibility_best: r.compatibility?.best || null,
+      compatibility_good: r.compatibility?.good || [],
+      compatibility_avoid: r.compatibility?.avoid || null,
+      emoji: r.emoji || '',
+      color: r.color || ''
+    }, { onConflict: 'test_id, code' });
+    
+    if (rError) throw new Error(`Failed to insert result type ${key}: ${rError.message}`);
+  }
+
+  console.log(`Successfully inserted test ${testId} into database.`);
 }

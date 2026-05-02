@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { ShareButtons } from "@/components/ShareButtons";
 import { Progress } from "@/components/ui/progress";
 import { useDrunkTest } from "@/hooks/useDrunkTest";
-import { selfAwarenessResults } from "@/data/drunkTestTypes";
+import { selfAwarenessResults } from "@/lib/customTests/drunkTestTypes";
 import Navigation from "@/components/Navigation";
 import SEO from "@/components/SEO";
 import { CoupangRecommend } from "@/components/CoupangRecommend";

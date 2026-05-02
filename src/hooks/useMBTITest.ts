@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react';
-import { mbtiQuestions } from '@/data/questions';
+import { mbtiQuestions } from '@/lib/customTests/mbtiQuestions';
 import { calculateMBTIType } from '@/utils/mbtiCalculator';
 
 export interface Answer {

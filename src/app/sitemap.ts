@@ -1,9 +1,16 @@
 import type { MetadataRoute } from 'next';
-import { testTypes } from '@/data/testTypes';
-import { blogPosts } from '@/data/blogPosts';
+import { getTests, getBlogPosts } from '@/lib/queries';
 
-export default function sitemap(): MetadataRoute.Sitemap {
+export const revalidate = 86400; // 하루 한 번 자동 갱신
+
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = 'https://mbtifinder.com';
+
+  // DB에서 데이터 로드
+  const activeTests = await getTests().catch(() => []) || [];
+  const activeBlogPosts = await getBlogPosts().catch(() => []) || [];
+
+  const availableTests = activeTests.filter((t: any) => t.is_available !== false);
 
   // 정적 페이지
   const staticPages: MetadataRoute.Sitemap = [
@@ -51,18 +58,16 @@ export default function sitemap(): MetadataRoute.Sitemap {
     },
   ];
 
-  // 테스트 페이지 (testTypes 데이터에서 자동 생성)
-  const testPages: MetadataRoute.Sitemap = testTypes
-    .filter(test => test.isAvailable)
-    .map(test => ({
-      url: `${baseUrl}${test.href}`,
-      lastModified: new Date(),
-      changeFrequency: 'weekly' as const,
-      priority: 0.8,
-    }));
+  // 테스트 페이지
+  const testPages: MetadataRoute.Sitemap = availableTests.map(test => ({
+    url: `${baseUrl}${test.href}`,
+    lastModified: new Date(),
+    changeFrequency: 'weekly' as const,
+    priority: 0.8,
+  }));
 
-  // 블로그 개별 포스트 (blogPosts 데이터에서 자동 생성)
-  const blogPages: MetadataRoute.Sitemap = blogPosts.map(post => ({
+  // 블로그 개별 포스트
+  const blogPages: MetadataRoute.Sitemap = activeBlogPosts.map(post => ({
     url: `${baseUrl}/blog/${post.id}`,
     lastModified: new Date(),
     changeFrequency: 'monthly' as const,

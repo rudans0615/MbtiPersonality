@@ -1,60 +1,85 @@
-import { testTypes } from "@/data/testTypes";
+import { getTests, getTestById, getQuestionsWithOptions } from "@/lib/queries";
 import TestClient from "./TestClient";
+import { notFound } from "next/navigation";
+
+export const revalidate = 3600; // ISR: 1시간마다 재생성
 
 export async function generateStaticParams() {
-  // 모든 사용 가능한 테스트 ID를 가져와 정적 페이지로 빌드합니다.
-  return testTypes
-    .filter(test => test.isAvailable && test.id !== "mbti") // mbti는 커스텀 컴포넌트를 사용하므로 제외 (임시)
-    .map(test => ({
-      testId: test.id,
-    }));
+  try {
+    const tests = await getTests();
+    return tests
+      .filter(test => test.is_available && test.id !== "mbti")
+      .map(test => ({ testId: test.id }));
+  } catch {
+    return [];
+  }
 }
 
 export async function generateMetadata({ params }: { params: Promise<{ testId: string }> }) {
   const { testId } = await params;
-  const testInfo = testTypes.find(t => t.id === testId);
-  
-  if (!testInfo) {
-    return { title: 'Test Not Found' };
-  }
 
-  return {
-    title: testInfo.title,
-    description: testInfo.description,
-    keywords: `${testInfo.category}, 심리테스트, ${testInfo.title.replace(/ /g, ', ')}`,
-    openGraph: {
+  try {
+    const testInfo = await getTestById(testId);
+    if (!testInfo) throw new Error("not found");
+    return {
       title: testInfo.title,
       description: testInfo.description,
-    }
-  };
+      keywords: `${testInfo.category}, 심리테스트, ${testInfo.title.replace(/ /g, ', ')}`,
+      openGraph: { title: testInfo.title, description: testInfo.description },
+    };
+  } catch {
+    return { title: 'Test Not Found' };
+  }
 }
 
 export default async function TestPage({ params }: { params: Promise<{ testId: string }> }) {
   const { testId } = await params;
-  const testInfo = testTypes.find(t => t.id === testId);
 
-  if (!testInfo) {
-    return <div className="min-h-screen flex items-center justify-center">Test Not Found</div>;
-  }
-
-  // 동적 임포트로 해당 테스트의 데이터를 불러옵니다.
-  let questionsData;
+  // 1. DB에서 테스트 메타 + 질문 가져오기
   try {
-    questionsData = await import(`@/data/${testId}Questions`);
-  } catch (e) {
-    return <div className="min-h-screen flex items-center justify-center">Test Data Not Found</div>;
+    const testInfo = await getTestById(testId);
+    const dbQuestions = await getQuestionsWithOptions(testId);
+
+    if (testInfo && dbQuestions.length > 0) {
+      // DB 데이터를 TestClient가 기대하는 형식으로 변환
+      const questions = dbQuestions.map(q => ({
+        id: q.question_number,
+        text: q.text,
+        question: q.text,
+        options: q.options.map(opt => ({
+          text: opt.text,
+          type: opt.type_code || undefined,
+          score: opt.score ?? undefined,
+        })),
+      }));
+
+      const clientTestInfo = {
+        id: testInfo.id,
+        title: testInfo.title,
+        subtitle: testInfo.subtitle,
+        description: testInfo.description,
+        emoji: testInfo.emoji,
+        color: testInfo.color,
+        duration: testInfo.duration,
+        questionCount: testInfo.question_count,
+        href: testInfo.href,
+        features: testInfo.features,
+        isAvailable: testInfo.is_available,
+        category: testInfo.category,
+      };
+
+      return (
+        <TestClient 
+          testId={testId} 
+          testInfo={clientTestInfo} 
+          questions={questions} 
+          seoArticle="" 
+        />
+      );
+    }
+  } catch {
+    // 에러 발생 시 notFound 로 리다이렉트
   }
 
-  const questionsKey = Object.keys(questionsData).find(key => key.endsWith('Questions')) || `${testId}Questions`;
-  const questions = questionsData[questionsKey] || [];
-  const seoArticle = questionsData.seoArticle || '';
-
-  return (
-    <TestClient 
-      testId={testId} 
-      testInfo={testInfo} 
-      questions={questions} 
-      seoArticle={seoArticle} 
-    />
-  );
+  return notFound();
 }

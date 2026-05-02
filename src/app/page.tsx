@@ -1,10 +1,10 @@
 import Link from "next/link";
-import { Clock, Users, ArrowRight, Sparkles, Heart, Brain, Laugh, Rocket, ChevronLeft, ChevronRight } from "lucide-react";
+import { Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { testTypes } from "@/data/testTypes";
-import CategoryRowClient from "@/components/CategoryRowClient"; // We need to extract the client component part
+import { getTests } from "@/lib/queries";
+import CategoryRowClient from "@/components/CategoryRowClient";
+
+export const revalidate = 3600;
 
 export const metadata = {
   title: {
@@ -16,13 +16,37 @@ export const metadata = {
   },
 };
 
-export default function Home() {
-  const hotTests = testTypes.filter(t => t.category === 'HOT' && t.isAvailable);
-  const loveTests = testTypes.filter(t => t.category === 'LOVE' && t.isAvailable);
-  const personalityTests = testTypes.filter(t => t.category === 'PERSONALITY' && t.isAvailable);
-  const funTests = testTypes.filter(t => t.category === 'FUN' && t.isAvailable);
-  const careerTests = testTypes.filter(t => t.category === 'CAREER' && t.isAvailable);
-  const comingSoonTests = testTypes.filter(t => !t.isAvailable);
+// DB 데이터를 testTypes 형식으로 변환
+function toClientFormat(tests: any[]) {
+  return tests.map(t => ({
+    id: t.id,
+    category: t.category,
+    title: t.title,
+    subtitle: t.subtitle,
+    description: t.description,
+    emoji: t.emoji,
+    color: t.color,
+    duration: t.duration,
+    questionCount: t.question_count,
+    href: t.href,
+    features: t.features,
+    isAvailable: t.is_available,
+    displayOrder: t.display_order,
+  }));
+}
+
+export default async function Home() {
+  let allTests: any[];
+
+  const dbTests = await getTests();
+  allTests = toClientFormat(dbTests);
+
+  const hotTests = allTests.filter(t => t.category === 'HOT' && t.isAvailable);
+  const loveTests = allTests.filter(t => t.category === 'LOVE' && t.isAvailable);
+  const personalityTests = allTests.filter(t => t.category === 'PERSONALITY' && t.isAvailable);
+  const funTests = allTests.filter(t => t.category === 'FUN' && t.isAvailable);
+  const careerTests = allTests.filter(t => t.category === 'CAREER' && t.isAvailable);
+  const comingSoonTests = allTests.filter(t => !t.isAvailable);
 
   return (
     <>

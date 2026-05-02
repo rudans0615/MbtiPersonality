@@ -4,21 +4,20 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Button } from '@/components/ui/button';
-import { getAvailableTests, TestType } from '@/data/testTypes';
 
-export default function Navigation() {
+// availableTests를 props로 받도록 변경
+export default function Navigation({ availableTests = [] }: { availableTests?: any[] }) {
   const [isOpen, setIsOpen] = useState(false);
   const [isMegaMenuOpen, setIsMegaMenuOpen] = useState(false);
   const [expandedCategory, setExpandedCategory] = useState<string | null>('HOT');
   const location = usePathname() || '/';
 
-  // 모든 사용 가능한 테스트를 가져오고, 카테고리별로 그룹화합니다.
-  const availableTests = getAvailableTests();
+  // 카테고리별로 그룹화합니다.
   const groupedByCategory = availableTests.reduce((acc, test) => {
     if (!acc[test.category]) acc[test.category] = [];
     acc[test.category].push(test);
     return acc;
-  }, {} as Record<string, TestType[]>);
+  }, {} as Record<string, any[]>);
 
   // 카테고리 이름 한글 매핑
   const categoryNames: Record<string, string> = {
@@ -102,7 +101,7 @@ export default function Navigation() {
                               {categoryNames[catKey]}
                             </h3>
                             <ul className="space-y-2">
-                              {tests.map(test => (
+                              {tests.map((test: any) => (
                                 <li key={test.id}>
                                   <Link href={test.href}>
                                     <div className="group flex items-start space-x-3 p-2 -mx-2 rounded-xl hover:bg-white/5 transition-colors cursor-pointer">
@@ -220,7 +219,7 @@ export default function Navigation() {
                         
                         {isExpanded && (
                           <div className="px-2 pb-2 space-y-1 animate-in slide-in-from-top-2 duration-200">
-                            {tests.map((test) => (
+                            {tests.map((test: any) => (
                               <Link key={test.href} href={test.href}>
                                 <div 
                                   className={`flex items-center space-x-3 px-3 py-2 text-sm font-medium transition-all rounded-lg cursor-pointer ${

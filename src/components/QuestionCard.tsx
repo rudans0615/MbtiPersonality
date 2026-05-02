@@ -1,4 +1,4 @@
-import { MBTIQuestion } from "@/data/questions";
+import { MBTIQuestion } from "@/lib/customTests/mbtiQuestions";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 

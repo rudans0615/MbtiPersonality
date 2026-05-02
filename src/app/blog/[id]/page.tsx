@@ -1,4 +1,4 @@
-import { blogPosts } from '@/data/blogPosts';
+import { getBlogPosts, getBlogPostById } from '@/lib/queries';
 import Navigation from '@/components/Navigation';
 import Footer from '@/components/Footer';
 import SEO from '@/components/SEO';
@@ -7,8 +7,11 @@ import Link from 'next/link';
 import { ArrowLeft, Calendar, Clock } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 
+export const revalidate = 3600; // 1시간 단위 자동 갱신 (ISR)
+
 // 한국어 날짜 문자열을 ISO 8601로 변환 (예: "2026년 5월 1일" → "2026-05-01")
-function parseDateToISO(dateStr: string): string {
+function parseDateToISO(dateStr: string | null | undefined): string {
+  if (!dateStr) return new Date().toISOString().split('T')[0];
   const match = dateStr.match(/(\d{4})년\s*(\d{1,2})월\s*(\d{1,2})일/);
   if (!match) return new Date().toISOString().split('T')[0];
   const [, y, m, d] = match;
@@ -17,15 +20,21 @@ function parseDateToISO(dateStr: string): string {
 
 // 빌드 타임에 모든 블로그 글의 라우팅 경로를 미리 생성합니다 (SSG)
 export async function generateStaticParams() {
-  return blogPosts.map((post) => ({
-    id: post.id.toString(),
-  }));
+  try {
+    const posts = await getBlogPosts();
+    if (posts.length > 0) {
+      return posts.map((post) => ({ id: post.id.toString() }));
+    }
+  } catch (error) {
+    console.warn("generateStaticParams: DB에서 블로그 포스트를 가져오는데 실패했습니다.", error);
+  }
+  return [];
 }
 
 // 동적 메타데이터 생성 (SEO)
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const post = blogPosts.find((p) => p.id.toString() === id);
+  let post = await getBlogPostById(Number(id)).catch(() => null);
   
   if (!post) return { title: '게시글을 찾을 수 없습니다 | MBTI Finder' };
   
@@ -41,14 +50,16 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
       type: 'article',
       url: `https://mbtifinder.com/blog/${id}`,
       authors: ['MBTI Finder'],
-      tags: post.tags,
+      tags: post.tags || [],
     }
   };
 }
 
 export default async function BlogPostPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const post = blogPosts.find((p) => p.id.toString() === id);
+  
+  let post = await getBlogPostById(Number(id)).catch(() => null);
+  let allPosts = await getBlogPosts().catch(() => []);
 
   if (!post) {
     return (
@@ -84,7 +95,7 @@ export default async function BlogPostPage({ params }: { params: Promise<{ id: s
     datePublished: parseDateToISO(post.date),
     dateModified: parseDateToISO(post.date),
     mainEntityOfPage: `https://mbtifinder.com/blog/${id}`,
-    keywords: post.tags.join(', '),
+    keywords: (post.tags || []).join(', '),
     articleSection: post.category,
     inLanguage: 'ko',
   };
@@ -97,7 +108,7 @@ export default async function BlogPostPage({ params }: { params: Promise<{ id: s
       />
       <SEO 
         title={`${post.title} | MBTI Finder 성격분석 블로그`} 
-        description={post.excerpt} 
+        description={post.excerpt || ""} 
         url={`https://mbtifinder.com/blog/${id}`} 
       />
       <Navigation />
@@ -114,7 +125,7 @@ export default async function BlogPostPage({ params }: { params: Promise<{ id: s
         <header className="max-w-3xl mx-auto px-6 mb-12 text-center">
           <div className="mb-4">
             <Badge variant="outline" className="text-pink-500 border-pink-200 bg-pink-50 text-sm px-3 py-1">
-              {post.category}
+              {post.category || '기타'}
             </Badge>
           </div>
           <h1 className="text-3xl md:text-4xl font-extrabold text-neutral-900 mb-6 leading-tight break-keep">
@@ -123,11 +134,11 @@ export default async function BlogPostPage({ params }: { params: Promise<{ id: s
           <div className="flex items-center justify-center space-x-4 text-sm text-neutral-500">
             <div className="flex items-center">
               <Calendar size={16} className="mr-1.5" />
-              {post.date}
+              {post.date || '날짜 미상'}
             </div>
             <div className="flex items-center">
               <Clock size={16} className="mr-1.5" />
-              {post.readTime} 소요
+              {post.read_time || (post as any).readTime || '3분'} 소요
             </div>
           </div>
         </header>
@@ -146,7 +157,7 @@ export default async function BlogPostPage({ params }: { params: Promise<{ id: s
         {/* Tags */}
         <div className="max-w-3xl mx-auto px-6 mt-12 mb-8">
           <div className="flex flex-wrap gap-2">
-            {post.tags.map((tag) => (
+            {(post.tags || []).map((tag: string) => (
               <Badge key={tag} variant="secondary" className="bg-neutral-100 text-neutral-600 hover:bg-neutral-200">
                 #{tag}
               </Badge>
@@ -158,11 +169,11 @@ export default async function BlogPostPage({ params }: { params: Promise<{ id: s
         <div className="max-w-3xl mx-auto px-6 mt-12 mb-8 pt-8 border-t border-neutral-200">
           <h3 className="text-xl font-bold text-neutral-900 mb-6">📝 함께 읽으면 좋은 관련 글</h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-            {blogPosts
-              .filter(p => p.category === post.category && p.id !== post.id)
+            {allPosts
+              .filter((p: any) => p.category === post.category && p.id !== post.id)
               .sort(() => 0.5 - Math.random()) // 간단한 랜덤 셔플
               .slice(0, 3)
-              .map(relatedPost => (
+              .map((relatedPost: any) => (
                 <Link key={relatedPost.id} href={`/blog/${relatedPost.id}`} className="group block">
                   <div className="p-4 rounded-xl border border-neutral-200 hover:border-pink-300 hover:shadow-md transition-all h-full bg-white flex flex-col">
                     <h4 className="font-bold text-neutral-800 group-hover:text-pink-600 line-clamp-2 mb-2 leading-tight">

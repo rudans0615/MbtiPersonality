@@ -2,7 +2,7 @@
 import { usePathname, useRouter } from "next/navigation";
 import SEO from "@/components/SEO";
 import { useMBTITest } from "@/hooks/useMBTITest";
-import { mbtiTypes } from "@/data/mbtiTypes";
+
 import ProgressBar from "@/components/ProgressBar";
 import QuestionCard from "@/components/QuestionCard";
 import Navigation from "@/components/Navigation";

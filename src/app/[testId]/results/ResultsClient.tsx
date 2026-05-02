@@ -11,22 +11,26 @@ import { ResultImageCard } from "@/components/ResultImageCard";
 import RelatedTests from "@/components/RelatedTests";
 import { Loader2, RotateCcw, Zap, Sparkles } from "lucide-react";
 
-function ResultsContent({ testId, testInfo, allKeys, resultsData, qLen }: any) {
+function ResultsContent({ testId, testInfo, allKeys, resultsData, qLen, availableTests }: any) {
   const searchParams = useSearchParams();
   const [score, setScore] = useState(0);
   const [typeResultKey, setTypeResultKey] = useState<string | null>(null);
   const [isAnalyzing, setIsAnalyzing] = useState(true);
-  const [calculateLevel, setCalculateLevel] = useState<((score: number) => string) | null>(null);
 
-  useEffect(() => {
-    // 클라이언트 사이드에서 동적으로 함수를 임포트합니다.
-    import(`@/data/${testId}Types`).then(mod => {
-      const calculateLevelKey = Object.keys(mod).find(key => key.startsWith('calculate'));
-      if (calculateLevelKey) {
-        setCalculateLevel(() => mod[calculateLevelKey]);
+  // DB에서 가져온 min_score, max_score를 활용한 결과 계산 로직
+  const calculateResultFromScore = (s: number) => {
+    if (!resultsData || Object.keys(resultsData).length === 0) return allKeys[0];
+
+    for (const [key, result] of Object.entries<any>(resultsData)) {
+      if (result.min_score !== undefined && result.max_score !== undefined && result.min_score !== null && result.max_score !== null) {
+        if (s >= result.min_score && s <= result.max_score) {
+          return key;
+        }
       }
-    }).catch(e => console.error("Failed to load calculation logic:", e));
-  }, [testId]);
+    }
+    // 기본값 폴백
+    return allKeys[0];
+  };
 
   useEffect(() => {
     // 유형 기반 테스트: ?types= 파라미터가 있으면 빈도 기반으로 결과 산출
@@ -59,10 +63,8 @@ function ResultsContent({ testId, testInfo, allKeys, resultsData, qLen }: any) {
     return () => clearTimeout(timer);
   }, [searchParams, testId, qLen]);
 
-  // 유형 기반이면 typeResultKey 사용, 아니면 기존 점수 기반 로직
-  const resultKey = typeResultKey
-    ? typeResultKey
-    : (calculateLevel ? calculateLevel(score) : allKeys[0]);
+  // 유형 기반이면 typeResultKey 사용, 아니면 점수 기반 로직 사용
+  const resultKey = typeResultKey ? typeResultKey : calculateResultFromScore(score);
   const result = resultsData[resultKey] || resultsData[allKeys[0]] || { title: "분석 완료", description: "당신만의 특별한 결과입니다!" };
 
   if (isAnalyzing) {
@@ -173,7 +175,7 @@ function ResultsContent({ testId, testInfo, allKeys, resultsData, qLen }: any) {
           })}
         </div>
 
-        <RelatedTests currentTestId={testId} />
+        <RelatedTests currentTestId={testId} availableTests={availableTests} />
 
         <AdSenseBlock adSlot="1133557799" />
       </div>

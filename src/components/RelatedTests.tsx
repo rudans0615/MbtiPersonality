@@ -6,18 +6,17 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Clock, Users, ArrowRight, ChevronLeft, ChevronRight, Sparkles } from "lucide-react";
-import { testTypes } from "@/data/testTypes";
 
-export default function RelatedTests({ currentTestId }: { currentTestId?: string }) {
+export default function RelatedTests({ currentTestId, availableTests = [] }: { currentTestId?: string, availableTests?: any[] }) {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const [randomTests, setRandomTests] = useState<any[]>([]);
 
   useEffect(() => {
     // 현재 테스트를 제외한 사용 가능한 테스트들 중 랜덤하게 6개 추출
-    const availableTests = testTypes.filter(t => t.isAvailable && t.id !== currentTestId);
-    const shuffled = [...availableTests].sort(() => 0.5 - Math.random());
+    const filteredTests = availableTests.filter(t => t.isAvailable && t.id !== currentTestId);
+    const shuffled = [...filteredTests].sort(() => 0.5 - Math.random());
     setRandomTests(shuffled.slice(0, 6));
-  }, [currentTestId]);
+  }, [currentTestId, availableTests]);
 
   const scroll = (direction: 'left' | 'right') => {
     if (scrollContainerRef.current) {

@@ -4,6 +4,7 @@ import './globals.css';
 import Navigation from '@/components/Navigation';
 import Footer from '@/components/Footer';
 import { Toaster } from '@/components/ui/toaster';
+import { getTests } from '@/lib/queries';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -48,11 +49,14 @@ const jsonLdWebSite = {
   },
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const allTests = await getTests().catch(() => []);
+  const availableTests = allTests.filter((t: any) => t.is_available !== false);
+
   return (
     <html lang="ko">
       <head>
@@ -64,11 +68,11 @@ export default function RootLayout({
       </head>
       <body className={inter.className}>
         <div className="min-h-screen bg-[#F8F9FB] flex flex-col">
-          <Navigation />
+          <Navigation availableTests={availableTests} />
           <main className="flex-grow">
             {children}
           </main>
-          <Footer />
+          <Footer availableTests={availableTests} />
         </div>
         <Toaster />
       </body>

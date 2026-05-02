@@ -1,6 +1,6 @@
 import { ImageResponse } from 'next/og';
 import { NextRequest } from 'next/server';
-import { testTypes } from '@/data/testTypes';
+import { getTestById } from '@/lib/queries';
 
 export const runtime = 'edge';
 
@@ -10,7 +10,8 @@ export async function GET(request: NextRequest) {
     const testId = searchParams.get('testId');
     const type = searchParams.get('type') || 'share'; // 'story' | 'feed' | 'share'
 
-    const testInfo = testTypes.find(t => t.id === testId);
+    if (!testId) throw new Error('Missing testId');
+    const testInfo = await getTestById(testId);
     
     if (!testInfo) {
       return new ImageResponse(

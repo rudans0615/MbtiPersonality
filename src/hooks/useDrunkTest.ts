@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import { drunkTestQuestions } from '@/data/drunkTestQuestions';
-import { calculateAwarenessLevel } from '@/data/drunkTestTypes';
+import { drunkTestQuestions } from '@/lib/customTests/drunkTestQuestions';
+import { calculateAwarenessLevel } from '@/lib/customTests/drunkTestTypes';
 
 export interface DrunkTestAnswer {
   questionId: number;

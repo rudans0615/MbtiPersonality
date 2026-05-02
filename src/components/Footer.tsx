@@ -1,8 +1,7 @@
 import Link from "next/link";
-import { getAvailableTests } from "@/data/testTypes";
 
-export default function Footer() {
-    const availableTests = getAvailableTests().slice(0, 4);
+export default function Footer({ availableTests = [] }: { availableTests?: any[] }) {
+    const topTests = availableTests.slice(0, 4);
 
     return (
         <footer className="relative bg-neutral-950 text-neutral-400 py-16 overflow-hidden">
@@ -48,7 +47,7 @@ export default function Footer() {
                     <div className="md:col-span-3 lg:col-span-3">
                         <h4 className="text-sm font-semibold text-white uppercase tracking-wider mb-6">인기 테스트</h4>
                         <ul className="space-y-4 text-sm">
-                            {availableTests.map((test) => (
+                            {topTests.map((test: any) => (
                                 <li key={test.id}>
                                     <Link href={test.href} className="group flex items-center text-neutral-400 hover:text-white transition-colors">
                                         <span className="w-6 opacity-50 group-hover:opacity-100 transition-opacity">{test.emoji}</span> 

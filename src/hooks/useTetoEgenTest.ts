@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { tetoEgenQuestions, tetoEgenAnswers } from "@/data/tetoEgenQuestions";
-import { tetoEgenTypes, getTetoEgenBalance } from "@/data/tetoEgenTypes";
+import { tetoEgenQuestions, tetoEgenAnswers } from "@/lib/customTests/tetoEgenQuestions";
+import { tetoEgenTypes, getTetoEgenBalance } from "@/lib/customTests/tetoEgenTypes";
 
 export interface TetoEgenAnswer {
   questionId: number;
