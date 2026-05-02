@@ -133,8 +133,8 @@ function ResultsContent({ testId, testInfo, allKeys, resultsData, qLen, availabl
 
           <div className="mt-12 mb-8">
             <CoupangRecommend 
-              keyword={result.coupangKeyword || result.title} 
-              title={result.coupangHook || `🎀 ${result.title}를 위한 찰떡 추천템`} 
+              keyword={result.coupang_keyword || result.title} 
+              title={`🎀 ${result.title}를 위한 찰떡 추천템`} 
             />
           </div>
 
