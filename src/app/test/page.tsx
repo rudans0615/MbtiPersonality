@@ -1,5 +1,6 @@
 "use client";
 import { usePathname, useRouter } from "next/navigation";
+import { useState } from "react";
 import SEO from "@/components/SEO";
 import { useMBTITest } from "@/hooks/useMBTITest";
 
@@ -10,6 +11,7 @@ import Navigation from "@/components/Navigation";
 
 export default function Test() {
   const router = useRouter();
+  const [error, setError] = useState("");
   const {
     currentQuestion,
     selectedAnswer,
@@ -27,10 +29,14 @@ export default function Test() {
 
   const handleNext = (answerValue?: number) => {
     if (isLastQuestion) {
-      const result = calculateResults();
-      // Store result in sessionStorage for results page
-      sessionStorage.setItem('mbtiResult', result);
-      router.push('/results');
+      const result = calculateResults(answerValue);
+      if (!result) { setError('모든 문항에 답변해주세요.'); return; }
+      try {
+        sessionStorage.setItem('mbtiResult', result);
+        router.push('/results');
+      } catch {
+        setError('결과를 저장하지 못했습니다. 브라우저의 저장소 사용을 허용한 뒤 마지막 답변을 다시 선택해주세요.');
+      }
     } else {
       nextQuestion(answerValue);
     }
@@ -58,6 +64,7 @@ export default function Test() {
 
       {/* Question Content */}
       <div className="max-w-3xl mx-auto px-6 py-12">
+        {error && <p role="alert" className="mb-4 text-red-700">{error}</p>}
         <QuestionCard
           question={currentQuestionData}
           selectedAnswer={selectedAnswer}

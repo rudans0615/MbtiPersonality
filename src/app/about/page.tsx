@@ -77,7 +77,7 @@ export default function About() {
                   특히 연애와 인간관계에서 유용한 통찰을 제공합니다.
                 </p>
                 <div className="text-center">
-                  <Link href="/teto-egen-test">
+                  <Link href="/teto-egen">
                     <Button className="bg-gradient-to-r from-blue-500 to-purple-500 text-white px-8 py-3 text-lg">
                       테토-에겐 검사 시작하기
                     </Button>

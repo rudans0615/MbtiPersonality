@@ -1,3 +1,4 @@
+import { useAnswerTransition } from "@/hooks/useAnswerTransition";
 import { MBTIQuestion } from "@/lib/customTests/mbtiQuestions";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -31,6 +32,7 @@ export default function QuestionCard({
   canGoPrevious,
   isLastQuestion
 }: QuestionCardProps) {
+  const { pending, advance } = useAnswerTransition(question.id);
   return (
     <Card className="w-full max-w-3xl mx-auto bg-white rounded-3xl shadow-lg animate-slide-up">
       <CardContent className="p-8 md:p-12">
@@ -46,20 +48,14 @@ export default function QuestionCard({
           {answerOptions.map((option) => (
             <button
               key={option.value}
+              disabled={pending}
               onClick={(e) => {
                 e.preventDefault();
                 e.stopPropagation();
                 
-                // Check if already selected to prevent double execution
-                if (selectedAnswer === option.value) {
-                  return;
-                }
-                
+                if (pending) return;
+                advance(() => onNext(option.value));
                 onAnswerSelect(option.value);
-                // Auto-advance after a short delay
-                setTimeout(() => {
-                  onNext(option.value);
-                }, 200);
               }}
               className={`w-full text-left p-6 rounded-2xl border-2 transition-all duration-300 ${
                 selectedAnswer === option.value
@@ -85,6 +81,7 @@ export default function QuestionCard({
           <div className="mt-8 pt-6 border-t border-neutral-100 flex justify-center">
             <Button
               onClick={onPrevious}
+              disabled={pending}
               variant="ghost"
               className="text-neutral-400 hover:text-primary hover:bg-primary/5 transition-all"
             >

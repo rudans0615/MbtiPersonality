@@ -1,5 +1,7 @@
 "use client";
 import { useTetoEgenTest } from "@/hooks/useTetoEgenTest";
+import { useState } from "react";
+import { useAnswerTransition } from "@/hooks/useAnswerTransition";
 import SEO from "@/components/SEO";
 import Navigation from "@/components/Navigation";
 import ProgressBar from "@/components/ProgressBar";
@@ -25,6 +27,9 @@ export default function TetoEgenTest() {
     canGoNext,
     canGoPrevious
   } = useTetoEgenTest();
+
+  const { pending, advance } = useAnswerTransition(currentQuestion.id);
+  const [error, setError] = useState("");
 
   const handleNext = () => {
     const result = goToNext();
@@ -52,6 +57,7 @@ export default function TetoEgenTest() {
 
       {/* Question Content */}
       <div className="max-w-2xl mx-auto px-6 py-8">
+        {error && <p role="alert" className="mb-4 text-red-700">{error}</p>}
         <Card className="bg-white rounded-3xl shadow-lg border-0 overflow-hidden">
           <CardContent className="p-8">
             {/* Question */}
@@ -67,24 +73,21 @@ export default function TetoEgenTest() {
               {answers.map((answer, index) => (
                 <button
                   key={index}
+                  disabled={pending}
                   onClick={(e) => {
                     e.preventDefault();
                     e.stopPropagation();
                     
-                    // Check if already selected to prevent double execution
-                    if (selectedAnswer === answer.value) {
-                      return;
-                    }
-                    
-                    handleAnswerSelect(answer.value);
-                    
-                    // Auto-advance after a short delay
-                    setTimeout(() => {
-                      const result = goToNext(answer.value);
-                      if (result === 'COMPLETE') {
-                        router.push('/teto-egen/results');
+                    if (pending) return;
+                    advance(() => {
+                      try {
+                        const result = goToNext(answer.value);
+                        if (result === 'COMPLETE') router.push('/teto-egen/results');
+                      } catch {
+                        setError('결과를 저장하지 못했습니다. 브라우저의 저장소 사용을 허용한 뒤 마지막 답변을 다시 선택해주세요.');
                       }
-                    }, 200);
+                    });
+                    handleAnswerSelect(answer.value);
                   }}
                   className={`w-full p-4 text-left rounded-xl border-2 transition-all duration-200 ${
                     selectedAnswer === answer.value
@@ -102,6 +105,7 @@ export default function TetoEgenTest() {
               <div className="mt-8 pt-6 border-t border-neutral-100 flex justify-center">
                 <Button
                   onClick={goToPrevious}
+                  disabled={pending}
                   variant="ghost"
                   className="text-neutral-400 hover:text-primary hover:bg-primary/5 transition-all"
                 >

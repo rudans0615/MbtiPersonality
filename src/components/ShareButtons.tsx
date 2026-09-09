@@ -1,4 +1,5 @@
 "use client";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 
@@ -10,6 +11,8 @@ interface ShareButtonsProps {
 
 export function ShareButtons({ title, shareText, url }: ShareButtonsProps) {
   const { toast } = useToast();
+  const [canShare, setCanShare] = useState(false);
+  useEffect(() => { setCanShare(typeof navigator.share === "function"); }, []);
 
   const handleShare = (platform: string) => {
     if (typeof window !== "undefined" && (window as any).gtag) {
@@ -109,7 +112,7 @@ export function ShareButtons({ title, shareText, url }: ShareButtonsProps) {
         💌 결과 공유하기
       </h3>
       <div className="flex flex-wrap justify-center gap-3">
-        {'share' in navigator && (
+        {canShare && (
           <Button
             onClick={() => handleShare('native')}
             className="flex-1 min-w-[120px] max-w-[200px] bg-primary text-white py-6 rounded-2xl hover:bg-primary/90 hover:scale-105 transition-all text-sm shadow-md"

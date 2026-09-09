@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import SEO from "@/components/SEO";
 import { usePathname, useRouter } from "next/navigation";
 import { tetoEgenTypes, getCompatibilityDescription } from "@/lib/customTests/tetoEgenTypes";
@@ -45,25 +46,33 @@ export default function TetoEgenResults() {
   const { toast } = useToast();
   const [testResult, setTestResult] = useState<any>(null);
 
+  const [loaded, setLoaded] = useState(false);
+  const [error, setError] = useState("");
+
   useEffect(() => {
-    const result = sessionStorage.getItem('tetoEgenResult');
-    if (!result) {
-      router.push('/teto-egen-test');
-      return;
-    }
-    setTestResult(JSON.parse(result));
-  }, [router]);
+    try {
+      const raw = sessionStorage.getItem('tetoEgenResult');
+      const result = raw ? JSON.parse(raw) : null;
+      const balance = result?.balance;
+      if (result && typeof result.type === 'string' && Object.prototype.hasOwnProperty.call(tetoEgenTypes, result.type) &&
+        balance && typeof balance.teto === 'number' && typeof balance.egen === 'number' &&
+        Number.isFinite(balance.teto) && Number.isFinite(balance.egen) &&
+        balance.teto >= 0 && balance.teto <= 100 && balance.egen >= 0 && balance.egen <= 100 &&
+        Math.abs(balance.teto + balance.egen - 100) < 0.01) setTestResult(result);
+    } catch { /* Missing or corrupt storage shows the start prompt. */ }
+    setLoaded(true);
+  }, []);
 
   const handleRestart = () => {
-    sessionStorage.removeItem('tetoEgenResult');
-    router.push('/teto-egen-test');
+    try { sessionStorage.removeItem('tetoEgenResult'); router.push('/teto-egen'); }
+    catch { setError('저장 결과를 지우지 못했습니다. 브라우저의 저장소 사용을 허용한 뒤 다시 시도해주세요.'); }
   };
 
   const handleShare = (platform: string) => {
     if (!testResult) return;
     
     const typeData = tetoEgenTypes[testResult.type];
-    const currentUrl = 'https://mbtifinder.com/teto-egen-test';
+    const currentUrl = 'https://mbtifinder.com/teto-egen';
     const shareText = `나는 ${typeData.title}(${typeData.subtitle})입니다! 테토 ${testResult.balance.teto}% vs 에겐 ${testResult.balance.egen}% 🔥`;
     const encodedUrl = encodeURIComponent(currentUrl);
     const encodedText = encodeURIComponent(shareText);
@@ -134,9 +143,12 @@ export default function TetoEgenResults() {
 
 
 
-  if (!testResult) {
-    return <div>Loading...</div>;
-  }
+  if (!loaded) return <p role="status" className="p-12 text-center">결과를 불러오는 중입니다.</p>;
+  if (!testResult) return <section className="max-w-3xl mx-auto px-6 pt-28 pb-12 text-center">
+    <h1 className="text-2xl font-bold mb-4">저장된 검사 결과가 없습니다</h1>
+    <p className="mb-6">결과가 없거나 읽을 수 없습니다. 테토·에겐 검사를 시작해주세요.</p>
+    <Link href="/teto-egen" className="underline text-primary">테토·에겐 검사 시작하기</Link>
+  </section>;
 
   const typeData = tetoEgenTypes[testResult.type];
   const bestPartnerType = typeData.compatibility.best;
@@ -149,7 +161,7 @@ export default function TetoEgenResults() {
   return (
     <div className="min-h-screen bg-neutral-50">
       <SEO title="테토 vs 에겐 진단 결과" description="당신의 호르몬 성향 분석 결과입니다." />
-      <Navigation />
+      {error && <p role="alert" className="p-4 text-red-700">{error}</p>}
       
       {/* Results Header */}
       <div className="gradient-bg text-white py-16">
@@ -268,7 +280,7 @@ export default function TetoEgenResults() {
             <ShareButtons 
               title="테토 vs 에겐 진단 결과"
               shareText={`나의 호르몬 성향은 '${typeData.title}'입니다!`}
-              url="https://mbtifinder.com/teto-egen-test"
+              url="https://mbtifinder.com/teto-egen"
             />
 
             <div className="mt-8 flex justify-center pb-8">

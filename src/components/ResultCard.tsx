@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { MBTIType } from "@/lib/customTests/mbtiTypes";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -14,9 +15,11 @@ interface ResultCardProps {
 
 export default function ResultCard({ mbtiType, onRestart, onShare }: ResultCardProps) {
   const { toast } = useToast();
+  const [canShare, setCanShare] = useState(false);
+  useEffect(() => { setCanShare(typeof navigator.share === "function"); }, []);
 
   const handleShare = (platform: string) => {
-    const currentUrl = 'https://mbtifinder.com/';
+    const currentUrl = 'https://mbtifinder.com/test';
     const shareText = `나의 MBTI 성격유형은 ${mbtiType.code}(${mbtiType.title})입니다! 당신도 확인해보세요!`;
     const encodedUrl = encodeURIComponent(currentUrl);
     const encodedText = encodeURIComponent(shareText);
@@ -176,7 +179,7 @@ export default function ResultCard({ mbtiType, onRestart, onShare }: ResultCardP
         <div className="text-center space-y-5 mt-10">
           <h3 className="text-lg font-bold text-neutral-600">🔥 내 결과 친구들에게 자랑하기 🔥</h3>
           <div className="flex justify-center space-x-3 flex-wrap gap-y-3">
-            {'share' in navigator && (
+            {canShare && (
               <Button
                 onClick={() => handleShare('native')}
                 className="bg-neutral-800 text-white px-6 py-6 rounded-2xl hover:bg-neutral-900 transition-all hover:-translate-y-1 shadow-lg"

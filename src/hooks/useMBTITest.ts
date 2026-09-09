@@ -17,36 +17,27 @@ export function useMBTITest() {
     setSelectedAnswer(value);
   }, []);
 
-  const nextQuestion = useCallback((answerValue?: number) => {
-    const valueToUse = answerValue !== undefined ? answerValue : selectedAnswer;
-    
-    if (valueToUse === null) {
-      return;
-    }
-
+  const withCurrentAnswer = useCallback((answerValue?: number): Answer[] | null => {
+    const value = answerValue ?? selectedAnswer;
     const question = mbtiQuestions[currentQuestion];
-    const newAnswer: Answer = {
-      questionId: question.id,
-      value: valueToUse,
-      dimension: question.dimension
-    };
+    if (!question || value === null || !Number.isInteger(value) || value < 1 || value > 5) return null;
+    return [...answers.slice(0, currentQuestion), { questionId: question.id, value, dimension: question.dimension }];
+  }, [answers, currentQuestion, selectedAnswer]);
 
-    setAnswers(prev => {
-      const newAnswers = [...prev];
-      newAnswers[currentQuestion] = newAnswer;
-      return newAnswers;
-    });
-
+  const nextQuestion = useCallback((answerValue?: number) => {
+    const updated = withCurrentAnswer(answerValue);
+    if (!updated || currentQuestion >= mbtiQuestions.length - 1) return;
+    setAnswers(updated);
     setCurrentQuestion(prev => prev + 1);
     setSelectedAnswer(null);
-  }, [currentQuestion, selectedAnswer]);
+  }, [currentQuestion, withCurrentAnswer]);
 
   const previousQuestion = useCallback(() => {
     if (currentQuestion > 0) {
       const previousQuestionIndex = currentQuestion - 1;
       
       // 이전 질문의 답변 제거
-      setAnswers(prev => prev.filter((_, index) => index !== previousQuestionIndex));
+      setAnswers(prev => prev.slice(0, previousQuestionIndex));
       
       setCurrentQuestion(previousQuestionIndex);
       setSelectedAnswer(null); // 선택 항목 초기화
@@ -59,9 +50,12 @@ export function useMBTITest() {
     setSelectedAnswer(null);
   }, []);
 
-  const calculateResults = useCallback(() => {
-    return calculateMBTIType(answers);
-  }, [answers]);
+  const calculateResults = useCallback((answerValue?: number) => {
+    const updated = withCurrentAnswer(answerValue);
+    if (!updated || updated.length !== mbtiQuestions.length ||
+      !updated.every((a, i) => a.questionId === mbtiQuestions[i].id)) return null;
+    return calculateMBTIType(updated);
+  }, [withCurrentAnswer]);
 
   const isLastQuestion = currentQuestion >= mbtiQuestions.length - 1;
   const canGoNext = selectedAnswer !== null;

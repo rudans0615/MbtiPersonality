@@ -25,7 +25,7 @@ export default function Privacy() {
               <div className="text-neutral-700 leading-relaxed space-y-2">
                 <p>MBTI Finder(이하 "서비스")는 다음의 목적을 위하여 개인정보를 처리합니다:</p>
                 <ul className="list-disc list-inside ml-4 space-y-1">
-                  <li>서비스 제공 및 운영</li>
+                  <li>서비스 제공 및 운영, 이메일 문의 확인과 답변</li>
                   <li>웹사이트 이용 통계 분석 및 서비스 개선</li>
                   <li>법령 및 서비스 이용약관 위반 행위에 대한 대응</li>
                 </ul>
@@ -36,7 +36,7 @@ export default function Privacy() {
             <section>
               <h2 className="text-2xl font-bold text-neutral-800 mb-4">2. 개인정보의 처리 및 보유기간</h2>
               <div className="text-neutral-700 leading-relaxed space-y-2">
-                <p>① 서비스는 이용자의 개인정보를 별도로 수집하거나 저장하지 않습니다.</p>
+                <p>① 서비스는 웹사이트 문의 폼으로 개인정보를 수집하지 않습니다. 이용자가 직접 이메일로 문의하는 경우, 발신 이메일 주소와 문의 내용을 수신하여 문의 확인과 답변에 이용합니다.</p>
                 <p>② 심리검사 결과는 이용자의 브라우저(세션 스토리지)에만 임시 저장되며, 브라우저를 닫으면 자동으로 삭제됩니다.</p>
                 <p>③ Google Analytics를 통해 수집되는 웹사이트 이용 통계는 Google의 개인정보처리방침에 따라 처리됩니다.</p>
               </div>
@@ -86,7 +86,7 @@ export default function Privacy() {
                   <li>개인정보 수정·삭제권 (해당 시)</li>
                   <li>손해배상청구권</li>
                 </ul>
-                <p>② 본 서비스는 개인정보를 직접 수집하지 않으므로, 대부분의 개인정보 관련 권리 행사가 해당되지 않습니다.</p>
+                <p>② 이메일 문의 내용의 수정·삭제 등 요청은 아래 연락처로 보내실 수 있습니다.</p>
               </div>
             </section>
 

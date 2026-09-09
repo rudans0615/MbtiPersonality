@@ -27,8 +27,8 @@ export function useTetoEgenTest() {
   };
 
   const goToNext = (answerValue?: number | string) => {
-    const valueToUse = answerValue || selectedAnswer;
-    if (valueToUse === null) {
+    const valueToUse = answerValue ?? selectedAnswer;
+    if (valueToUse === null || !getAnswersForQuestion(currentQuestion.id).some(a => a.value === valueToUse)) {
       return;
     }
 
@@ -38,7 +38,7 @@ export function useTetoEgenTest() {
       value: valueToUse as number | string
     };
 
-    const updatedAnswers = [...answers];
+    const updatedAnswers = answers.slice(0, currentQuestionIndex);
     const existingIndex = updatedAnswers.findIndex(a => a.questionId === currentQuestion.id);
     
     if (existingIndex >= 0) {
@@ -56,7 +56,9 @@ export function useTetoEgenTest() {
         .map(a => a.value as number);
       
       const balance = getTetoEgenBalance(personalityAnswers);
-      const resultType = calculateTetoEgenType(gender!, balance);
+      const userGender = updatedAnswers.find(a => a.questionId === 1)?.value;
+      if (updatedAnswers.length !== tetoEgenQuestions.length || (userGender !== 'M' && userGender !== 'F')) return;
+      const resultType = calculateTetoEgenType(userGender, balance);
       
       // 결과를 세션 스토리지에 저장
       sessionStorage.setItem('tetoEgenResult', JSON.stringify({
@@ -81,7 +83,7 @@ export function useTetoEgenTest() {
     const previousQuestionId = tetoEgenQuestions[previousQuestionIndex].id;
     
     // 이전 질문의 답변 제거
-    setAnswers(prev => prev.filter(a => a.questionId !== previousQuestionId));
+    setAnswers(prev => prev.slice(0, previousQuestionIndex));
     
     setCurrentQuestionIndex(previousQuestionIndex);
     setSelectedAnswer(null); // 선택 항목 초기화
