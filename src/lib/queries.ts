@@ -32,6 +32,8 @@ export interface QuestionWithOptions {
 }
 
 export interface ResultType {
+  min_score: number | null;
+  max_score: number | null;
   id: number;
   test_id: string;
   code: string;

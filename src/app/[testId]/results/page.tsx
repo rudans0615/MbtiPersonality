@@ -1,3 +1,4 @@
+import { getGenericScoring } from "@/lib/customTests/resolveGenericResult";
 import { getTests, getTestById, getResultTypes, getQuestionsWithOptions } from "@/lib/queries";
 import ResultsClient from "./ResultsClient";
 import { notFound } from "next/navigation";
@@ -77,6 +78,7 @@ export default async function ResultsPage({ params }: { params: Promise<{ testId
           allKeys={allKeys}
           resultsData={resultsData}
           qLen={questions.length}
+          scoring={getGenericScoring(questions)}
           availableTests={availableTests}
         />
       );

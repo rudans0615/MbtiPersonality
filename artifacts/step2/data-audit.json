@@ -1,0 +1,141 @@
+[
+  {
+    "id": "roommateAirQuality",
+    "questionCount": 8,
+    "mode": "score",
+    "issues": []
+  },
+  {
+    "id": "myPetHealingStyle",
+    "questionCount": 12,
+    "mode": "score",
+    "issues": []
+  },
+  {
+    "id": "petStressRelief",
+    "questionCount": 12,
+    "mode": "score",
+    "issues": []
+  },
+  {
+    "id": "travelMood2023",
+    "questionCount": 8,
+    "mode": "score",
+    "issues": []
+  },
+  {
+    "id": "socialMediaHabitTest2024",
+    "questionCount": 12,
+    "mode": "score",
+    "issues": []
+  },
+  {
+    "id": "shoppingMoodTest1234",
+    "questionCount": 12,
+    "mode": "score",
+    "issues": []
+  },
+  {
+    "id": "workLifeBalanceTest",
+    "questionCount": 12,
+    "mode": "score",
+    "issues": []
+  },
+  {
+    "id": "seasonalMoodTest",
+    "questionCount": 12,
+    "mode": "score",
+    "issues": []
+  },
+  {
+    "id": "travelFriendCompatibility",
+    "questionCount": 8,
+    "mode": "score",
+    "issues": []
+  },
+  {
+    "id": "socialMediaHabitsTest",
+    "questionCount": 0,
+    "mode": "score",
+    "issues": [
+      "no questions",
+      "no results"
+    ]
+  },
+  {
+    "id": "friendshipCompatibility",
+    "questionCount": 12,
+    "mode": "score",
+    "issues": []
+  },
+  {
+    "id": "socialMediaHabits",
+    "questionCount": 12,
+    "mode": "score",
+    "issues": []
+  },
+  {
+    "id": "petPersonalityPreference",
+    "questionCount": 10,
+    "mode": "score",
+    "issues": []
+  },
+  {
+    "id": "dopamine",
+    "questionCount": 12,
+    "mode": "types",
+    "issues": []
+  },
+  {
+    "id": "sbti",
+    "questionCount": 12,
+    "mode": "types",
+    "issues": []
+  },
+  {
+    "id": "hogu",
+    "questionCount": 12,
+    "mode": "score",
+    "issues": []
+  },
+  {
+    "id": "stalkerReactionTest",
+    "questionCount": 8,
+    "mode": "score",
+    "issues": [
+      "unmapped attainable scores: 0"
+    ]
+  },
+  {
+    "id": "subscriptionSpenderQuiz",
+    "questionCount": 8,
+    "mode": "score",
+    "issues": [
+      "unmapped attainable scores: 0"
+    ]
+  },
+  {
+    "id": "commuteBgmSurvivalType",
+    "questionCount": 8,
+    "mode": "score",
+    "issues": [
+      "unmapped attainable scores: 0"
+    ]
+  },
+  {
+    "id": "officePhoneUsageKkondaeLevel",
+    "questionCount": 10,
+    "mode": "score",
+    "issues": [
+      "unmapped attainable scores: 0"
+    ]
+  },
+  {
+    "id": "weddingNewsAttitudeTest",
+    "questionCount": 8,
+    "mode": "score",
+    "issues": [
+      "unmapped attainable scores: 0"
+    ]
+  }
+]

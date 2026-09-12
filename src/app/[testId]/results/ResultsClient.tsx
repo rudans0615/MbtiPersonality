@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useEffect, Suspense } from "react";
+import { useRef, useEffect, Suspense } from "react";
+import { resolveGenericResult } from "@/lib/customTests/resolveGenericResult";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
@@ -9,85 +10,37 @@ import { ShareButtons } from "@/components/ShareButtons";
 import { AdSenseBlock } from "@/components/AdSenseBlock";
 import { ResultImageCard } from "@/components/ResultImageCard";
 import RelatedTests from "@/components/RelatedTests";
-import { Loader2, RotateCcw, Zap, Sparkles } from "lucide-react";
+import { Loader2, RotateCcw, Zap } from "lucide-react";
 
-function ResultsContent({ testId, testInfo, allKeys, resultsData, qLen, availableTests }: any) {
+function ResultsContent({ testId, testInfo, allKeys, resultsData, qLen, scoring, availableTests }: any) {
   const searchParams = useSearchParams();
-  const [score, setScore] = useState(0);
-  const [typeResultKey, setTypeResultKey] = useState<string | null>(null);
-  const [isAnalyzing, setIsAnalyzing] = useState(true);
-
-  // DB에서 가져온 min_score, max_score를 활용한 결과 계산 로직
-  const calculateResultFromScore = (s: number) => {
-    if (!resultsData || Object.keys(resultsData).length === 0) return allKeys[0];
-
-    for (const [key, result] of Object.entries<any>(resultsData)) {
-      if (result.min_score !== undefined && result.max_score !== undefined && result.min_score !== null && result.max_score !== null) {
-        if (s >= result.min_score && s <= result.max_score) {
-          return key;
-        }
-      }
-    }
-    // 기본값 폴백
-    return allKeys[0];
-  };
-
+  const resolution = resolveGenericResult(searchParams, resultsData, scoring);
+  const resultKey = resolution.key;
+  const reported = useRef(new Set<string>());
+  const query = searchParams.toString();
   useEffect(() => {
-    // 유형 기반 테스트: ?types= 파라미터가 있으면 빈도 기반으로 결과 산출
-    const typesParam = searchParams.get("types");
-    if (typesParam) {
-      const typeArr = decodeURIComponent(typesParam).split(",").filter(Boolean);
-      const freq: Record<string, number> = {};
-      typeArr.forEach(t => { freq[t] = (freq[t] || 0) + 1; });
-      // 가장 많이 선택된 유형을 결과로 결정
-      const sorted = Object.entries(freq).sort((a, b) => b[1] - a[1]);
-      if (sorted.length > 0) {
-        setTypeResultKey(sorted[0][0]);
-      }
-    } else {
-      // 점수 기반 테스트: 기존 로직
-      const s = parseInt(searchParams.get("score") || "0", 10);
-      setScore(s);
+    const eventKey = JSON.stringify([testId, query]);
+    if (resultKey && !reported.current.has(eventKey) && typeof window.gtag === 'function') {
+      reported.current.add(eventKey);
+      window.gtag('event', 'test_completed', { test_id: testId, questions_count: qLen });
     }
+  }, [resultKey, query, testId, qLen]);
 
-    const timer = setTimeout(() => {
-      setIsAnalyzing(false);
-      if (typeof window !== "undefined" && (window as any).gtag) {
-        (window as any).gtag('event', 'test_completed', {
-          test_id: testId,
-          options_count: 4, // approx
-          questions_count: qLen
-        });
-      }
-    }, 3000);
-    return () => clearTimeout(timer);
-  }, [searchParams, testId, qLen]);
-
-  // 유형 기반이면 typeResultKey 사용, 아니면 점수 기반 로직 사용
-  const resultKey = typeResultKey ? typeResultKey : calculateResultFromScore(score);
-  const result = resultsData[resultKey] || resultsData[allKeys[0]] || { title: "분석 완료", description: "당신만의 특별한 결과입니다!" };
-
-  if (isAnalyzing) {
-    return (
-      <div className="min-h-screen flex flex-col font-sans">
-        <main className="flex-grow flex flex-col items-center justify-center p-4">
-          <Loader2 className="h-16 w-16 animate-spin text-pink-400 mb-8" />
-          <h2 className="text-3xl font-extrabold text-neutral-800 mb-4">당신의 답변을 분석 중입니다...</h2>
-          <p className="text-neutral-500 mb-12">AI가 당신의 심리 데이터를 해독하고 있어요 🧠</p>
-          <div className="w-full max-w-md">
-            <AdSenseBlock adSlot="3344556677" />
-          </div>
-        </main>
-      </div>
-    );
-  }
+  if (resolution.error) return <section className="max-w-3xl mx-auto px-6 pt-28 pb-12 text-center">
+    <h1 className="text-2xl font-bold mb-4">{resolution.error === 'unavailable' ? '결과를 제공할 수 없습니다' : '검사 결과를 확인할 수 없습니다'}</h1>
+    <p className="mb-6">{resolution.error === 'unavailable' ? '이 검사의 결과 정보를 확인 중입니다. 다른 테스트를 이용해주세요.' : '답변 정보가 없거나 올바르지 않습니다. 검사를 처음부터 진행해주세요.'}</p>
+    <Link href={resolution.error === 'unavailable' ? '/' : testInfo.href || '/' + testId} className="text-primary underline">
+      {resolution.error === 'unavailable' ? '다른 테스트 보기' : '검사 시작하기'}
+    </Link>
+  </section>;
+  const result = resultsData[resolution.key];
 
   return (
     <>
-      <div className="bg-gradient-to-br from-pink-300 via-purple-300 to-indigo-300 text-white py-20 relative overflow-hidden w-full">
+      <div className="bg-gradient-to-br from-pink-300 via-purple-300 to-indigo-300 text-white pt-28 pb-32 relative overflow-hidden w-full">
         <div className="max-w-3xl mx-auto px-6 text-center relative z-10">
           <h1 className="text-xl md:text-2xl font-semibold mb-4 tracking-wider opacity-90 drop-shadow-md">{testInfo.title} 결과 💫</h1>
-          <p className="text-lg opacity-80">당신의 진짜 유형은...</p>
+          <p className="text-lg opacity-80">선택한 답변에 따른 결과입니다</p>
         </div>
       </div>
 
@@ -104,6 +57,8 @@ function ResultsContent({ testId, testInfo, allKeys, resultsData, qLen, availabl
             </div>
           </div>
 
+          <p className="text-sm text-neutral-500 mb-6">재미와 자기이해를 위한 참고용 테스트이며, 전문적인 심리 평가나 의학적 진단을 대신하지 않습니다.</p>
+
           <ResultImageCard
             testTitle={testInfo.title}
             resultTitle={result.title}
@@ -118,7 +73,7 @@ function ResultsContent({ testId, testInfo, allKeys, resultsData, qLen, availabl
             <div className="mb-10 mt-6">
               <h3 className="text-xl font-bold text-neutral-800 mb-5 flex items-center justify-center">
                 <Zap className="mr-2 text-yellow-400 fill-yellow-400" size={24} />
-                순살 조심! 뼈때리는 팩트 모음
+                이 유형의 특징
               </h3>
               <div className="grid md:grid-cols-2 gap-3">
                 {result.characteristics.map((trait: string, index: number) => (
@@ -185,7 +140,7 @@ function ResultsContent({ testId, testInfo, allKeys, resultsData, qLen, availabl
 
 export default function ResultsClient(props: any) {
   return (
-    <Suspense fallback={<div className="min-h-screen flex items-center justify-center"><Loader2 className="animate-spin text-pink-400 h-10 w-10" /></div>}>
+    <Suspense fallback={<div role="status" className="min-h-screen flex flex-col gap-4 items-center justify-center"><Loader2 className="animate-spin text-pink-400 h-10 w-10" /><p>결과를 불러오는 중입니다.</p></div>}>
       <ResultsContent {...props} />
     </Suspense>
   );
