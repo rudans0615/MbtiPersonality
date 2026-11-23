@@ -131,7 +131,7 @@ export const BRIDGE_TOPIC_QUEUE = [
     category: '커리어',
     bridgeLinks: [
       { href: '/subscriptionSpenderQuiz', label: '구독 소비 유형 테스트' },
-      { href: '/shoppingMoodTest1234', label: '쇼핑 성향 테스트' },
+      { href: '/workLifeBalanceTest', label: '직장·워라밸 성향 테스트' },
     ],
   },
   {
@@ -185,7 +185,7 @@ export const BRIDGE_TOPIC_QUEUE = [
     category: '심층분석',
     bridgeLinks: [
       { href: '/subscriptionSpenderQuiz', label: '구독 소비 유형 테스트' },
-      { href: '/shoppingMoodTest1234', label: '쇼핑 기분 테스트' },
+      { href: '/dopamine', label: '도파민 중독 성향 테스트' },
     ],
   },
   {
@@ -232,7 +232,7 @@ export const BRIDGE_TOPIC_QUEUE = [
     category: '심층분석',
     bridgeLinks: [
       { href: '/dopamine', label: '도파민 중독 테스트' },
-      { href: '/socialMediaHabitTest2024', label: 'SNS 습관 테스트' },
+      { href: '/test', label: '무료 60문항 MBTI 검사' },
     ],
   },
   {
@@ -258,8 +258,8 @@ export const BRIDGE_TOPIC_QUEUE = [
     keyword: '강아지파 vs 고양이파 성격 차이: 반려동물 취향으로 보는 애착과 휴식 성향',
     category: '성격분석',
     bridgeLinks: [
-      { href: '/myPetHealingStyle', label: '반려동물 힐링 스타일 테스트' },
       { href: '/petPersonalityPreference', label: '반려동물 성향 테스트' },
+      { href: '/test', label: '무료 60문항 MBTI 검사' },
     ],
   },
   {
@@ -267,8 +267,8 @@ export const BRIDGE_TOPIC_QUEUE = [
     keyword: '룸메이트·동거 전 반드시 맞춰야 할 생활 습관 6가지 (청결·소음·개인공간)',
     category: '관계심리',
     bridgeLinks: [
-      { href: '/roommateAirQuality', label: '룸메이트 성향 테스트' },
-      { href: '/compatibility', label: 'MBTI 궁합표' },
+      { href: '/compatibility', label: 'MBTI 16×16 궁합표' },
+      { href: '/friendshipCompatibility', label: '우정 궁합 테스트' },
     ],
   },
   {
@@ -276,8 +276,8 @@ export const BRIDGE_TOPIC_QUEUE = [
     keyword: '인스타그램을 볼수록 우울해지는 상향 비교 심리와 건강한 SNS 사용 기준',
     category: '심층분석',
     bridgeLinks: [
-      { href: '/socialMediaHabitTest2024', label: 'SNS 습관 테스트' },
       { href: '/dopamine', label: '도파민 중독 테스트' },
+      { href: '/test', label: '60문항 MBTI 검사' },
     ],
   },
   {
@@ -286,7 +286,7 @@ export const BRIDGE_TOPIC_QUEUE = [
     category: '심층분석',
     bridgeLinks: [
       { href: '/seasonalMoodTest', label: '계절 무드 테스트' },
-      { href: '/petStressRelief', label: '스트레스 해소 성향 테스트' },
+      { href: '/travelMood2023', label: '여행 스타일 테스트' },
     ],
   },
   {
