@@ -110,6 +110,22 @@ for (const rPath of ['/results', '/teto-egen/results', '/dopamine/results', '/co
 const missingCompat = await fetchText('/compatibility/XXXX-YYYY');
 assert(missingCompat.status === 404, `Invalid compatibility returned ${missingCompat.status} instead of 404`);
 
+// 7. Dynamic OG endpoints & friend invite flow
+const ogChecks = [
+  '/api/og?mode=compatibility&a=ENFJ&b=INFP&score=95&tier=%EC%B5%9C%EA%B3%A0%EC%9D%98+%EA%B6%81%ED%95%A9',
+  '/api/og?mode=invite&from=INFP&name=%EC%A7%80%EB%AF%BC',
+  '/api/og?mode=result&testTitle=MBTI&resultTitle=INFP&subtitle=%EC%A4%91%EC%9E%AC%EC%9E%90',
+];
+for (const ogPath of ogChecks) {
+  const res = await fetch(`${BASE}${ogPath}`);
+  const ct = res.headers.get('content-type') || '';
+  assert(res.status === 200 && ct.includes('image/png'), `OG endpoint ${ogPath} failed: ${res.status} (${ct})`);
+}
+const invitePage = await fetchText('/test?from=INFP&name=%EC%A7%80%EB%AF%BC');
+assert(invitePage.status === 200, `/test invite returned ${invitePage.status}`);
+assert(invitePage.text.includes('mode=invite'), '/test invite missing dynamic invite OG meta');
+assert(invitePage.text.includes('지민(INFP)'), '/test invite missing inviter greeting banner');
+
 console.log(JSON.stringify({
   sitemapUrlsTotal: locs.length,
   sitemapUrls200: sitemap200,

@@ -5,6 +5,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { CoupangRecommend } from "@/components/CoupangRecommend";
+import { FriendInviteBox } from "@/components/FriendInviteBox";
 import { IS_ADSENSE_REVIEW_MODE } from "@/lib/siteConfig";
 
 interface ResultCardProps {
@@ -166,6 +167,9 @@ export default function ResultCard({ mbtiType, onRestart, onShare }: ResultCardP
             ))}
           </div>
         </div>
+
+        {/* 2인 궁합 친구 초대 박스 */}
+        <FriendInviteBox myCode={mbtiType.code} myTitle={mbtiType.title} />
 
         {/* 제휴 마케팅 추천 스캐폴딩: 심사 기간 중 비노출 */}
         {!IS_ADSENSE_REVIEW_MODE && <CoupangRecommend keyword={mbtiType.title} />}

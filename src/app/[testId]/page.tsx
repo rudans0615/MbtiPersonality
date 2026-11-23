@@ -39,6 +39,11 @@ export async function generateMetadata({
         title: `${testInfo.title} | MBTI Finder`,
         description: desc,
         url: `https://mbtifinder.com/${testId}`,
+        images: [{ url: `/api/og?testId=${encodeURIComponent(testId)}`, width: 1200, height: 630 }],
+      },
+      twitter: {
+        card: "summary_large_image",
+        images: [`/api/og?testId=${encodeURIComponent(testId)}`],
       },
     };
   } catch {

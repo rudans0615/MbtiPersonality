@@ -38,6 +38,13 @@ export async function generateMetadata({
     return { title: "유형을 찾을 수 없습니다", robots: { index: false, follow: false } };
   }
 
+  const ogUrl = `/api/og?${new URLSearchParams({
+    mode: "result",
+    testTitle: "MBTI 16가지 성격유형 백과",
+    resultTitle: `${data.code} · ${data.title}`,
+    subtitle: data.subtitle,
+  }).toString()}`;
+
   return {
     title: `${data.code} (${data.title}) 특징·연애·직장·궁합 총정리`,
     description: `${data.code} ${data.title} — ${data.subtitle}. 강점과 약점, 연애 스타일, 직장 생활, 추천 직업, 잘 맞는 궁합 유형과 성장 조언을 확인하세요.`,
@@ -47,6 +54,11 @@ export async function generateMetadata({
       description: data.subtitle,
       type: "article",
       url: `https://mbtifinder.com/type/${upper}`,
+      images: [{ url: ogUrl, width: 1200, height: 630, alt: `${data.code} ${data.title}` }],
+    },
+    twitter: {
+      card: "summary_large_image",
+      images: [ogUrl],
     },
   };
 }

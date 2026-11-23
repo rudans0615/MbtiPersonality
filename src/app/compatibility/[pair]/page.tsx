@@ -12,6 +12,7 @@ import {
   Sparkles,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { ShareButtons } from "@/components/ShareButtons";
 import { IS_ALL_COMPATIBILITY_INDEXED } from "@/lib/siteConfig";
 import {
   CURATED_PAIR_KEYS,
@@ -44,6 +45,13 @@ export async function generateMetadata({
 
   const report = getCompatibilityReport(parsed.codeA, parsed.codeB);
   const shouldIndex = IS_ALL_COMPATIBILITY_INDEXED || Boolean(CURATED_PAIR_MAP[parsed.canonical]);
+  const ogUrl = `/api/og?${new URLSearchParams({
+    mode: "compatibility",
+    a: report.codeA,
+    b: report.codeB,
+    score: String(report.score),
+    tier: report.tierLabel,
+  }).toString()}`;
 
   return {
     title: `${report.codeA} ${report.codeB} 궁합 (${report.score}점) · 연애·직장·대화법 총정리`,
@@ -51,10 +59,16 @@ export async function generateMetadata({
     alternates: { canonical: `/compatibility/${parsed.canonical}` },
     robots: { index: shouldIndex, follow: true },
     openGraph: {
-      title: `${report.codeA} ✕ ${report.codeB} MBTI 궁합 분석 | MBTI Finder`,
+      title: `${report.codeA} ✕ ${report.codeB} MBTI 궁합 ${report.score}점 (${report.tierLabel})`,
       description: report.headline,
       type: "article",
       url: `https://mbtifinder.com/compatibility/${parsed.canonical}`,
+      images: [{ url: ogUrl, width: 1200, height: 630, alt: `${report.codeA} ${report.codeB} 궁합` }],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: `${report.codeA} ✕ ${report.codeB} MBTI 궁합 ${report.score}점`,
+      images: [ogUrl],
     },
   };
 }
@@ -286,6 +300,13 @@ export default async function CompatibilityDetailPage({
               ))}
             </div>
           </section>
+
+          {/* 궁합 결과 공유 버튼 */}
+          <ShareButtons
+            title={`${report.codeA} ✕ ${report.codeB} MBTI 궁합 (${report.score}점)`}
+            shareText={`${report.codeA}와 ${report.codeB} 궁합은 ${report.score}점(${report.tierLabel})! ${report.headline} 👉`}
+            url={`https://mbtifinder.com/compatibility/${report.pairKey}`}
+          />
 
           {/* 각 유형 상세 가이드 & 검사 CTA */}
           <section className="bg-gradient-to-br from-neutral-900 to-neutral-800 text-white rounded-3xl p-8 flex flex-col sm:flex-row items-center justify-between gap-6">

@@ -5,10 +5,19 @@ import Link from "next/link";
 import { useMBTITest } from "@/hooks/useMBTITest";
 import ProgressBar from "@/components/ProgressBar";
 import QuestionCard from "@/components/QuestionCard";
+import { MBTI_CODES, toCanonicalPair, type MBTICode } from "@/lib/customTests/mbtiCompatibility";
+import { mbtiTypes } from "@/lib/customTests/mbtiTypes";
 
-export default function TestClient() {
+interface TestClientProps {
+  inviteFrom?: MBTICode;
+  inviteName?: string;
+}
+
+export default function TestClient({ inviteFrom, inviteName }: TestClientProps) {
   const router = useRouter();
   const [error, setError] = useState("");
+  const [showQuickCompare, setShowQuickCompare] = useState(false);
+
   const {
     currentQuestion,
     selectedAnswer,
@@ -32,7 +41,18 @@ export default function TestClient() {
       }
       try {
         sessionStorage.setItem("mbtiResult", result);
-        router.push("/results");
+        if (inviteFrom) {
+          sessionStorage.setItem(
+            "mbtiInvite",
+            JSON.stringify({ from: inviteFrom, name: inviteName || "" })
+          );
+          const qs = new URLSearchParams({ from: inviteFrom });
+          if (inviteName) qs.set("name", inviteName);
+          router.push(`/results?${qs.toString()}`);
+        } else {
+          sessionStorage.removeItem("mbtiInvite");
+          router.push("/results");
+        }
       } catch {
         setError("결과를 저장하지 못했습니다. 브라우저의 저장소 사용을 허용한 뒤 마지막 답변을 다시 선택해주세요.");
       }
@@ -45,14 +65,64 @@ export default function TestClient() {
     return <div className="pt-28 text-center">검사를 불러오는 중입니다...</div>;
   }
 
+  const inviterLabel = inviteFrom
+    ? inviteName
+      ? `${inviteName}(${inviteFrom})`
+      : `${inviteFrom}(${mbtiTypes[inviteFrom].title})`
+    : "";
+
   return (
     <div className="min-h-screen bg-neutral-50 pt-16">
+      {/* 2인 궁합 초대 배너 */}
+      {inviteFrom && (
+        <div className="bg-gradient-to-r from-rose-500 via-pink-500 to-purple-500 text-white">
+          <div className="max-w-4xl mx-auto px-6 py-4 flex flex-col sm:flex-row items-center justify-between gap-3">
+            <div className="text-sm md:text-base font-medium text-center sm:text-left">
+              💌 <strong>{inviterLabel}</strong>님이 2인 MBTI 궁합 비교에 초대했어요! 검사를 끝내면 둘의 궁합 리포트가 바로 열립니다.
+            </div>
+            <button
+              type="button"
+              onClick={() => setShowQuickCompare((prev) => !prev)}
+              className="text-xs font-bold bg-white/20 hover:bg-white/30 px-3.5 py-1.5 rounded-full shrink-0 transition-colors"
+            >
+              {showQuickCompare ? "닫기" : "이미 내 MBTI 알아요 → 바로 비교"}
+            </button>
+          </div>
+
+          {showQuickCompare && (
+            <div className="bg-white/95 text-neutral-800 border-b border-pink-100">
+              <div className="max-w-4xl mx-auto px-6 py-4">
+                <p className="text-xs font-bold text-neutral-600 mb-2.5">
+                  내 MBTI를 선택하면 {inviterLabel}님과의 궁합 페이지로 바로 이동합니다:
+                </p>
+                <div className="grid grid-cols-4 sm:grid-cols-8 gap-2">
+                  {MBTI_CODES.map((code) => {
+                    const pair = toCanonicalPair(inviteFrom, code)!;
+                    return (
+                      <Link
+                        key={code}
+                        href={`/compatibility/${pair}`}
+                        className="text-center py-1.5 rounded-lg bg-pink-50 hover:bg-pink-600 hover:text-white text-xs font-extrabold text-pink-700 border border-pink-200 transition-colors"
+                      >
+                        {code}
+                      </Link>
+                    );
+                  })}
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+
       {/* Progress Header */}
       <div className="bg-white shadow-sm sticky top-16 z-20">
         <div className="max-w-4xl mx-auto px-6 py-4">
           <div className="flex items-center justify-between mb-4">
             <h1 className="text-xl font-semibold text-neutral-800">MBTI 성격유형 검사</h1>
-            <span className="text-neutral-600">{currentQuestion + 1} / {totalQuestions}</span>
+            <span className="text-neutral-600">
+              {currentQuestion + 1} / {totalQuestions}
+            </span>
           </div>
           <ProgressBar current={currentQuestion + 1} total={totalQuestions} />
         </div>
@@ -72,7 +142,7 @@ export default function TestClient() {
           isLastQuestion={isLastQuestion}
         />
 
-        {/* 검사 안내 및 해석 가이드 (초기 문항 노출 시에도 충분한 정보 제공) */}
+        {/* 검사 안내 및 해석 가이드 */}
         <section className="mt-12 bg-white rounded-3xl border border-neutral-100 shadow-sm p-8 space-y-4 text-neutral-700 leading-relaxed">
           <h2 className="text-xl font-bold text-neutral-900">MBTI 60문항 성격유형 검사 안내</h2>
           <p className="text-sm">

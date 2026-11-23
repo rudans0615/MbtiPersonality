@@ -94,7 +94,11 @@ function ResultsContent({ testId, testInfo, allKeys, resultsData, qLen, scoring,
           )}
 
           <div className="text-center space-y-5 mt-10">
-            <ShareButtons title={`${testInfo.title} 결과`} shareText={`나의 검사 결과는 '${result.title}'! 너도 해봐 👉`} url={`https://mbtifinder.com/${testId}`} />
+            <ShareButtons
+              title={`나의 ${testInfo.title} 결과: ${result.title}`}
+              shareText={`나의 ${testInfo.title} 결과는 '${result.title}'! 너는 뭐가 나올까? 👉`}
+              url={query ? `https://mbtifinder.com/${testId}/results?${query}` : `https://mbtifinder.com/${testId}`}
+            />
           </div>
 
           <div className="mt-8 flex justify-center pb-4">
