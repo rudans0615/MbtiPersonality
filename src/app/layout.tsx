@@ -27,9 +27,14 @@ export const metadata: Metadata = {
   twitter: {
     card: 'summary_large_image',
   },
-  ...(process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION
-    ? { verification: { google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION } }
-    : {}),
+  verification: {
+    ...(process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION
+      ? { google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION }
+      : {}),
+    other: {
+      'naver-site-verification': 'c3f5cd8a078f04143833a1c733cbba5e26a2b3a0',
+    },
+  },
 };
 
 const jsonLdWebSite = {
