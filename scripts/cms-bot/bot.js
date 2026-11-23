@@ -6,6 +6,7 @@ import { zodResponseFormat } from 'openai/helpers/zod';
 import dotenv from 'dotenv';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import { generateBridgeBlogDraft, handleBridgeBlogCallback, sendBlogQueueStatus, scheduleTwiceWeeklyBridgeBlog } from './bridgeBlogWorkflow.js';
 
 dotenv.config();
 
@@ -35,7 +36,8 @@ bot.setMyCommands([
   { command: 'suggest', description: '요즘 유행하는 바이럴 테스트 추천받기' },
   { command: 'newtest', description: '신규 테스트 자동 생성 및 배포 (예: /newtest 탕후루 취향)' },
   { command: 'batch', description: '한번에 여러 테스트 자동 생성 (예: /batch 3)' },
-  { command: 'newblog', description: 'SEO 블로그 칼럼 자동 작성 및 배포 (예: /newblog INFP 연애)' },
+  { command: 'newblog', description: '고품질 브릿지 칼럼 초안 작성 (승인 후 발행)' },
+  { command: 'blogqueue', description: '남은 브릿지 칼럼 주제 큐 및 스케줄 확인' },
   { command: 'market', description: '마케팅 에이전시 파이프라인 가동 (예: /market hogu)' },
 ]);
 
@@ -515,50 +517,17 @@ JSON 형식 외에 어떤 말도 출력하지 마.`
   }
 }
 
-// /newblog 명령어 핸들러 (수동 트리거 및 자동 모드 지원)
+// /newblog 명령어 핸들러 (승인형 브릿지 칼럼 초안 생성)
 bot.onText(/\/(newblog)(?:\s+(.+))?/, async (msg, match) => {
   const chatId = msg.chat.id;
-  const topic = match[2] || null;
-  await generateAndPublishBlog(chatId, topic);
+  const topic = match[2] ? match[2].trim() : null;
+  await generateBridgeBlogDraft(bot, openai, chatId, topic);
 });
 
-// 매일 정해진 시간(예: 오전 10시)에 자동으로 블로그를 발행하는 스케줄러
-function scheduleDailyBlog() {
-  if (process.env.ENABLE_DAILY_AUTO_BLOG !== 'true') {
-    console.log('🛑 Auto-Pilot 일일 블로그 자동 발행이 비활성화되어 있습니다.');
-    return;
-  }
-  const now = new Date();
-  const targetHour = 10; // 오전 10시
-  const targetMinute = 0;
+// /blogqueue 명령어 핸들러 (남은 브릿지 주제 큐 확인)
+bot.onText(/\/(blogqueue)/, async (msg) => {
+  await sendBlogQueueStatus(bot, msg.chat.id);
+});
 
-  const nextRun = new Date(now.getFullYear(), now.getMonth(), now.getDate(), targetHour, targetMinute, 0, 0);
-
-  // 이미 오늘 10시가 지났다면 내일 10시로 설정
-  if (now.getTime() >= nextRun.getTime()) {
-    nextRun.setDate(nextRun.getDate() + 1);
-  }
-
-  const delay = nextRun.getTime() - now.getTime();
-
-  console.log(`🤖 Auto-Pilot 스케줄러 세팅 완료: 다음 포스팅까지 ${Math.floor(delay / 1000 / 60)}분 남았습니다.`);
-
-  setTimeout(() => {
-    const adminChatId = process.env.ADMIN_CHAT_ID;
-    if (adminChatId) {
-      generateAndPublishBlog(adminChatId, null);
-    }
-
-    // 이후에는 24시간마다 반복
-    setInterval(() => {
-      if (adminChatId) {
-        generateAndPublishBlog(adminChatId, null);
-      }
-    }, 24 * 60 * 60 * 1000);
-
-  }, delay);
-}
-
-// 스케줄러 시작
-scheduleDailyBlog();
-
+// 매주 화·목 오전 10:00 KST 승인형 브릿지 칼럼 초안 스케줄러 시작
+scheduleTwiceWeeklyBridgeBlog(bot, openai);
