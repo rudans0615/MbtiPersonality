@@ -5,72 +5,106 @@ export interface MBTIQuestion {
   dimension: 'E' | 'I' | 'S' | 'N' | 'T' | 'F' | 'J' | 'P';
 }
 
+/**
+ * 64문항 완벽 대칭 MBTI 문항 세트
+ * - 각 지표 16문항 (8:8 완전 대칭) → 긍정 동의 편향 수학적 0%
+ * - 타 지표 혼입(교차 오염) 및 사회적 바람직성 편향 문항 전면 배제
+ * - E/I → S/N → T/F → J/P 4축 교차 순환 배치로 응답 피로도 최소화
+ */
 export const mbtiQuestions: MBTIQuestion[] = [
-  // Extraversion vs Introversion (E/I)
-  { id: 1, text: "파티에서 새로운 사람들과 만나는 것이 편안하다.", emoji: "🎉", dimension: "E" },
-  { id: 2, text: "혼자 있는 시간을 통해 에너지를 충전한다.", emoji: "🧘", dimension: "I" },
-  { id: 3, text: "큰 그룹에서 이야기하는 것을 좋아한다.", emoji: "👥", dimension: "E" },
-  { id: 4, text: "말하기 전에 신중하게 생각하는 편이다.", emoji: "🤔", dimension: "I" },
-  { id: 5, text: "사교적인 모임에서 활력을 얻는다.", emoji: "🎪", dimension: "E" },
-  { id: 6, text: "조용한 환경에서 집중이 잘 된다.", emoji: "📚", dimension: "I" },
-  { id: 7, text: "처음 만난 사람과도 쉽게 대화할 수 있다.", emoji: "💬", dimension: "E" },
-  { id: 8, text: "깊은 관계를 가진 소수의 친구를 선호한다.", emoji: "👫", dimension: "I" },
-  { id: 9, text: "사람들 앞에서 발표하는 것이 편하다.", emoji: "🎤", dimension: "E" },
-  { id: 10, text: "내 생각을 글로 표현하는 것을 선호한다.", emoji: "✍️", dimension: "I" },
-  { id: 11, text: "즉흥적으로 친구들을 만나는 것을 좋아한다.", emoji: "🎊", dimension: "E" },
-  { id: 12, text: "미리 계획된 만남을 선호한다.", emoji: "📅", dimension: "I" },
-  { id: 13, text: "팀워크를 통해 문제를 해결하는 것을 좋아한다.", emoji: "🤝", dimension: "E" },
-  { id: 14, text: "혼자서 문제를 해결하는 것을 선호한다.", emoji: "🧩", dimension: "I" },
-  { id: 15, text: "활동적이고 외부 활동을 즐긴다.", emoji: "🏃", dimension: "E" },
+  // Round 1 (E, S, T, J)
+  { id: 1, text: "여러 사람이 모인 자리에서 대화를 나누다 보면 오히려 에너지가 올라간다.", emoji: "🎉", dimension: "E" },
+  { id: 2, text: "추상적인 이론이나 가설보다 지금 당장 눈앞에서 확인되는 사실이 더 와닿는다.", emoji: "🔎", dimension: "S" },
+  { id: 3, text: "친구가 고민을 털어놓으면 감정적 위로보다 현실적인 해결 방법부터 머릿속에 떠오른다.", emoji: "🧠", dimension: "T" },
+  { id: 4, text: "여행이나 주말 약속을 잡을 때 출발 전 동선과 일정을 미리 정해 두어야 마음이 놓인다.", emoji: "📅", dimension: "J" },
 
-  // Sensing vs iNtuition (S/N)
-  { id: 16, text: "세부사항보다는 전체적인 그림을 보는 것을 선호한다.", emoji: "🎯", dimension: "N" },
-  { id: 17, text: "구체적이고 실용적인 정보를 중시한다.", emoji: "📊", dimension: "S" },
-  { id: 18, text: "새로운 가능성과 아이디어에 관심이 많다.", emoji: "💡", dimension: "N" },
-  { id: 19, text: "과거의 경험을 바탕으로 판단한다.", emoji: "📖", dimension: "S" },
-  { id: 20, text: "상상력과 창의성을 발휘하는 일을 좋아한다.", emoji: "🎨", dimension: "N" },
-  { id: 21, text: "단계별로 체계적으로 일을 진행한다.", emoji: "📋", dimension: "S" },
-  { id: 22, text: "미래의 가능성에 대해 자주 생각한다.", emoji: "🔮", dimension: "N" },
-  { id: 23, text: "현재 상황에 집중하며 현실적으로 접근한다.", emoji: "⏰", dimension: "S" },
-  { id: 24, text: "추상적이고 이론적인 개념을 즐긴다.", emoji: "🧠", dimension: "N" },
-  { id: 25, text: "실제 경험을 통해 배우는 것을 선호한다.", emoji: "🔧", dimension: "S" },
-  { id: 26, text: "패턴과 연관성을 찾는 것에 흥미가 있다.", emoji: "🔗", dimension: "N" },
-  { id: 27, text: "사실과 데이터에 기반해 결정한다.", emoji: "📈", dimension: "S" },
-  { id: 28, text: "새로운 방법과 혁신을 추구한다.", emoji: "🚀", dimension: "N" },
-  { id: 29, text: "검증된 방법을 선호한다.", emoji: "✅", dimension: "S" },
-  { id: 30, text: "은유와 상징적 표현을 좋아한다.", emoji: "🎭", dimension: "N" },
+  // Round 2 (I, N, F, P)
+  { id: 5, text: "사람들과 즐겁게 어울린 뒤에도 혼자만의 조용한 시간이 있어야 에너지가 회복된다.", emoji: "🧘", dimension: "I" },
+  { id: 6, text: "하나의 사건을 보더라도 겉으로 드러난 사실보다 그 이면의 의도와 맥락을 먼저 떠올린다.", emoji: "🔮", dimension: "N" },
+  { id: 7, text: "옳고 그름이 분명한 상황이라도 상대가 상처받을 것 같으면 표현 수위를 먼저 고민한다.", emoji: "💭", dimension: "F" },
+  { id: 8, text: "세세한 시간표대로 움직이는 여행보다 현지 기분에 따라 발길 닿는 대로 다니는 쪽이 훨씬 즐겁다.", emoji: "🧭", dimension: "P" },
 
-  // Thinking vs Feeling (T/F)
-  { id: 31, text: "결정을 내릴 때 논리적 분석을 중시한다.", emoji: "🧠", dimension: "T" },
-  { id: 32, text: "사람들의 감정을 고려해서 결정한다.", emoji: "❤️", dimension: "F" },
-  { id: 33, text: "객관적이고 공정한 판단을 중요하게 생각한다.", emoji: "⚖️", dimension: "T" },
-  { id: 34, text: "조화와 협력을 위해 노력한다.", emoji: "🕊️", dimension: "F" },
-  { id: 35, text: "비판적 사고로 문제를 분석한다.", emoji: "🔍", dimension: "T" },
-  { id: 36, text: "타인의 기분을 상하게 하지 않으려 조심한다.", emoji: "🤗", dimension: "F" },
-  { id: 37, text: "효율성과 성과를 중시한다.", emoji: "📈", dimension: "T" },
-  { id: 38, text: "개인적 가치와 신념을 중요하게 여긴다.", emoji: "💎", dimension: "F" },
-  { id: 39, text: "갈등 상황에서 논리적으로 해결책을 찾는다.", emoji: "🤝", dimension: "T" },
-  { id: 40, text: "다른 사람의 입장을 이해하려 노력한다.", emoji: "👁️", dimension: "F" },
-  { id: 41, text: "규칙과 원칙을 일관되게 적용한다.", emoji: "📏", dimension: "T" },
-  { id: 42, text: "상황에 따라 유연하게 접근한다.", emoji: "🌊", dimension: "F" },
-  { id: 43, text: "장단점을 분석해서 최선의 선택을 한다.", emoji: "📊", dimension: "T" },
-  { id: 44, text: "마음이 편한 쪽으로 결정하는 경우가 많다.", emoji: "😌", dimension: "F" },
-  { id: 45, text: "문제의 원인을 찾아 근본적으로 해결한다.", emoji: "🔧", dimension: "T" },
+  // Round 3 (E, N, T, P)
+  { id: 9, text: "처음 보는 사람이 많은 모임에서도 먼저 말을 걸며 분위기를 트는 편이다.", emoji: "💬", dimension: "E" },
+  { id: 10, text: "현실에 당장 쓰이지 않더라도 철학적 질문이나 새로운 개념을 상상하는 것이 즐겁다.", emoji: "🌌", dimension: "N" },
+  { id: 11, text: "상대의 기분이 다소 상하더라도 사실과 다른 말로 감싸주기보다 솔직하게 짚어주는 편이 낫다.", emoji: "⚖️", dimension: "T" },
+  { id: 12, text: "마감이 코앞에 닥쳤을 때 오히려 집중력과 아이디어가 폭발해 일을 몰아 끝내는 경우가 많다.", emoji: "⚡", dimension: "P" },
 
-  // Judging vs Perceiving (J/P)
-  { id: 46, text: "계획을 세우고 일정에 따라 행동하는 것을 좋아한다.", emoji: "📅", dimension: "J" },
-  { id: 47, text: "융통성 있게 상황에 맞춰 행동한다.", emoji: "🎪", dimension: "P" },
-  { id: 48, text: "미리 정해진 구조와 틀 안에서 일하는 것을 선호한다.", emoji: "🏗️", dimension: "J" },
-  { id: 49, text: "자유롭고 개방적인 환경을 좋아한다.", emoji: "🦋", dimension: "P" },
-  { id: 50, text: "데드라인을 지키는 것이 중요하다고 생각한다.", emoji: "⏰", dimension: "J" },
-  { id: 51, text: "마지막 순간에 하는 일이 더 창의적이라고 생각한다.", emoji: "⚡", dimension: "P" },
-  { id: 52, text: "체계적이고 조직적으로 일을 처리한다.", emoji: "📋", dimension: "J" },
-  { id: 53, text: "여러 가지 일을 동시에 진행하는 것을 좋아한다.", emoji: "🎯", dimension: "P" },
-  { id: 54, text: "결정을 빨리 내리고 실행에 옮긴다.", emoji: "🚀", dimension: "J" },
-  { id: 55, text: "결정을 내리기 전에 더 많은 정보를 수집한다.", emoji: "📚", dimension: "P" },
-  { id: 56, text: "정리정돈이 잘 된 환경을 선호한다.", emoji: "🧹", dimension: "J" },
-  { id: 57, text: "변화와 다양성을 즐긴다.", emoji: "🌈", dimension: "P" },
-  { id: 58, text: "목표를 달성하기 위해 꾸준히 노력한다.", emoji: "🎯", dimension: "J" },
-  { id: 59, text: "즉흥적인 활동을 즐긴다.", emoji: "🎲", dimension: "P" },
-  { id: 60, text: "일을 완료했을 때 만족감을 느낀다.", emoji: "✅", dimension: "J" },
+  // Round 4 (I, S, F, J)
+  { id: 13, text: "여러 명이 섞인 자리에서는 말을 많이 하기보다 주로 듣는 편이 편하다.", emoji: "🎧", dimension: "I" },
+  { id: 14, text: "설명을 들을 때 큰 취지보다 구체적인 예시와 실제 사례가 있어야 이해가 빠르다.", emoji: "📊", dimension: "S" },
+  { id: 15, text: "친구가 힘든 일을 말하면 해결책을 제시하기 전에 '얼마나 속상했을까' 공감부터 먼저 나온다.", emoji: "❤️", dimension: "F" },
+  { id: 16, text: "해야 할 일이 남아 있으면 마감 전이라도 먼저 끝내 놓아야 편하게 쉴 수 있다.", emoji: "✅", dimension: "J" },
+
+  // Round 5 (E, S, F, J)
+  { id: 17, text: "머릿속 생각을 혼자 정리하기보다 누군가와 말로 주고받을 때 정리가 잘 된다.", emoji: "🗣️", dimension: "E" },
+  { id: 18, text: "아직 일어나지 않은 미래를 상상하기보다 현재 눈앞의 현실에 집중하는 편이다.", emoji: "⏱️", dimension: "S" },
+  { id: 19, text: "결정을 내릴 때 객관적 효율보다 나와 주변 사람들의 마음이 편안한지를 더 중요하게 본다.", emoji: "🌿", dimension: "F" },
+  { id: 20, text: "갑작스럽게 약속 시간이나 계획이 변경되면 유연하게 넘기기보다 적잖이 스트레스를 받는다.", emoji: "📌", dimension: "J" },
+
+  // Round 6 (I, N, T, P)
+  { id: 21, text: "입 밖으로 말하기 전에 머릿속에서 생각을 충분히 정리하는 편이다.", emoji: "🤔", dimension: "I" },
+  { id: 22, text: "세부적인 수치나 절차보다 전체가 어떤 큰 그림과 흐름으로 이어지는지가 먼저 눈에 들어온다.", emoji: "🗺️", dimension: "N" },
+  { id: 23, text: "중요한 결정을 내릴 때 '사람들이 어떻게 느낄까'보다 '논리적으로 무엇이 타당한가'를 우선한다.", emoji: "📐", dimension: "T" },
+  { id: 24, text: "일찍 결론을 못 박기보다 더 좋은 대안이 나올 수 있으니 선택지를 열어두는 편이 편하다.", emoji: "🚪", dimension: "P" },
+
+  // Round 7 (E, N, F, J)
+  { id: 25, text: "주말 내내 집에서 혼자 쉬기보다 밖에 나가 사람을 만나야 기분이 환기된다.", emoji: "☀️", dimension: "E" },
+  { id: 26, text: "이미 익숙하고 검증된 방식이라도 '더 새롭고 다른 방법은 없을까?' 자주 떠올린다.", emoji: "💡", dimension: "N" },
+  { id: 27, text: "논리적으로 맞는 말이라도 차갑거나 배려 없는 말투를 들으면 쉽게 마음이 상한다.", emoji: "🫧", dimension: "F" },
+  { id: 28, text: "결정을 미루고 여러 선택지를 열어두기보다 빠르게 기준을 정해 결론을 내리는 편이 편하다.", emoji: "🎯", dimension: "J" },
+
+  // Round 8 (I, S, T, P)
+  { id: 29, text: "넓고 얕은 인맥보다 마음 깊이 통하는 소수의 사람과 시간을 보내는 것이 좋다.", emoji: "☕", dimension: "I" },
+  { id: 30, text: "소설이나 영화를 볼 때 숨은 상징을 해석하기보다 줄거리와 연출 자체를 그대로 즐긴다.", emoji: "🎬", dimension: "S" },
+  { id: 31, text: "토론이나 회의에서 의견이 갈리면 분위기보다 근거의 일관성과 설득력을 기준으로 판단한다.", emoji: "🔍", dimension: "T" },
+  { id: 32, text: "계획표를 꼼꼼히 세워도 막상 그날 기분이나 상황에 따라 다르게 움직이는 일이 자주 있다.", emoji: "🎲", dimension: "P" },
+
+  // Round 9 (E, S, T, P)
+  { id: 33, text: "여러 명이 함께 떠들썩하게 어울리는 모임이 소수와의 조용한 만남보다 즐겁다.", emoji: "🎊", dimension: "E" },
+  { id: 34, text: "새로운 시도를 할 때도 막연한 직감보다 직접 검증해 본 경험과 감각을 더 믿는다.", emoji: "🛠️", dimension: "S" },
+  { id: 35, text: "칭찬을 들을 때도 따뜻한 격려의 말보다 내 실력이나 성과를 정확히 짚어주는 평가가 더 기쁘다.", emoji: "📈", dimension: "T" },
+  { id: 36, text: "미리 정해진 빡빡한 일정보다 당일 번개나 즉흥적인 제안에 더 큰 설렘을 느낀다.", emoji: "✨", dimension: "P" },
+
+  // Round 10 (I, N, F, J)
+  { id: 37, text: "전화 통화나 즉석 만남보다 문자·글로 차분하게 소통하는 쪽이 훨씬 편하다.", emoji: "✍️", dimension: "I" },
+  { id: 38, text: "대화하다 보면 처음 주제에서 연상 작용이 꼬리를 물어 전혀 다른 아이디어로 자주 뻗어 나간다.", emoji: "🌀", dimension: "N" },
+  { id: 39, text: "모임이나 팀에서 의견 충돌이 생기면 누가 맞는지 가리기보다 분위기가 깨지지 않게 중재하려 한다.", emoji: "🕊️", dimension: "F" },
+  { id: 40, text: "하루를 시작할 때 머릿속이나 메모장에 오늘 처리할 일의 순서를 정리해 두는 편이다.", emoji: "📋", dimension: "J" },
+
+  // Round 11 (E, N, T, J)
+  { id: 41, text: "새로운 환경에 가면 주변 사람들과 빠르게 친해지고 금세 어울린다.", emoji: "🤝", dimension: "E" },
+  { id: 42, text: "현재의 상태보다 앞으로 3년, 5년 뒤 펼쳐질 가능성과 변화를 그려보는 시간이 많다.", emoji: "🚀", dimension: "N" },
+  { id: 43, text: "갈등 상황에서 감정적으로 호소하는 말보다 원인과 결과를 차분히 따져보는 대화가 편하다.", emoji: "🧩", dimension: "T" },
+  { id: 44, text: "업무나 과제는 마감 직전에 몰아치기보다 미리 일정을 쪼개서 차근차근 진행하는 스타일이다.", emoji: "🗂️", dimension: "J" },
+
+  // Round 12 (I, S, F, P)
+  { id: 45, text: "약속이 연달아 잡혀 있으면 아무리 친한 사람이어도 금방 피로감을 느낀다.", emoji: "🔋", dimension: "I" },
+  { id: 46, text: "대화를 할 때 비유나 에둘러 하는 말보다 구체적이고 직관적인 표현이 훨씬 편하다.", emoji: "📌", dimension: "S" },
+  { id: 47, text: "상대방의 표정이나 말투에 미묘한 변화가 생기면 나도 모르게 기분을 살피고 신경 쓰게 된다.", emoji: "👀", dimension: "F" },
+  { id: 48, text: "책상이나 방이 조금 어질러져 있어도 내 머릿속에 위치만 대충 알면 크게 신경 쓰지 않는다.", emoji: "🛋️", dimension: "P" },
+
+  // Round 13 (E, S, F, P)
+  { id: 49, text: "감정이나 고민이 생기면 혼자 삭이기보다 주변 사람에게 바로 털어놓는 편이다.", emoji: "📢", dimension: "E" },
+  { id: 50, text: "일상에서 주변의 소리, 색감, 분위기 같은 디테일한 변화를 잘 알아차리는 편이다.", emoji: "👁️", dimension: "S" },
+  { id: 51, text: "어떤 선택이 합리적이라는 걸 알면서도 내 가치관이나 진심에 어긋나면 쉽게 실행하지 못한다.", emoji: "💎", dimension: "F" },
+  { id: 52, text: "한 가지 일을 끝까지 정해진 순서대로 처리하기보다 흥미가 당기는 일부터 자유롭게 넘나든다.", emoji: "🦋", dimension: "P" },
+
+  // Round 14 (I, N, T, J)
+  { id: 53, text: "여럿이 시끌벅적하게 노는 것보다 혼자 몰입할 수 있는 취미 시간이 더 소중하다.", emoji: "📚", dimension: "I" },
+  { id: 54, text: "구체적 근거가 다 모이기 전에도 전체적인 패턴과 직감으로 흐름을 먼저 파악하는 편이다.", emoji: "🔗", dimension: "N" },
+  { id: 55, text: "선택의 갈림길에서 정(情)이나 인간적 미안함보다 객관적 손익과 합리성을 따르는 편이다.", emoji: "📊", dimension: "T" },
+  { id: 56, text: "물건이나 파일이 정해진 자리에 정돈되어 있지 않으면 신경이 쓰여 바로 정리하게 된다.", emoji: "🧹", dimension: "J" },
+
+  // Round 15 (E, N, F, P)
+  { id: 57, text: "조용한 공간에 오래 혼자 있으면 답답함을 느끼고 외부 자극을 찾게 된다.", emoji: "🏃", dimension: "E" },
+  { id: 58, text: "사실 그대로를 묘사하기보다 비유, 은유, 상징적인 표현으로 느낌을 전달하는 것을 좋아한다.", emoji: "🎭", dimension: "N" },
+  { id: 59, text: "성과가 조금 아쉽더라도 서로 배려하고 진심으로 응원해 준 과정이 있었다면 큰 보람을 느낀다.", emoji: "🌸", dimension: "F" },
+  { id: 60, text: "예상치 못한 변수가 생겨 계획이 틀어져도 크게 당황하지 않고 상황에 맞춰 즉석에서 바꾼다.", emoji: "🌊", dimension: "P" },
+
+  // Round 16 (I, S, T, J)
+  { id: 61, text: "새로운 모임에서는 먼저 나서기보다 주변 분위기를 파악한 뒤 천천히 대화에 참여한다.", emoji: "🌙", dimension: "I" },
+  { id: 62, text: "'만약에~'로 시작하는 비현실적 상상 놀이보다 실제 생활에 바로 쓰이는 이야기가 흥미롭다.", emoji: "🧱", dimension: "S" },
+  { id: 63, text: "누군가 실수를 했을 때 위로의 말보다 다음에 같은 실수를 막을 구조적 개선점부터 생각한다.", emoji: "🔧", dimension: "T" },
+  { id: 64, text: "규칙적인 생활 루틴과 예측 가능한 일정이 있을 때 가장 안정감과 효율이 올라간다.", emoji: "⏰", dimension: "J" },
 ];

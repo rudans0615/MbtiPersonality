@@ -20,11 +20,11 @@ export async function generateMetadata({
 
     return {
       title: `${sender}님과의 MBTI 2인 궁합 검사`,
-      description: `${sender}님이 MBTI 궁합 비교에 초대했어요! 60문항 무료 검사를 완료하면 둘의 궁합 점수와 대화법 리포트가 바로 열립니다.`,
+      description: `${sender}님이 MBTI 궁합 비교에 초대했어요! 64문항 정밀 무료 검사를 완료하면 둘의 궁합 점수와 대화법 리포트가 바로 열립니다.`,
       alternates: { canonical: "/test" },
       openGraph: {
         title: `${sender}님과 나의 MBTI 궁합은 몇 점일까?`,
-        description: "지금 60문항 MBTI 검사하고 2인 궁합 리포트를 바로 확인해보세요!",
+        description: "지금 64문항 MBTI 검사하고 2인 궁합 리포트를 바로 확인해보세요!",
         url: `https://mbtifinder.com/test?${ogParams.toString()}`,
         images: [{ url: ogUrl, width: 1200, height: 630, alt: `${sender} MBTI 궁합 초대` }],
       },
@@ -37,16 +37,16 @@ export async function generateMetadata({
   }
 
   return {
-    title: "MBTI 성격유형 검사 (무료 60문항)",
+    title: "MBTI 성격유형 검사 (무료 64문항 정밀 분석)",
     description:
-      "외향·내향, 감각·직관, 사고·감정, 판단·인식 4가지 지표로 16가지 성격유형을 분석하는 무료 60문항 MBTI 성격유형 검사입니다.",
+      "외향·내향, 감각·직관, 사고·감정, 판단·인식 4가지 지표를 8:8 대칭 64문항으로 정밀 분석하고 4축 백분율 그래프까지 제공하는 무료 MBTI 성격유형 검사입니다.",
     alternates: { canonical: "/test" },
     openGraph: {
-      title: "무료 60문항 MBTI 성격유형 검사 | MBTI Finder",
-      description: "외향·내향, 감각·직관, 사고·감정, 판단·인식 4가지 지표로 나의 16유형을 정확하게 분석해보세요.",
+      title: "무료 64문항 MBTI 성격유형 검사 | MBTI Finder",
+      description: "4가지 선호 지표를 8:8 대칭 64문항으로 정밀 분석하고 나의 백분율 비율을 확인해보세요.",
       images: [
         {
-          url: "/api/og?mode=result&testTitle=MBTI+성격유형+검사&resultTitle=나의+진짜+MBTI는%3F&subtitle=무료+60문항+정밀+성격+분석",
+          url: "/api/og?mode=result&testTitle=MBTI+성격유형+검사&resultTitle=나의+진짜+MBTI는%3F&subtitle=무료+64문항+정밀+성격+분석",
           width: 1200,
           height: 630,
         },

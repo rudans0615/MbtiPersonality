@@ -73,8 +73,8 @@ export default function About() {
                   개인의 인식과 판단 선호 경향을 4가지 축으로 정리해 16가지 유형으로 살펴보는 틀입니다.
                 </p>
                 <p className="mb-6">
-                  MBTI Finder의 60문항 검사는 에너지 방향(E/I), 인식 방식(S/N), 판단 기준(T/F), 생활 양식(J/P)을
-                  균형 있게 측정하여 자신의 강점과 성장 포인트를 정리할 수 있도록 설계되었습니다.
+                  MBTI Finder의 64문항 정밀 검사는 에너지 방향(E/I), 인식 방식(S/N), 판단 기준(T/F), 생활 양식(J/P)을
+                  각 지표별 8:8 완전 대칭 문항으로 측정하여 4가지 지표 백분율과 강점·성장 포인트를 제공합니다.
                 </p>
                 <div className="flex flex-wrap justify-center gap-3">
                   <Link href="/test">

@@ -1,6 +1,6 @@
 import { useState, useCallback } from 'react';
 import { mbtiQuestions } from '@/lib/customTests/mbtiQuestions';
-import { calculateMBTIType } from '@/utils/mbtiCalculator';
+import { calculateMBTIDetailed, type MBTICalculationResult } from '@/utils/mbtiCalculator';
 
 export interface Answer {
   questionId: number;
@@ -50,11 +50,11 @@ export function useMBTITest() {
     setSelectedAnswer(null);
   }, []);
 
-  const calculateResults = useCallback((answerValue?: number) => {
+  const calculateResults = useCallback((answerValue?: number): MBTICalculationResult | null => {
     const updated = withCurrentAnswer(answerValue);
     if (!updated || updated.length !== mbtiQuestions.length ||
       !updated.every((a, i) => a.questionId === mbtiQuestions[i].id)) return null;
-    return calculateMBTIType(updated);
+    return calculateMBTIDetailed(updated);
   }, [withCurrentAnswer]);
 
   const isLastQuestion = currentQuestion >= mbtiQuestions.length - 1;

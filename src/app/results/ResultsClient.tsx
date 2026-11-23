@@ -5,6 +5,7 @@ import Link from "next/link";
 import ResultCard from "@/components/ResultCard";
 import RelatedTests from "@/components/RelatedTests";
 import { mbtiTypes } from "@/lib/customTests/mbtiTypes";
+import type { MBTIAxesBreakdown } from "@/utils/mbtiCalculator";
 import {
   getCompatibilityReport,
   getCompatibilityTier,
@@ -18,6 +19,7 @@ function ResultsInner({ availableTests = [] }: { availableTests?: any[] }) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [code, setCode] = useState<MBTICode | null>(null);
+  const [breakdown, setBreakdown] = useState<MBTIAxesBreakdown | null>(null);
   const [inviteFrom, setInviteFrom] = useState<MBTICode | null>(null);
   const [inviteName, setInviteName] = useState("");
   const [loaded, setLoaded] = useState(false);
@@ -27,6 +29,14 @@ function ResultsInner({ availableTests = [] }: { availableTests?: any[] }) {
     try {
       const value = sessionStorage.getItem("mbtiResult");
       if (value && isValidMbtiCode(value)) setCode(value);
+
+      const rawBreakdown = sessionStorage.getItem("mbtiBreakdown");
+      if (rawBreakdown) {
+        const parsedB = JSON.parse(rawBreakdown);
+        if (parsedB?.EI && parsedB?.SN && parsedB?.TF && parsedB?.JP) {
+          setBreakdown(parsedB);
+        }
+      }
 
       const urlFrom = (searchParams.get("from") || "").toUpperCase();
       const urlName = (searchParams.get("name") || "").trim().slice(0, 12);
@@ -66,6 +76,7 @@ function ResultsInner({ availableTests = [] }: { availableTests?: any[] }) {
   const restart = () => {
     try {
       sessionStorage.removeItem("mbtiResult");
+      sessionStorage.removeItem("mbtiBreakdown");
       sessionStorage.removeItem("mbtiInvite");
       router.push("/test");
     } catch {
@@ -107,11 +118,11 @@ function ResultsInner({ availableTests = [] }: { availableTests?: any[] }) {
       )}
 
       <div className="text-center mb-8">
-        <p className="text-xs font-bold uppercase tracking-widest text-primary mb-2">MBTI 60문항 정밀 분석</p>
+        <p className="text-xs font-bold uppercase tracking-widest text-primary mb-2">MBTI 64문항 정밀 분석</p>
         <h1 className="text-3xl sm:text-4xl font-extrabold text-neutral-900">나의 MBTI 검사 결과</h1>
       </div>
       {error && <p role="alert" className="mb-4 text-red-700 text-center">{error}</p>}
-      <ResultCard mbtiType={mbtiTypes[code]} onRestart={restart} onShare={() => {}} />
+      <ResultCard mbtiType={mbtiTypes[code]} breakdown={breakdown} onRestart={restart} onShare={() => {}} />
 
       <RelatedTests currentTestId="mbti" availableTests={availableTests} />
     </section>

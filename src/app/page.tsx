@@ -12,7 +12,7 @@ export const metadata = {
     absolute: "MBTI 성격유형 검사 | 심리테스트 & 16유형 백과 - MBTI Finder",
   },
   description:
-    "무료 60문항 MBTI 성격유형 검사, 16가지 유형별 연애·직장 백과사전, 테토-에겐 진단과 심리 칼럼까지 한곳에서 만나보세요.",
+    "무료 64문항 정밀 MBTI 성격유형 검사, 16가지 유형별 연애·직장 백과사전, 테토-에겐 진단과 심리 칼럼까지 한곳에서 만나보세요.",
   alternates: {
     canonical: "/",
   },
@@ -68,7 +68,7 @@ export default async function Home() {
             </span>
           </h1>
           <p className="text-lg md:text-xl text-neutral-500 mb-10 max-w-2xl mx-auto leading-relaxed">
-            60문항 MBTI 성격유형 검사부터 16가지 유형 백과, 연애·일상 성향 테스트와 심리 칼럼까지 모두 무료로 이용할 수 있습니다.
+            64문항 정밀 MBTI 성격유형 검사부터 16가지 유형 백과, 연애·일상 성향 테스트와 심리 칼럼까지 모두 무료로 이용할 수 있습니다.
           </p>
           <div className="flex flex-wrap justify-center gap-3">
             <Link href={hotTests[0]?.href || "/test"}>
@@ -192,7 +192,7 @@ export default async function Home() {
             나를 이해하고 주변 사람들과 소통해보세요
           </h2>
           <p className="text-lg text-neutral-400 mb-10 max-w-2xl mx-auto">
-            60문항 무료 MBTI 검사로 나의 선호 지표를 확인하고, 16가지 유형 가이드에서 연애·직장 팁까지 함께 살펴보세요.
+            64문항 무료 정밀 MBTI 검사로 나의 4가지 선호 지표 비율을 확인하고, 16가지 유형 가이드에서 연애·직장 팁까지 함께 살펴보세요.
           </p>
           <Link href="/test">
             <Button

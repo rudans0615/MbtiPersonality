@@ -40,7 +40,8 @@ export default function TestClient({ inviteFrom, inviteName }: TestClientProps) 
         return;
       }
       try {
-        sessionStorage.setItem("mbtiResult", result);
+        sessionStorage.setItem("mbtiResult", result.type);
+        sessionStorage.setItem("mbtiBreakdown", JSON.stringify(result.axes));
         if (inviteFrom) {
           sessionStorage.setItem(
             "mbtiInvite",
@@ -161,11 +162,11 @@ export default function TestClient({ inviteFrom, inviteName }: TestClientProps) 
 
         {/* 검사 안내 및 해석 가이드 */}
         <section className="mt-12 bg-white rounded-3xl border border-neutral-100 shadow-sm p-8 space-y-4 text-neutral-700 leading-relaxed">
-          <h2 className="text-xl font-bold text-neutral-900">MBTI 60문항 성격유형 검사 안내</h2>
+          <h2 className="text-xl font-bold text-neutral-900">MBTI 64문항 정밀 성격유형 검사 안내</h2>
           <p className="text-sm">
             본 검사는 칼 융의 심리유형 이론을 바탕으로 일상 속 행동과 사고 선호를 <strong>외향(E)-내향(I)</strong>,{" "}
             <strong>감각(S)-직관(N)</strong>, <strong>사고(T)-감정(F)</strong>, <strong>판단(J)-인식(P)</strong>의
-            4가지 축으로 나누어 살펴보는 60문항 자기이해 테스트입니다.
+            4가지 축으로 각 16문항(8:8 대칭)씩 균형 측정하는 64문항 자기이해 테스트입니다.
           </p>
           <ul className="list-disc list-inside text-sm space-y-1.5 text-neutral-600">
             <li>이상적인 모습이나 타인이 바라는 모습이 아니라, <strong>평소 가장 편안하고 자연스러운 반응</strong>을 기준으로 선택해 주세요.</li>

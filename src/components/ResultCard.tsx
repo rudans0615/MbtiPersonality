@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { MBTIType } from "@/lib/customTests/mbtiTypes";
 import { toCanonicalPair } from "@/lib/customTests/mbtiCompatibility";
+import type { MBTIAxesBreakdown } from "@/utils/mbtiCalculator";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
@@ -24,11 +25,12 @@ import {
 
 interface ResultCardProps {
   mbtiType: MBTIType;
+  breakdown?: MBTIAxesBreakdown | null;
   onRestart: () => void;
   onShare: (platform: string) => void;
 }
 
-export default function ResultCard({ mbtiType, onRestart, onShare }: ResultCardProps) {
+export default function ResultCard({ mbtiType, breakdown, onRestart, onShare }: ResultCardProps) {
   const { toast } = useToast();
   const [canShare, setCanShare] = useState(false);
 
@@ -116,6 +118,56 @@ export default function ResultCard({ mbtiType, onRestart, onShare }: ResultCardP
         <div className="bg-neutral-50/80 border border-neutral-100 rounded-2xl p-5 sm:p-6 text-neutral-700 mb-8 leading-relaxed whitespace-pre-line text-sm sm:text-base">
           {mbtiType.description}
         </div>
+
+        {/* 4가지 선호 지표 백분율 분석 */}
+        {breakdown && (
+          <div className="bg-white rounded-3xl border border-neutral-200/80 p-6 mb-8 shadow-sm">
+            <div className="flex flex-wrap items-center justify-between gap-2 mb-5">
+              <h3 className="text-lg font-bold text-neutral-900">📊 나의 4가지 선호 지표 비율</h3>
+              <span className="text-xs text-neutral-500">64문항 (지표별 8:8 대칭 측정)</span>
+            </div>
+            <div className="space-y-5">
+              {[
+                { key: "EI", axis: breakdown.EI, barColor: "from-blue-500 to-indigo-500" },
+                { key: "SN", axis: breakdown.SN, barColor: "from-emerald-500 to-teal-500" },
+                { key: "TF", axis: breakdown.TF, barColor: "from-rose-500 to-pink-500" },
+                { key: "JP", axis: breakdown.JP, barColor: "from-amber-500 to-orange-500" },
+              ].map(({ key, axis, barColor }) => {
+                const firstWins = axis.winner === axis.first;
+                return (
+                  <div key={key}>
+                    <div className="flex items-center justify-between text-xs sm:text-sm mb-1.5">
+                      <span className={firstWins ? "font-extrabold text-neutral-900" : "font-medium text-neutral-500"}>
+                        {axis.firstLabel} {axis.firstPercent}%
+                      </span>
+                      {axis.isBorderline && (
+                        <span className="text-[11px] font-bold px-2 py-0.5 rounded-full bg-amber-100 text-amber-800">
+                          경계 성향
+                        </span>
+                      )}
+                      <span className={!firstWins ? "font-extrabold text-neutral-900" : "font-medium text-neutral-500"}>
+                        {axis.secondPercent}% {axis.secondLabel}
+                      </span>
+                    </div>
+                    <div className="w-full h-3 bg-neutral-100 rounded-full overflow-hidden flex">
+                      <div
+                        className={`h-full bg-gradient-to-r ${barColor} transition-all duration-500`}
+                        style={{ width: `${axis.firstPercent}%`, opacity: firstWins ? 1 : 0.35 }}
+                      />
+                      <div
+                        className={`h-full bg-gradient-to-r ${barColor} transition-all duration-500`}
+                        style={{ width: `${axis.secondPercent}%`, opacity: !firstWins ? 1 : 0.35 }}
+                      />
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+            <p className="text-xs text-neutral-500 mt-5 leading-relaxed bg-neutral-50 p-3.5 rounded-xl border border-neutral-100">
+              💡 <strong>경계 성향(45~55%)</strong>으로 표시된 지표는 상황에 따라 두 성향을 유연하게 함께 사용하는 균형형입니다. 컨디션이나 환경에 따라 경계 지표 한 글자가 다르게 나올 수 있습니다.
+            </p>
+          </div>
+        )}
 
         {/* 저장용 결과 카드 */}
         <ResultImageCard

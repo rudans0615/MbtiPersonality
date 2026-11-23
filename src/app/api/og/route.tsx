@@ -153,7 +153,7 @@ export async function GET(request: NextRequest) {
       const senderLabel = name ? `${name}(${from})` : `${from}(${fromType?.title || 'MBTI'})`;
       const badgeLine = '2인 MBTI 궁합 초대장';
       const mainLine = `${senderLabel}님과 나의 궁합은 몇 점일까?`;
-      const subLine = '지금 60문항 MBTI 검사하고 2인 궁합 리포트를 바로 확인하세요!';
+      const subLine = '지금 64문항 MBTI 검사하고 2인 궁합 리포트를 바로 확인하세요!';
       const ctaLine = '내 MBTI 검사하고 궁합 확인하기';
       const fontData = await loadKoreanFont(`${badgeLine}${mainLine}${subLine}${ctaLine}`);
 
