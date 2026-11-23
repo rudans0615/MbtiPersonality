@@ -1,15 +1,17 @@
+import type { Metadata } from "next";
 import { Card, CardContent } from "@/components/ui/card";
-import Navigation from "@/components/Navigation";
-import SEO from "@/components/SEO";
+
+export const metadata: Metadata = {
+  title: "이용약관",
+  description: "MBTI Finder 서비스 이용 조건, 면책사항 및 저작권 안내입니다.",
+  alternates: { canonical: "/terms" },
+};
 
 export default function Terms() {
   return (
     <div className="min-h-screen bg-neutral-50">
-      <SEO title="이용약관 | MBTI Finder" description="MBTI Finder 서비스 이용에 관한 약관입니다." url="https://mbtifinder.com/terms" />
-      <Navigation />
-      
       {/* Header */}
-      <div className="gradient-bg text-white py-16">
+      <div className="gradient-bg text-white pt-28 pb-16">
         <div className="max-w-4xl mx-auto px-6 text-center">
           <h1 className="text-4xl md:text-5xl font-bold mb-4">이용약관</h1>
           <p className="text-xl opacity-90">서비스 이용에 관한 약관</p>

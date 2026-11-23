@@ -1,15 +1,17 @@
+import type { Metadata } from "next";
 import { Card, CardContent } from "@/components/ui/card";
-import Navigation from "@/components/Navigation";
-import SEO from "@/components/SEO";
+
+export const metadata: Metadata = {
+  title: "개인정보처리방침",
+  description: "MBTI Finder의 개인정보 수집, 이용, 쿠키 및 광고 정책, 보호 조치에 관한 안내입니다.",
+  alternates: { canonical: "/privacy" },
+};
 
 export default function Privacy() {
   return (
     <div className="min-h-screen bg-neutral-50">
-      <SEO title="개인정보처리방침 | MBTI Finder" description="MBTI Finder의 개인정보 수집, 이용, 보호에 관한 정책입니다." url="https://mbtifinder.com/privacy" />
-      <Navigation />
-      
       {/* Header */}
-      <div className="gradient-bg text-white py-16">
+      <div className="gradient-bg text-white pt-28 pb-16">
         <div className="max-w-4xl mx-auto px-6 text-center">
           <h1 className="text-4xl md:text-5xl font-bold mb-4">개인정보처리방침</h1>
           <p className="text-xl opacity-90">개인정보 보호에 관한 정책</p>
@@ -96,8 +98,8 @@ export default function Privacy() {
                 <p>① 서비스는 다음과 같은 목적을 위해 쿠키를 사용합니다:</p>
                 <ul className="list-disc list-inside ml-4 space-y-1">
                   <li>웹사이트 이용 패턴 분석 (Google Analytics)</li>
-                  <li>맞춤형 기만성 및 문맥형 광고 송출 (Google AdSense 등)</li>
-                  <li>제휴 마케팅 성과 추적 (쿠팡 파트너스 등 가상 제휴 링크 추적)</li>
+                  <li>맞춤형(관심 기반) 및 문맥형 광고 송출 (Google AdSense 등)</li>
+                  <li>제휴 마케팅 성과 추적 (쿠팡 파트너스 등 제휴 링크 추적)</li>
                   <li>서비스 개선 및 맞춤화</li>
                 </ul>
                 <p>② 이용자는 쿠키 설치에 대한 선택권을 가지고 있습니다. 웹브라우저에서 옵션을 설정함으로써 모든 쿠키를 허용하거나, 쿠키 저장 시 확인을 거치거나, 아니면 모든 쿠키의 저장을 거부할 수도 있습니다.</p>

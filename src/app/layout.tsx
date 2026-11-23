@@ -27,12 +27,9 @@ export const metadata: Metadata = {
   twitter: {
     card: 'summary_large_image',
   },
-  alternates: {
-    canonical: '/',
-  },
-  verification: {
-    google: '', // Google Search Console 인증 코드가 있으면 여기에 입력
-  },
+  ...(process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION
+    ? { verification: { google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION } }
+    : {}),
 };
 
 const jsonLdWebSite = {

@@ -21,10 +21,12 @@ export async function generateMetadata({ params }: { params: Promise<{ testId: s
 
   try {
     const testInfo = await getTestById(testId);
-    if (!testInfo) throw new Error("not found");
+    if (!testInfo?.is_available) throw new Error("not found");
     return {
       title: `${testInfo.title} 결과`,
       description: `나의 ${testInfo.title} 결과를 확인해보세요!`,
+      alternates: { canonical: `/${testId}/results` },
+      robots: { index: false, follow: true },
     };
   } catch {
     return { title: 'Results Not Found' };
@@ -40,7 +42,7 @@ export default async function ResultsPage({ params }: { params: Promise<{ testId
     const resultsData = await getResultTypes(testId);
     const questions = await getQuestionsWithOptions(testId);
 
-    if (testInfo && Object.keys(resultsData).length > 0) {
+    if (testInfo?.is_available && Object.keys(resultsData).length > 0) {
       const allKeys = Object.keys(resultsData);
       const clientTestInfo = {
         id: testInfo.id,

@@ -70,7 +70,7 @@ export default function RelatedTests({ currentTestId, availableTests = [] }: { c
                 </div>
                 <div className="flex items-center gap-1">
                   <Users size={14} />
-                  {test.questions}문항
+                  {test.questionCount ?? test.questions ?? 12}문항
                 </div>
               </div>
 

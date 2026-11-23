@@ -144,7 +144,7 @@ export default function CategoryRowClient({ category, tests, isComingSoon = fals
                 </div>
                 <div className="flex items-center gap-1">
                   <Users size={14} />
-                  {test.questions}문항
+                  {test.questionCount ?? test.questions ?? 12}문항
                 </div>
               </div>
 

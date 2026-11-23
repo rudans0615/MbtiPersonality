@@ -1,43 +1,50 @@
 "use client";
 import React, { useEffect } from 'react';
+import { DUMMY_AD_SLOTS, IS_ADSENSE_REVIEW_MODE } from '@/lib/siteConfig';
 
-/**
- * 구글 애드센스 광고를 표시하기 위한 공통 컴포넌트입니다.
- * props로 adClient(클라이언트 ID)와 adSlot(광고 슬롯 ID)을 받습니다.
- */
 interface AdSenseBlockProps {
   adClient?: string;
-  adSlot: string;
+  adSlot?: string;
   adFormat?: string;
   fullWidthResponsive?: boolean;
   className?: string;
 }
 
 export const AdSenseBlock: React.FC<AdSenseBlockProps> = ({
-  adClient = 'ca-pub-1176633482077881', // index.html에 있는 pub ID를 기본값으로 사용
-  adSlot,
+  adClient = 'ca-pub-1176633482077881',
+  adSlot = '',
   adFormat = 'auto',
   fullWidthResponsive = true,
   className = '',
 }) => {
+  const normalizedSlot = (adSlot || '').trim();
+  const isDisabled =
+    IS_ADSENSE_REVIEW_MODE ||
+    !normalizedSlot ||
+    DUMMY_AD_SLOTS.has(normalizedSlot) ||
+    !/^\d{8,12}$/.test(normalizedSlot);
+
   useEffect(() => {
+    if (isDisabled || process.env.NODE_ENV !== 'production') return;
     try {
       // @ts-ignore
       (window.adsbygoogle = window.adsbygoogle || []).push({});
     } catch (err) {
       console.error('AdSense error:', err);
     }
-  }, []);
+  }, [isDisabled]);
 
-  // 개발 환경에서는 광고 영역을 시각적으로 표시하기 위한 더미 스타일 제공
-  const isDev = process.env.NODE_ENV !== 'production';
+  // 심사 모드이거나 유효한 실제 슬롯 ID가 없으면 빈 광고 컨테이너를 렌더링하지 않음
+  if (isDisabled) {
+    return null;
+  }
 
-  if (isDev) {
+  if (process.env.NODE_ENV !== 'production') {
     return (
-      <div 
+      <div
         className={`flex items-center justify-center bg-gray-100 border-2 border-dashed border-gray-300 text-gray-400 p-4 my-4 rounded-md min-h-[100px] ${className}`}
       >
-        <span>[개발 환경] 구글 애드센스 광고 영역 ({adSlot})</span>
+        <span>[개발 환경] 구글 애드센스 광고 영역 ({normalizedSlot})</span>
       </div>
     );
   }
@@ -48,7 +55,7 @@ export const AdSenseBlock: React.FC<AdSenseBlockProps> = ({
         className="adsbygoogle"
         style={{ display: 'block', width: '100%' }}
         data-ad-client={adClient}
-        data-ad-slot={adSlot}
+        data-ad-slot={normalizedSlot}
         data-ad-format={adFormat}
         data-full-width-responsive={fullWidthResponsive ? 'true' : 'false'}
       ></ins>

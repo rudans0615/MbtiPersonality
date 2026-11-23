@@ -6,7 +6,7 @@ export default function robots(): MetadataRoute.Robots {
       {
         userAgent: '*',
         allow: '/',
-        disallow: ['/api/', '/privacy', '/terms'],
+        disallow: ['/api/'],
       },
     ],
     sitemap: 'https://mbtifinder.com/sitemap.xml',

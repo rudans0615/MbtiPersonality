@@ -7,9 +7,9 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { CoupangRecommend } from "@/components/CoupangRecommend";
 import { ShareButtons } from "@/components/ShareButtons";
-import { AdSenseBlock } from "@/components/AdSenseBlock";
 import { ResultImageCard } from "@/components/ResultImageCard";
 import RelatedTests from "@/components/RelatedTests";
+import { IS_ADSENSE_REVIEW_MODE } from "@/lib/siteConfig";
 import { Loader2, RotateCcw, Zap } from "lucide-react";
 
 function ResultsContent({ testId, testInfo, allKeys, resultsData, qLen, scoring, availableTests }: any) {
@@ -67,8 +67,6 @@ function ResultsContent({ testId, testInfo, allKeys, resultsData, qLen, scoring,
             characteristics={result.characteristics}
           />
 
-          <AdSenseBlock adSlot="8811223344" />
-
           {result.characteristics && result.characteristics.length > 0 && (
             <div className="mb-10 mt-6">
               <h3 className="text-xl font-bold text-neutral-800 mb-5 flex items-center justify-center">
@@ -86,14 +84,14 @@ function ResultsContent({ testId, testInfo, allKeys, resultsData, qLen, scoring,
             </div>
           )}
 
-          <div className="mt-12 mb-8">
-            <CoupangRecommend 
-              keyword={result.coupang_keyword || result.title} 
-              title={`🎀 ${result.title}를 위한 찰떡 추천템`} 
-            />
-          </div>
-
-          <AdSenseBlock adSlot="9922334455" />
+          {!IS_ADSENSE_REVIEW_MODE && (
+            <div className="mt-12 mb-8">
+              <CoupangRecommend 
+                keyword={result.coupang_keyword || result.title} 
+                title={`🎀 ${result.title}를 위한 찰떡 추천템`} 
+              />
+            </div>
+          )}
 
           <div className="text-center space-y-5 mt-10">
             <ShareButtons title={`${testInfo.title} 결과`} shareText={`나의 검사 결과는 '${result.title}'! 너도 해봐 👉`} url={`https://mbtifinder.com/${testId}`} />
@@ -131,8 +129,6 @@ function ResultsContent({ testId, testInfo, allKeys, resultsData, qLen, scoring,
         </div>
 
         <RelatedTests currentTestId={testId} availableTests={availableTests} />
-
-        <AdSenseBlock adSlot="1133557799" />
       </div>
     </>
   );

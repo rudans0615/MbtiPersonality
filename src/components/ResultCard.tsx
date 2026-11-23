@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import { MBTIType } from "@/lib/customTests/mbtiTypes";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
-import { AdSenseBlock } from "@/components/AdSenseBlock";
 import { CoupangRecommend } from "@/components/CoupangRecommend";
-import { ShareButtons } from "@/components/ShareButtons";
+import { IS_ADSENSE_REVIEW_MODE } from "@/lib/siteConfig";
 
 interface ResultCardProps {
   mbtiType: MBTIType;
@@ -111,9 +111,6 @@ export default function ResultCard({ mbtiType, onRestart, onShare }: ResultCardP
           <p>{mbtiType.description}</p>
         </div>
 
-        {/* 첫 번째 광고 영역: 결과 설명 바로 아래 */}
-        <AdSenseBlock adSlot="4325732101" />
-
         <div className="grid md:grid-cols-2 gap-8 mb-8 mt-4">
           <div className="bg-pink-50/50 rounded-[2rem] p-6 border border-pink-100">
             <h3 className="text-xl font-bold text-pink-500 mb-4 flex items-center">
@@ -149,10 +146,10 @@ export default function ResultCard({ mbtiType, onRestart, onShare }: ResultCardP
           </h3>
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
             {mbtiType.compatible.map((type, index) => (
-              <div key={index} className="bg-white/80 backdrop-blur-sm rounded-2xl p-4 text-center border border-white hover:shadow-md transition-shadow cursor-pointer group">
+              <Link key={index} href={`/type/${type}`} className="bg-white/80 backdrop-blur-sm rounded-2xl p-4 text-center border border-white hover:shadow-md transition-shadow cursor-pointer group block">
                 <div className="font-extrabold text-rose-500 mb-1 group-hover:scale-110 transition-transform">{type}</div>
-                <div className="text-xs text-rose-400 font-medium">최고의 궁합</div>
-              </div>
+                <div className="text-xs text-rose-400 font-medium">유형 가이드 보기 →</div>
+              </Link>
             ))}
           </div>
         </div>
@@ -170,11 +167,8 @@ export default function ResultCard({ mbtiType, onRestart, onShare }: ResultCardP
           </div>
         </div>
 
-        {/* 제휴 마케팅 추천 스캐폴딩: MBTI 특화 자동 추천 */}
-        <CoupangRecommend keyword={mbtiType.title} />
-
-        {/* 두 번째 광고 영역: 추천 직업/상품과 결과 공유하기 사이 */}
-        <AdSenseBlock adSlot="7890123456" />
+        {/* 제휴 마케팅 추천 스캐폴딩: 심사 기간 중 비노출 */}
+        {!IS_ADSENSE_REVIEW_MODE && <CoupangRecommend keyword={mbtiType.title} />}
 
         <div className="text-center space-y-5 mt-10">
           <h3 className="text-lg font-bold text-neutral-600">🔥 내 결과 친구들에게 자랑하기 🔥</h3>

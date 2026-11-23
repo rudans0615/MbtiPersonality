@@ -25,19 +25,8 @@ export default function Footer({ availableTests = [] }: { availableTests?: any[]
                             <span className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white to-neutral-400 tracking-tight">MBTI Finder</span>
                         </div>
                         <p className="text-neutral-400 leading-relaxed text-sm mb-6 max-w-sm">
-                            단순한 호기심을 넘어 당신의 진정한 성향을 발견하세요. 과학적이고 재미있는 심리테스트 플랫폼, MBTI Finder가 함께합니다.
+                            단순한 호기심을 넘어 당신의 진정한 성향을 발견하세요. 자기이해를 돕는 심리테스트와 16가지 MBTI 유형 가이드, 심리 칼럼을 제공합니다.
                         </p>
-                        <div className="flex space-x-4">
-                            <div className="w-8 h-8 rounded-full bg-white/5 hover:bg-white/10 flex items-center justify-center cursor-pointer transition-colors">
-                                <span className="text-sm">🌐</span>
-                            </div>
-                            <div className="w-8 h-8 rounded-full bg-white/5 hover:bg-white/10 flex items-center justify-center cursor-pointer transition-colors">
-                                <span className="text-sm">📱</span>
-                            </div>
-                            <div className="w-8 h-8 rounded-full bg-white/5 hover:bg-white/10 flex items-center justify-center cursor-pointer transition-colors">
-                                <span className="text-sm">💌</span>
-                            </div>
-                        </div>
                     </div>
 
                     {/* Spacer for Desktop */}
@@ -62,6 +51,7 @@ export default function Footer({ availableTests = [] }: { availableTests?: any[]
                         <h4 className="text-sm font-semibold text-white uppercase tracking-wider mb-6">고객 지원</h4>
                         <ul className="space-y-4 text-sm">
                             <li><Link href="/about" className="hover:text-white transition-colors">서비스 소개</Link></li>
+                            <li><Link href="/type" className="hover:text-white transition-colors">MBTI 16유형 백과</Link></li>
                             <li><Link href="/blog" className="hover:text-white transition-colors">심리 칼럼</Link></li>
                             <li><Link href="/terms" className="hover:text-white transition-colors">이용약관</Link></li>
                             <li><Link href="/privacy" className="hover:text-white transition-colors">개인정보처리방침</Link></li>

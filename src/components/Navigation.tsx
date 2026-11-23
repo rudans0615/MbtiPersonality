@@ -127,6 +127,15 @@ export default function Navigation({ availableTests = [] }: { availableTests?: a
               )}
             </div>
 
+            <Link href="/type">
+              <div className={`px-5 py-2 rounded-full text-sm font-semibold transition-all cursor-pointer ${
+                isActive('/type') 
+                  ? 'text-white bg-white/10' 
+                  : 'text-neutral-300 hover:text-white hover:bg-white/5'
+              }`}>
+                MBTI 백과
+              </div>
+            </Link>
             <Link href="/blog">
               <div className={`px-5 py-2 rounded-full text-sm font-semibold transition-all cursor-pointer ${
                 isActive('/blog') 
@@ -243,7 +252,19 @@ export default function Navigation({ availableTests = [] }: { availableTests?: a
               </div>
 
               <div className="border-t border-white/5 pt-4">
-                <Link href="/blog">
+                <Link href="/type">
+                  <div 
+                    className={`block px-4 py-3 text-base font-medium transition-all rounded-xl cursor-pointer ${
+                      isActive('/type') 
+                        ? 'text-white bg-white/10' 
+                        : 'text-neutral-300 hover:text-white hover:bg-white/5'
+                    }`}
+                    onClick={() => setIsOpen(false)}
+                  >
+                    🧭 MBTI 16유형 백과
+                  </div>
+                </Link>
+            <Link href="/blog">
                   <div 
                     className={`block px-4 py-3 text-base font-medium transition-all rounded-xl cursor-pointer ${
                       isActive('/blog') 

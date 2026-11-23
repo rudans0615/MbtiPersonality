@@ -39,7 +39,7 @@ bot.setMyCommands([
   { command: 'market', description: '마케팅 에이전시 파이프라인 가동 (예: /market hogu)' },
 ]);
 
-bot.sendMessage(process.env.ADMIN_CHAT_ID || '', `🤖 콘텐츠 자동화 봇이 가동되었습니다.
+if (process.env.BOT_NOTIFY_STARTUP === 'true') bot.sendMessage(process.env.ADMIN_CHAT_ID || '', `🤖 콘텐츠 자동화 봇이 가동되었습니다.
 - 💡 /추천 : 요즘 유행하는 바이럴 테스트 기획안 스캔
 - 🚀 /newtest [주제] : 테스트 1개 기획/디자인/배포
 - 📦 /batch [숫자] : 여러 개의 테스트를 한 번에 묶음 자동 배포
@@ -339,15 +339,17 @@ bot.onText(/\/batch\s*(\d*)/, async (msg, match) => {
 [JSON 출력 형식]
 {
   "testId": "camelCase 영문 ID (반드시 매번 겹치지 않는 고유하고 랜덤한 영문 ID 생성)",
+  "scoringMode": "types",
   "category": "HOT | LOVE | PERSONALITY | FUN | CAREER 중 택1",
   "title": "바이럴 제목",
   "subtitle": "부제목",
   "description": "소개",
   "emoji": "이모지 1개",
   "seoArticle": "이 테스트의 심리학적 배경과 분석 원리를 다루는 500자 이상의 전문 칼럼 (문단 포함)",
-  "questions": [{ "question": "구체적 상황 질문 (반드시 ${targetQuestions}개 작성)", "options": [{ "text": "구어체 선택지 (반드시 ${targetOptions}개)", "score": 1 }] }],
+  "questions": [{ "question": "구체적 상황 질문 (반드시 ${targetQuestions}개 작성)", "options": [{ "text": "구어체 선택지 (반드시 ${targetOptions}개)", "type": "results에 실제로 정의된 유형키" }] }],
   "results": { "유형키": { "title": "유형명", "emoji": "이모지", "subtitle": "한줄요약", "description": "해당 유형의 장단점 및 특징을 다루는 300자 이상의 상세 설명", "characteristics": ["특징1","특징2","특징3","특징4"], "coupangKeyword": "상품 키워드" } }
 }
+유형은 2~8개이며 모든 유형이 최다 선택 결과로 나올 수 있어야 한다. 선택지에는 score를 넣지 않는다.
 JSON만 출력. 다른 텍스트 금지.`
           },
           {
@@ -522,6 +524,10 @@ bot.onText(/\/(newblog)(?:\s+(.+))?/, async (msg, match) => {
 
 // 매일 정해진 시간(예: 오전 10시)에 자동으로 블로그를 발행하는 스케줄러
 function scheduleDailyBlog() {
+  if (process.env.ENABLE_DAILY_AUTO_BLOG !== 'true') {
+    console.log('🛑 Auto-Pilot 일일 블로그 자동 발행이 비활성화되어 있습니다.');
+    return;
+  }
   const now = new Date();
   const targetHour = 10; // 오전 10시
   const targetMinute = 0;
