@@ -136,6 +136,15 @@ export default function Navigation({ availableTests = [] }: { availableTests?: a
                 MBTI 백과
               </div>
             </Link>
+            <Link href="/compatibility">
+              <div className={`px-5 py-2 rounded-full text-sm font-semibold transition-all cursor-pointer ${
+                isActive('/compatibility') 
+                  ? 'text-white bg-white/10' 
+                  : 'text-neutral-300 hover:text-white hover:bg-white/5'
+              }`}>
+                MBTI 궁합표
+              </div>
+            </Link>
             <Link href="/blog">
               <div className={`px-5 py-2 rounded-full text-sm font-semibold transition-all cursor-pointer ${
                 isActive('/blog') 
@@ -262,6 +271,18 @@ export default function Navigation({ availableTests = [] }: { availableTests?: a
                     onClick={() => setIsOpen(false)}
                   >
                     🧭 MBTI 16유형 백과
+                  </div>
+                </Link>
+                <Link href="/compatibility">
+                  <div 
+                    className={`block px-4 py-3 text-base font-medium transition-all rounded-xl cursor-pointer ${
+                      isActive('/compatibility') 
+                        ? 'text-white bg-white/10' 
+                        : 'text-neutral-300 hover:text-white hover:bg-white/5'
+                    }`}
+                    onClick={() => setIsOpen(false)}
+                  >
+                    💖 MBTI 궁합표
                   </div>
                 </Link>
             <Link href="/blog">

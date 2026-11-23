@@ -113,9 +113,14 @@ export default async function Home() {
                 유형별 특징·연애·직장·궁합 한눈에 보기
               </h2>
             </div>
-            <Link href="/type" className="text-sm font-semibold text-primary hover:underline inline-flex items-center">
-              전체 백과 보기 <ArrowRight size={16} className="ml-1" />
-            </Link>
+            <div className="flex flex-wrap gap-4">
+              <Link href="/compatibility" className="text-sm font-semibold text-pink-600 hover:underline inline-flex items-center">
+                16×16 MBTI 궁합표 보기 <ArrowRight size={16} className="ml-1" />
+              </Link>
+              <Link href="/type" className="text-sm font-semibold text-primary hover:underline inline-flex items-center">
+                전체 백과 보기 <ArrowRight size={16} className="ml-1" />
+              </Link>
+            </div>
           </div>
           <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-3">
             {allMbtiList.map((item) => (

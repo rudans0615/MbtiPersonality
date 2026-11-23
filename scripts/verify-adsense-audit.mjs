@@ -28,6 +28,7 @@ const redirects = [
   ['/travelMood2023-test', '/travelMood2023'],
   ['/socialMediaHabitTest2024-test', '/socialMediaHabitTest2024'],
   ['/shoppingMoodTest1234-test', '/shoppingMoodTest1234'],
+  ['/compatibility/INFP-ENFJ', '/compatibility/ENFJ-INFP'],
 ];
 for (const [src, dst] of redirects) {
   const r = await fetchText(src);
@@ -70,6 +71,8 @@ const canonicalChecks = [
   ['/teto-egen', 'https://mbtifinder.com/teto-egen'],
   ['/type', 'https://mbtifinder.com/type'],
   ['/type/INFP', 'https://mbtifinder.com/type/INFP'],
+  ['/compatibility', 'https://mbtifinder.com/compatibility'],
+  ['/compatibility/ENFJ-INFP', 'https://mbtifinder.com/compatibility/ENFJ-INFP'],
   ['/blog', 'https://mbtifinder.com/blog'],
   ['/blog/222', 'https://mbtifinder.com/blog/222'],
   ['/dopamine', 'https://mbtifinder.com/dopamine'],
@@ -98,12 +101,14 @@ const home = await fetchText('/');
 assert(!home.text.includes('오픈 대기 중'), 'Homepage still shows Coming Soon cards');
 assert(!home.text.includes('곧 출시할 신규 테스트'), 'Homepage still shows Coming Soon heading');
 
-// 6. Result pages must be noindex
-for (const rPath of ['/results', '/teto-egen/results', '/dopamine/results']) {
+// 6. Result pages & non-curated compatibility pairs (Option A) must be noindex
+for (const rPath of ['/results', '/teto-egen/results', '/dopamine/results', '/compatibility/ESFP-INTJ']) {
   const r = await fetchText(rPath);
-  assert(r.status === 200, `Result page ${rPath} returned ${r.status}`);
-  assert(/name="robots"[^>]*content="[^"]*noindex/i.test(r.text), `Result page ${rPath} missing noindex meta`);
+  assert(r.status === 200, `Noindex page ${rPath} returned ${r.status}`);
+  assert(/name="robots"[^>]*content="[^"]*noindex/i.test(r.text), `Page ${rPath} missing noindex meta`);
 }
+const missingCompat = await fetchText('/compatibility/XXXX-YYYY');
+assert(missingCompat.status === 404, `Invalid compatibility returned ${missingCompat.status} instead of 404`);
 
 console.log(JSON.stringify({
   sitemapUrlsTotal: locs.length,

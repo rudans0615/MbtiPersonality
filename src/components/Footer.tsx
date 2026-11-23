@@ -52,6 +52,7 @@ export default function Footer({ availableTests = [] }: { availableTests?: any[]
                         <ul className="space-y-4 text-sm">
                             <li><Link href="/about" className="hover:text-white transition-colors">서비스 소개</Link></li>
                             <li><Link href="/type" className="hover:text-white transition-colors">MBTI 16유형 백과</Link></li>
+                            <li><Link href="/compatibility" className="hover:text-white transition-colors">MBTI 궁합표</Link></li>
                             <li><Link href="/blog" className="hover:text-white transition-colors">심리 칼럼</Link></li>
                             <li><Link href="/terms" className="hover:text-white transition-colors">이용약관</Link></li>
                             <li><Link href="/privacy" className="hover:text-white transition-colors">개인정보처리방침</Link></li>

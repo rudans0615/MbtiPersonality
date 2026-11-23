@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound, permanentRedirect } from "next/navigation";
 import { mbtiTypes } from "@/lib/customTests/mbtiTypes";
+import { toCanonicalPair } from "@/lib/customTests/mbtiCompatibility";
 import { getBlogPosts } from "@/lib/queries";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, ArrowRight, Briefcase, Heart, Lightbulb, Sparkles, CheckCircle2, AlertCircle } from "lucide-react";
@@ -192,15 +193,16 @@ export default async function MbtiTypeDetailPage({
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                 {data.compatible.map((partnerCode) => {
                   const partner = mbtiTypes[partnerCode];
+                  const pairSlug = toCanonicalPair(upper, partnerCode);
                   return (
                     <Link
                       key={partnerCode}
-                      href={`/type/${partnerCode}`}
+                      href={pairSlug ? `/compatibility/${pairSlug}` : `/type/${partnerCode}`}
                       className="p-3.5 rounded-2xl bg-rose-50/60 border border-rose-100 hover:border-rose-300 hover:bg-rose-50 transition-all text-center group"
                     >
                       <div className="text-xl mb-1">{partner?.emoji || "✨"}</div>
                       <div className="font-extrabold text-rose-600 group-hover:underline">{partnerCode}</div>
-                      <div className="text-xs text-neutral-500">{partner?.title || ""}</div>
+                      <div className="text-xs text-neutral-500">궁합 분석 보기 →</div>
                     </Link>
                   );
                 })}
