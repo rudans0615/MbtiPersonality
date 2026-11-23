@@ -532,4 +532,11 @@ bot.onText(/\/(blogqueue)/, async (msg) => {
 });
 
 // 매주 화·목 오전 10:00 KST 승인형 브릿지 칼럼 초안 스케줄러 시작
+// /ga4 명령어 핸들러 (최근 N일 GA4 성과 즉시 조회)
+bot.onText(/\/(ga4)(?:\s+(\d+))?/, async (msg, match) => {
+  const days = Math.min(90, Math.max(1, Number.parseInt(match[2] || "7", 10) || 7));
+  await sendGA4Report(bot, openai, msg.chat.id, days);
+});
+
 scheduleTwiceWeeklyBridgeBlog(bot, openai);
+scheduleWeeklyGA4Report(bot, openai);
