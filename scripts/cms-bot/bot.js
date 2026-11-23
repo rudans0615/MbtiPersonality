@@ -7,6 +7,7 @@ import dotenv from 'dotenv';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { generateBridgeBlogDraft, handleBridgeBlogCallback, sendBlogQueueStatus, scheduleTwiceWeeklyBridgeBlog } from './bridgeBlogWorkflow.js';
+import { sendGA4Report, scheduleWeeklyGA4Report } from './ga4Reporter.js';
 
 dotenv.config();
 
@@ -38,6 +39,7 @@ bot.setMyCommands([
   { command: 'batch', description: '한번에 여러 테스트 자동 생성 (예: /batch 3)' },
   { command: 'newblog', description: '고품질 브릿지 칼럼 초안 작성 (승인 후 발행)' },
   { command: 'blogqueue', description: '남은 브릿지 칼럼 주제 큐 및 스케줄 확인' },
+  { command: 'ga4', description: 'GA4 방문자·인기페이지·완료율 리포트 조회 (예: /ga4 또는 /ga4 30)' },
   { command: 'market', description: '마케팅 에이전시 파이프라인 가동 (예: /market hogu)' },
 ]);
 

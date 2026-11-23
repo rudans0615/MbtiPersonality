@@ -7,3 +7,8 @@ vite.config.ts.*
 .env
 .env.*
 .next/
+.local/
+scripts/cms-bot/ga4-service-account.json
+scripts/cms-bot/.pending-blog-drafts.json
+scripts/cms-bot/.used-bridge-topics.json
+artifacts/backup/
