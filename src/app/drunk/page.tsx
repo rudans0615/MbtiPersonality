@@ -1,5 +1,8 @@
 import type { Metadata } from "next";
+import { getTests } from "@/lib/queries";
 import DrunkClient from "./DrunkClient";
+
+export const revalidate = 60;
 
 export const metadata: Metadata = {
   title: "나 술 취했나? 자가진단 테스트",
@@ -7,6 +10,21 @@ export const metadata: Metadata = {
   alternates: { canonical: "/drunk" },
 };
 
-export default function DrunkPage() {
-  return <DrunkClient />;
+export default async function DrunkPage() {
+  const allTests = await getTests().catch(() => []);
+  const availableTests = allTests.map((t: any) => ({
+    id: t.id,
+    category: t.category,
+    title: t.title,
+    subtitle: t.subtitle,
+    description: t.description,
+    emoji: t.emoji,
+    color: t.color,
+    duration: t.duration,
+    questionCount: t.question_count,
+    href: t.href,
+    isAvailable: t.is_available,
+  }));
+
+  return <DrunkClient availableTests={availableTests} />;
 }

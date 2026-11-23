@@ -3,6 +3,7 @@ import { Suspense, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import ResultCard from "@/components/ResultCard";
+import RelatedTests from "@/components/RelatedTests";
 import { mbtiTypes } from "@/lib/customTests/mbtiTypes";
 import {
   getCompatibilityReport,
@@ -13,7 +14,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Heart } from "lucide-react";
 
-function ResultsInner() {
+function ResultsInner({ availableTests = [] }: { availableTests?: any[] }) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [code, setCode] = useState<MBTICode | null>(null);
@@ -77,10 +78,10 @@ function ResultsInner() {
   const inviterDisplay = inviteFrom ? (inviteName ? `${inviteName}(${inviteFrom})` : inviteFrom) : "";
 
   return (
-    <section className="max-w-4xl mx-auto px-4 pt-24 pb-12">
+    <section className="max-w-4xl mx-auto px-4 pt-24 pb-16">
       {/* 친구 초대 2인 궁합 즉시 비교 카드 */}
       {pairReport && pairTier && (
-        <div className="bg-gradient-to-br from-rose-50 via-pink-50 to-purple-50 rounded-[2rem] border-2 border-pink-200 shadow-lg p-6 md:p-8 mb-24 text-center">
+        <div className="bg-gradient-to-br from-rose-50 via-pink-50 to-purple-50 rounded-[2rem] border-2 border-pink-200 shadow-lg p-6 md:p-8 mb-10 text-center">
           <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white text-rose-600 text-xs font-extrabold border border-pink-200 mb-4">
             <Heart size={13} className="fill-rose-500" /> 2인 궁합 비교 완료!
           </div>
@@ -105,17 +106,22 @@ function ResultsInner() {
         </div>
       )}
 
-      <h1 className="text-3xl font-bold text-center mb-24">MBTI 검사 결과</h1>
-      {error && <p role="alert" className="mb-4 text-red-700">{error}</p>}
+      <div className="text-center mb-8">
+        <p className="text-xs font-bold uppercase tracking-widest text-primary mb-2">MBTI 60문항 정밀 분석</p>
+        <h1 className="text-3xl sm:text-4xl font-extrabold text-neutral-900">나의 MBTI 검사 결과</h1>
+      </div>
+      {error && <p role="alert" className="mb-4 text-red-700 text-center">{error}</p>}
       <ResultCard mbtiType={mbtiTypes[code]} onRestart={restart} onShare={() => {}} />
+
+      <RelatedTests currentTestId="mbti" availableTests={availableTests} />
     </section>
   );
 }
 
-export default function ResultsClient() {
+export default function ResultsClient({ availableTests = [] }: { availableTests?: any[] }) {
   return (
     <Suspense fallback={<p role="status" className="pt-28 p-12 text-center">결과를 불러오는 중입니다.</p>}>
-      <ResultsInner />
+      <ResultsInner availableTests={availableTests} />
     </Suspense>
   );
 }

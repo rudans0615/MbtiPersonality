@@ -7,10 +7,12 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { CoupangRecommend } from "@/components/CoupangRecommend";
 import { ShareButtons } from "@/components/ShareButtons";
+import { ResultImageCard } from "@/components/ResultImageCard";
+import RelatedTests from "@/components/RelatedTests";
 import { IS_ADSENSE_REVIEW_MODE } from "@/lib/siteConfig";
 import { RotateCcw, Users, Heart, Sparkles } from "lucide-react";
 
-export default function TetoEgenResultsClient() {
+export default function TetoEgenResultsClient({ availableTests = [] }: { availableTests?: any[] }) {
   const router = useRouter();
   const [testResult, setTestResult] = useState<any>(null);
   const [loaded, setLoaded] = useState(false);
@@ -97,6 +99,14 @@ export default function TetoEgenResultsClient() {
               <p className="text-xl text-neutral-600 mb-4">{typeData.subtitle}</p>
               <p className="text-lg text-neutral-700 leading-relaxed">{typeData.description}</p>
             </div>
+
+            <ResultImageCard
+              testTitle="테토 vs 에겐 성향 진단"
+              resultTitle={typeData.title}
+              resultEmoji={typeData.emoji}
+              resultSubtitle={`테토 ${testResult.balance.teto}% vs 에겐 ${testResult.balance.egen}%`}
+              characteristics={typeData.characteristics}
+            />
 
             {/* Teto-Egen Balance */}
             <div className="mb-8">
@@ -237,6 +247,8 @@ export default function TetoEgenResultsClient() {
             </div>
           </CardContent>
         </Card>
+
+        <RelatedTests currentTestId="teto-egen" availableTests={availableTests} />
       </div>
     </div>
   );

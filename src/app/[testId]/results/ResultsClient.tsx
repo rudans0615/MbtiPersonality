@@ -34,13 +34,14 @@ function ResultsContent({ testId, testInfo, allKeys, resultsData, qLen, scoring,
     </Link>
   </section>;
   const result = resultsData[resolution.key];
+  const heroGradient = testInfo.color || "from-pink-400 via-purple-400 to-indigo-400";
 
   return (
     <>
-      <div className="bg-gradient-to-br from-pink-300 via-purple-300 to-indigo-300 text-white pt-28 pb-32 relative overflow-hidden w-full">
+      <div className={`bg-gradient-to-br ${heroGradient} text-white pt-28 pb-32 relative overflow-hidden w-full`}>
         <div className="max-w-3xl mx-auto px-6 text-center relative z-10">
-          <h1 className="text-xl md:text-2xl font-semibold mb-4 tracking-wider opacity-90 drop-shadow-md">{testInfo.title} 결과 💫</h1>
-          <p className="text-lg opacity-80">선택한 답변에 따른 결과입니다</p>
+          <h1 className="text-xl md:text-2xl font-bold mb-3 tracking-wide opacity-95 drop-shadow-sm">{testInfo.title} 결과 💫</h1>
+          <p className="text-sm sm:text-base opacity-85">선택한 답변을 바탕으로 분석한 나의 유형입니다</p>
         </div>
       </div>
 
@@ -111,22 +112,36 @@ function ResultsContent({ testId, testInfo, allKeys, resultsData, qLen, scoring,
         </div>
 
         {/* All Types Overview */}
-        <div className="mt-12 mb-6 text-center">
+        <div className="mt-14 mb-6 text-center">
           <h3 className="text-2xl font-bold text-neutral-800">모든 유형 모아보기</h3>
+          <p className="text-sm text-neutral-500 mt-1">이 테스트의 전체 결과 유형을 비교해보세요</p>
         </div>
         <div className="grid sm:grid-cols-2 gap-4">
           {allKeys.map((key: string) => {
             const type = resultsData[key];
+            const isMine = key === resultKey;
             return (
-              <div key={key} className={`p-6 rounded-[1.5rem] bg-white border-2 transition-all duration-300 shadow-sm hover:shadow-md cursor-default ${key === resultKey ? "border-pink-400 shadow-pink-100" : "border-white hover:border-pink-200"}`}>
-                <div className="flex items-center space-x-4 mb-3">
-                  <div className="text-4xl bg-neutral-50 p-2 rounded-2xl">{type.emoji || "✨"}</div>
-                  <div>
-                    {type.subtitle && <div className="text-sm font-bold text-neutral-500 mb-0.5">{type.subtitle}</div>}
-                    <div className="font-extrabold text-xl text-pink-500">{type.title}</div>
+              <div
+                key={key}
+                className={`p-6 rounded-[1.5rem] bg-white border-2 transition-all duration-300 shadow-sm ${
+                  isMine ? "border-pink-400 ring-2 ring-pink-100 shadow-pink-100" : "border-neutral-100 hover:border-pink-200"
+                }`}
+              >
+                <div className="flex items-start justify-between gap-2 mb-3">
+                  <div className="flex items-center space-x-3">
+                    <div className="text-3xl bg-neutral-50 p-2 rounded-2xl shrink-0">{type.emoji || "✨"}</div>
+                    <div>
+                      {type.subtitle && <div className="text-xs font-bold text-neutral-500 mb-0.5">{type.subtitle}</div>}
+                      <div className="font-extrabold text-lg text-pink-600 leading-snug">{type.title}</div>
+                    </div>
                   </div>
+                  {isMine && (
+                    <span className="text-[11px] font-extrabold px-2.5 py-0.5 rounded-full bg-pink-500 text-white shrink-0">
+                      내 결과
+                    </span>
+                  )}
                 </div>
-                <p className="text-[0.9rem] text-neutral-600 font-medium leading-relaxed line-clamp-2">{type.description}</p>
+                <p className="text-sm text-neutral-600 leading-relaxed break-keep">{type.description}</p>
               </div>
             );
           })}

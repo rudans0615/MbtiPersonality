@@ -71,6 +71,16 @@ export default function TestClient({ inviteFrom, inviteName }: TestClientProps) 
       : `${inviteFrom}(${mbtiTypes[inviteFrom].title})`
     : "";
 
+  const progressPct = Math.round(((currentQuestion + 1) / totalQuestions) * 100);
+  const milestoneText =
+    progressPct >= 85
+      ? "거의 다 왔어요! 🔥"
+      : progressPct >= 50
+      ? "절반 돌파! 👍"
+      : progressPct >= 25
+      ? "순항 중 ✨"
+      : "";
+
   return (
     <div className="min-h-screen bg-neutral-50 pt-16">
       {/* 2인 궁합 초대 배너 */}
@@ -116,12 +126,19 @@ export default function TestClient({ inviteFrom, inviteName }: TestClientProps) 
       )}
 
       {/* Progress Header */}
-      <div className="bg-white shadow-sm sticky top-16 z-20">
-        <div className="max-w-4xl mx-auto px-6 py-4">
-          <div className="flex items-center justify-between mb-4">
-            <h1 className="text-xl font-semibold text-neutral-800">MBTI 성격유형 검사</h1>
-            <span className="text-neutral-600">
-              {currentQuestion + 1} / {totalQuestions}
+      <div className="bg-white/95 backdrop-blur-md shadow-sm sticky top-16 z-20 border-b border-neutral-100">
+        <div className="max-w-3xl mx-auto px-6 py-3.5">
+          <div className="flex items-center justify-between mb-2.5">
+            <div className="flex items-center gap-2">
+              <h1 className="text-base sm:text-lg font-bold text-neutral-800">MBTI 성격유형 검사</h1>
+              {milestoneText && (
+                <span className="text-xs font-bold px-2.5 py-0.5 rounded-full bg-indigo-50 text-indigo-600">
+                  {milestoneText}
+                </span>
+              )}
+            </div>
+            <span className="text-xs sm:text-sm font-bold text-neutral-600">
+              {currentQuestion + 1} / {totalQuestions} <span className="text-primary ml-1">({progressPct}%)</span>
             </span>
           </div>
           <ProgressBar current={currentQuestion + 1} total={totalQuestions} />
