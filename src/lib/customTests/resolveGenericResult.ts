@@ -22,7 +22,22 @@ export function getGenericScoring(questions: GenericQuestion[]): GenericScoring 
   };
 }
 
-/** searchParams already decodes URL values. Preserve first-seen tie order. */
+/** Deterministic FNV-1a + Murmur3 fmix32 hash for unbiased tie-breaking across all question positions. */
+function hashString(str: string): number {
+  let h = 2166136261;
+  for (let i = 0; i < str.length; i++) {
+    h ^= str.charCodeAt(i);
+    h = Math.imul(h, 16777619);
+  }
+  h ^= h >>> 16;
+  h = Math.imul(h, 2246822507);
+  h ^= h >>> 13;
+  h = Math.imul(h, 3266489909);
+  h ^= h >>> 16;
+  return h >>> 0;
+}
+
+/** searchParams already decodes URL values. Ties are broken deterministically without question-order bias. */
 export function resolveGenericResult(
   params: Pick<URLSearchParams, 'getAll'>,
   results: Record<string, ScoreRange>,
@@ -40,7 +55,12 @@ export function resolveGenericResult(
       !code || !Object.prototype.hasOwnProperty.call(results, code) || !scoring.allowedTypes[index]?.includes(code))) return fail('invalid');
     const counts: Record<string, number> = Object.create(null);
     answers.forEach(code => { counts[code] = (counts[code] || 0) + 1; });
-    const key = Object.entries(counts).sort((a, b) => b[1] - a[1])[0][0];
+    const maxCount = Math.max(...Object.values(counts));
+    const tied = Object.entries(counts)
+      .filter(([, c]) => c === maxCount)
+      .map(([k]) => k)
+      .sort();
+    const key = tied.length === 1 ? tied[0] : tied[hashString(types[0]) % tied.length];
     return { key, error: null };
   }
   if (scores.length !== 1 || types.length || !/^-?\d+$/.test(scores[0])) return fail('invalid');

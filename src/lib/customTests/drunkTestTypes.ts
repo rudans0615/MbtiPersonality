@@ -26,9 +26,9 @@ export const selfAwarenessResults: Record<string, SelfAwarenessResult> = {
     ],
     advice: [
       "현재 상태를 유지하세요",
-      "주변 사람들을 도와주세요",
-      "안전 운전 가능",
-      "중요한 일 처리 가능"
+      "주변 사람들을 챙겨주세요",
+      "음주했다면 소량이라도 대중교통을 이용하세요",
+      "물을 자주 마시며 컨디션을 유지하세요"
     ],
     emoji: "😐",
     color: "bg-green-500",

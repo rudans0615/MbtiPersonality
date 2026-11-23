@@ -25,7 +25,7 @@ export const tetoEgenTypes: Record<string, TetoEgenType> = {
     subtitle: "테스토스테론 남성",
     description: "주도적이고 현실적인 에너지가 넘치는 남성형 리더. 목표 지향적이며 행동으로 표현하는 직진형 스타일입니다.",
     characteristics: [
-      "공격성과 사냥 본능이 강함",
+      "승부욕과 추진력이 강함",
       "자기주장이 강하며 리더십 보유",
       "감정보다 논리를 우선시",
       "친구가 많고 무리 생활에 익숙",
@@ -113,9 +113,9 @@ export const tetoEgenTypes: Record<string, TetoEgenType> = {
     code: "EGEN_F",
     title: "에겐녀",
     subtitle: "에스트로겐 여성",
-    description: "부드럽고 따뜻한 여성성의 대표. 감정이 풍부하고 배려심 깊은 전통적 여성미를 지닌 스타일입니다.",
+    description: "부드럽고 따뜻한 에너지의 대표. 감정이 풍부하고 배려심 깊은 다정한 매력을 지닌 스타일입니다.",
     characteristics: [
-      "부드러운 여성성과 모성애",
+      "부드러운 감성과 따뜻한 포용력",
       "감정이 풍부하고 표현력이 좋음",
       "타인을 배려하고 돌보는 성향",
       "안정감과 평화를 추구",
@@ -142,17 +142,23 @@ export const tetoEgenTypes: Record<string, TetoEgenType> = {
 };
 
 export const getCompatibilityDescription = (userType: string, partnerType: string): string => {
-  const compatibility = {
+  const compatibility: Record<string, string> = {
     "TETO_M-EGEN_F": "최고의 궁합! 테토남의 강한 추진력과 에겐녀의 부드러운 감성이 완벽하게 보완됩니다.",
+    "EGEN_F-TETO_M": "최고의 궁합! 에겐녀의 섬세한 따뜻함과 테토남의 든든한 리더십이 자연스럽게 어우러집니다.",
     "TETO_F-TETO_M": "역동적인 커플! 서로의 에너지가 시너지를 만들어내지만 때로는 주도권 경쟁이 있을 수 있어요.",
-    "EGEN_M-TETO_F": "환상의 조합! 에겐남의 섬세함과 테토녀의 당당함이 서로를 성장시킵니다.",
-    "EGEN_F-EGEN_M": "감성적 소울메이트! 서로를 깊이 이해하지만 때로는 결정력이 부족할 수 있어요.",
     "TETO_M-TETO_F": "강력한 파워커플! 목표 달성력은 최고지만 갈등 시 격렬할 수 있습니다.",
-    "EGEN_M-EGEN_F": "예술가 커플! 감성적 교감이 뛰어나지만 현실적 추진력은 아쉬울 수 있어요."
+    "EGEN_M-TETO_F": "환상의 조합! 에겐남의 섬세함과 테토녀의 당당함이 서로를 성장시킵니다.",
+    "TETO_F-EGEN_M": "환상의 조합! 테토녀의 추진력과 에겐남의 다정한 공감이 완벽한 균형을 이룹니다.",
+    "EGEN_F-EGEN_M": "감성적 소울메이트! 서로를 깊이 이해하지만 때로는 결정력이 부족할 수 있어요.",
+    "EGEN_M-EGEN_F": "예술가 커플! 감성적 교감이 뛰어나지만 현실적 추진력은 아쉬울 수 있어요.",
+    "TETO_M-TETO_M": "에너지 넘치는 파트너! 함께 목표를 향해 달릴 때 최고의 시너지를 냅니다.",
+    "TETO_F-TETO_F": "당당하고 쿨한 조합! 서로의 독립성을 존중하며 자극을 주고받아요.",
+    "EGEN_M-EGEN_M": "감수성이 통하는 조합! 깊은 대화와 공감이 끊이지 않는 편안한 사이입니다.",
+    "EGEN_F-EGEN_F": "다정하고 세심한 조합! 말하지 않아도 마음을 알아채는 따뜻한 관계예요."
   };
-  
+
   const key = `${userType}-${partnerType}`;
-  return compatibility[key as keyof typeof compatibility] || "독특한 조합이네요! 서로 다른 매력이 새로운 가능성을 만들어낼 거예요.";
+  return compatibility[key] || "독특한 조합이네요! 서로 다른 매력이 새로운 가능성을 만들어낼 거예요.";
 };
 
 export const getTetoEgenBalance = (answers: number[]): { teto: number; egen: number } => {
