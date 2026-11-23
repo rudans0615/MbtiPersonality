@@ -4,7 +4,7 @@ import { mbtiTypes } from '@/lib/customTests/mbtiTypes';
 import { IS_ALL_COMPATIBILITY_INDEXED } from '@/lib/siteConfig';
 import { CURATED_PAIR_KEYS, getAllCanonicalPairs } from '@/lib/customTests/mbtiCompatibility';
 
-export const revalidate = 86400;
+export const revalidate = 3600;
 
 function parseKoreanDate(dateStr?: string | null): Date {
   if (!dateStr) return new Date('2026-09-01');
@@ -49,7 +49,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     .filter((test) => test.href && !seenUrls.has(`${baseUrl}${test.href}`))
     .map((test) => ({
       url: `${baseUrl}${test.href}`,
-      lastModified: new Date('2026-09-12'),
+      lastModified: new Date(),
       changeFrequency: 'weekly' as const,
       priority: 0.8,
     }));

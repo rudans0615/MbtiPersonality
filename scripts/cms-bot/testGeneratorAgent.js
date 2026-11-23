@@ -1,161 +1,473 @@
+import fs from 'node:fs';
+import path from 'node:path';
+import crypto from 'node:crypto';
+import { fileURLToPath } from 'node:url';
 import { z } from 'zod';
 import { zodResponseFormat } from 'openai/helpers/zod';
-import { injectCode } from './developerAgent.js';
+import { assertSafeTopic } from './validateTestData.js';
+import {
+  saveTestDraft,
+  publishTestDraft,
+  deleteTestDraft,
+  listExistingTests,
+} from './developerAgent.js';
+
+const scriptDir = path.dirname(fileURLToPath(import.meta.url));
+const pendingTestDraftsPath = path.join(scriptDir, '.pending-test-drafts.json');
+
+function loadPendingDrafts() {
+  try {
+    if (fs.existsSync(pendingTestDraftsPath)) {
+      return JSON.parse(fs.readFileSync(pendingTestDraftsPath, 'utf8'));
+    }
+  } catch (e) {
+    console.warn('Failed loading pending test drafts:', e.message);
+  }
+  return {};
+}
+
+function savePendingDrafts(store) {
+  try {
+    fs.writeFileSync(pendingTestDraftsPath, JSON.stringify(store, null, 2), 'utf8');
+  } catch (e) {
+    console.warn('Failed saving pending test drafts:', e.message);
+  }
+}
+
+const pendingTestDrafts = loadPendingDrafts();
+
+const TestSchema = z.object({
+  testId: z.string().describe('기존 테스트 ID와 절대 겹치지 않는 camelCase 영문 고유 ID (예: cafeStudyHabitTest)'),
+  category: z.enum(['HOT', 'LOVE', 'PERSONALITY', 'FUN', 'CAREER']),
+  title: z.string().describe('클릭을 부르되 과장·자극적이지 않고 신뢰감 있는 한국어 테스트 제목 (26자 이내)'),
+  subtitle: z.string().describe('호기심을 자극하는 부제목 (40자 이내)'),
+  description: z.string().describe('테스트 랜딩 페이지 및 검색 설명에 바로 쓰일 110~170자 분량의 명확한 소개글 (자연스러운 한국어 존댓말)'),
+  emoji: z.string().describe('대표 이모지 1개'),
+  promotionalCopy: z.string().describe('스레드·인스타 공유용 2~3줄 후킹 멘트 (링크 자리 없이 문구만)'),
+  results: z
+    .array(
+      z.object({
+        typeCode: z.string().describe('영문 대문자 스네이크 케이스 (예: CAFE_STRATEGIST)'),
+        title: z.string().describe('유형 이름 (예: 완벽주의 루틴 설계자)'),
+        emoji: z.string(),
+        subtitle: z.string().describe('핵심 한줄 요약 (28자 이내)'),
+        description: z
+          .string()
+          .describe('이 유형의 강점, 일상 패턴, 보완 포인트를 구체적으로 담은 210~320자 분량의 상세 설명 (임상·의학적 단정 금지)'),
+        characteristics: z
+          .array(z.string())
+          .length(4)
+          .describe('이 유형의 핵심 특징 4가지 (각 12~30자, 구체적이고 공감 가는 표현)'),
+        coupangKeyword: z
+          .string()
+          .describe("실제 쿠팡에서 검색 가능한 구체적 실물 상품명 (예: '노이즈캔슬링 헤드폰', '아로마 디퓨저'. 성향 이름 금지)"),
+      })
+    )
+    .length(4)
+    .describe('서로 뚜렷하게 구분되는 정확히 4개의 고유한 결과 유형'),
+  questions: z
+    .array(
+      z.object({
+        question: z.string().describe('구체적인 일상 상황이 담긴 질문 (모호한 "이런 경우" 금지)'),
+        options: z
+          .array(
+            z.object({
+              text: z.string().describe('자연스러운 한국어 구어체 선택지 (12~45자)'),
+              typeCode: z.string().describe('매핑될 결과 유형의 typeCode (4개 유형이 각 문항에 정확히 1번씩 1:1 매핑되어야 함)'),
+            })
+          )
+          .length(4)
+          .describe('반드시 4지선다 (각 문항마다 4개 결과 유형이 정확히 1개씩 1:1 매핑)'),
+      })
+    )
+    .min(8)
+    .max(12)
+    .describe('주제에 가장 잘 맞는 8~12개의 문항 (권장 10문항)'),
+});
+
+function toDeveloperPayload(parsedData) {
+  const formattedResults = {};
+  for (const r of parsedData.results) {
+    formattedResults[r.typeCode] = {
+      title: r.title,
+      emoji: r.emoji,
+      subtitle: r.subtitle,
+      description: r.description,
+      characteristics: r.characteristics,
+      coupangKeyword: r.coupangKeyword,
+    };
+  }
+  const formattedQuestions = parsedData.questions.map((q) => ({
+    question: q.question,
+    options: q.options.map((o) => ({
+      text: o.text,
+      type: o.typeCode,
+    })),
+  }));
+
+  return {
+    scoringMode: 'types',
+    testId: parsedData.testId,
+    category: parsedData.category,
+    title: parsedData.title,
+    subtitle: parsedData.subtitle,
+    description: parsedData.description,
+    emoji: parsedData.emoji,
+    promotionalCopy: parsedData.promotionalCopy,
+    questions: formattedQuestions,
+    results: formattedResults,
+  };
+}
+
+async function generateAndCritiqueDraft(openai, { topic, targetAudience, tone, existingTests, retryFeedback = '' }) {
+  const existingSummary = existingTests
+    .map((t) => `- [${t.id}] (${t.category}${t.is_available ? '' : ', 비활성'}) ${t.title}`)
+    .join('\n');
+
+  const completion = await openai.beta.chat.completions.parse({
+    model: 'gpt-4o',
+    temperature: 0.85,
+    messages: [
+      {
+        role: 'system',
+        content: `너는 한국 10~30대 독자가 공감하고 지인에게 공유하고 싶어지는 고품질 심리테스트 전문 '디렉터 + 메인작가'야.
+
+[애드센스 & 품질 절대 규칙]
+1. 스토킹, 폭력, 자해, 음주운전, 의학적/임상적 진단, 혐오·비하 표현은 절대 금지한다.
+2. 결과 유형(results)은 반드시 서로 성격이 뚜렷하게 다른 **정확히 4개**로 설계한다.
+3. 문항(questions)은 **10문항(8~12문항 허용)**으로 구성하며, **매 문항의 4개 선택지는 4개의 typeCode에 정확히 1:1로 1번씩 매핑**되어야 한다. (특정 유형이 한 문항에 2번 들어가거나 빠지면 안 된다!)
+4. 테스트 소개(description)는 랜딩 페이지와 검색 메타 설명에 바로 노출되므로 110~170자의 자연스러운 존댓말 설명으로 작성한다.
+5. 각 결과의 description은 최소 210~320자로 작성하며, 강점·일상 행동 패턴·관계/생활 팁을 구체적으로 담는다.
+6. 아래 [기존 테스트 목록]과 testId, 제목, 주제가 중복되지 않는 완전히 새로운 기획이어야 한다.
+
+[톤앤매너]
+- 타겟: ${targetAudience}
+- 수위/분위기: ${tone}
+- 질문과 선택지: 모호한 지시어("이런 경우") 금지. 구체적 한국 일상 시나리오와 자연스러운 구어체 사용.
+
+[기존 테스트 목록 (중복 금지)]
+${existingSummary || '(없음)'}`,
+      },
+      {
+        role: 'user',
+        content: `테스트 주제: "${topic}"\n위 조건을 모두 만족하는 신규 심리테스트 JSON을 작성해줘.${
+          retryFeedback ? `\n\n[이전 초안 검증 실패 사유 — 반드시 해결할 것]\n${retryFeedback}` : ''
+        }`,
+      },
+    ],
+    response_format: zodResponseFormat(TestSchema, 'test_schema'),
+  });
+
+  const draft = completion.choices[0].message.parsed;
+
+  // 2차 Critic Agent 검수 (문맥 정합성, 선택지-유형 일치도, 한국어 자연스러움, 쿠팡 키워드 실물성)
+  const qaCompletion = await openai.beta.chat.completions.parse({
+    model: 'gpt-4o',
+    temperature: 0.25,
+    messages: [
+      {
+        role: 'system',
+        content: `너는 한국어 심리테스트의 심리측정 정합성과 문장을 검수하는 '수석 Critic Agent'야.
+주어진 JSON을 검토하고 아래 기준으로 엄격히 교정해 동일한 스키마로 반환해.
+
+[검수 체크리스트]
+1. 선택지-유형 정합성: 모든 문항의 각 선택지가 매핑된 typeCode의 성격과 100% 논리적으로 일치하는지 확인하고, 어긋나거나 반대되는 보기를 정확히 수정하라.
+2. 1:1 매핑 유지: 모든 문항의 4개 선택지가 반드시 4개 결과 typeCode를 중복 없이 1개씩 가리키도록 유지하라.
+3. 문장 품질: AI 번역투·외계어·오타·어색한 비문을 자연스러운 한국어로 교정하고, 각 결과 description이 200자 이상 풍부한지 확인하라.
+4. 안전/정책 준수: 과도한 인신공격, 혐오, 의학적 단정, 위험 행동 조장 문구를 제거하라.
+5. 쿠팡 키워드: 추상적 성향명이 아니라 실제 쿠팡에서 검색되는 구체적 실물 상품명으로 교정하라.`,
+      },
+      {
+        role: 'user',
+        content: JSON.stringify(draft),
+      },
+    ],
+    response_format: zodResponseFormat(TestSchema, 'test_schema'),
+  });
+
+  return qaCompletion.choices[0].message.parsed;
+}
+
+function formatApprovalPreview(draftId, saved, aiData) {
+  const { payload, auditReport } = saved;
+  const resultsList = payload.results
+    .map((r) => `  • ${r.emoji} ${r.title} (${r.code}) — ${r.subtitle}`)
+    .join('\n');
+
+  const sampleQs = payload.questions
+    .slice(0, 2)
+    .map(
+      (q) =>
+        `Q${q.question_number}. ${q.text}\n` +
+        q.options.map((o, idx) => `   ${idx + 1}) ${o.text} [${o.type_code}]`).join('\n')
+    )
+    .join('\n\n');
+
+  const mcText = Object.entries(auditReport.monteCarloPct)
+    .map(([k, v]) => `${k}:${v}`)
+    .join(' / ');
+
+  return (
+    `🧪 [신규 테스트 초안 검수 요청]\n` +
+    `━━━━━━━━━━━━━━━\n` +
+    `${payload.test.emoji} 제목: ${payload.test.title}\n` +
+    `🔖 ID: ${payload.test.id} | 카테고리: ${payload.test.category} | ${payload.questions.length}문항\n` +
+    `📝 소개: ${payload.test.description}\n\n` +
+    `🧭 결과 유형 (${payload.results.length}종):\n${resultsList}\n\n` +
+    `📋 대표 문항 미리보기 (보기 자동 순환 적용):\n${sampleQs}\n\n` +
+    `✅ 자동 품질 게이트 통과\n` +
+    `• 채점 모드: 유형제 (score=NULL 확인)\n` +
+    `• 페르소나 도달률: ${auditReport.personaReachable}/${payload.results.length} (100%)\n` +
+    `• Monte Carlo(4,000회): ${mcText}\n` +
+    `• 정책·외계어 필터: 이상 없음 | 초안 DB 저장 완료(비공개)\n` +
+    `━━━━━━━━━━━━━━━\n` +
+    `아래 버튼으로 라이브 발행 여부를 결정하세요. (초안 ID: ${draftId})`
+  );
+}
+
+async function generateThreadsPromoForNewTest(openai, testInfo, results) {
+  const url = `https://mbtifinder.com/${testInfo.id}`;
+  try {
+    const res = await openai.chat.completions.create({
+      model: 'gpt-4o-mini',
+      temperature: 0.85,
+      response_format: { type: 'json_object' },
+      messages: [
+        {
+          role: 'system',
+          content: `너는 한국 스레드(Threads)·인스타 릴스 바이럴 에디터야.
+신규 심리테스트 런칭 홍보 패키지를 JSON으로 작성해.
+규칙:
+- threadsPost: 220~350자, 1~2줄 훅 + 공감 질문 + 테스트 링크(${url}) 포함, 해시태그 3~4개
+- reelsHook: 3초 안에 시선을 잡는 짧은 릴스/스토리 첫 문장 (25자 이내)
+JSON만 출력: { "threadsPost": "...", "reelsHook": "..." }`,
+        },
+        {
+          role: 'user',
+          content: `테스트 제목: ${testInfo.title}\n설명: ${testInfo.description}\n유형: ${results.map((r) => r.title).join(', ')}`,
+        },
+      ],
+    });
+    return JSON.parse(res.choices[0].message.content);
+  } catch {
+    return {
+      threadsPost: `${testInfo.emoji || '✨'} ${testInfo.title}\n\n친구랑 결과 비교해보면 은근 소름 돋는 테스트!\n👉 ${url}\n\n#심리테스트 #성향테스트 #MBTI`,
+      reelsHook: `${testInfo.title}, 너는 어떤 유형?`,
+    };
+  }
+}
 
 export async function generateViralTest(openai, bot, chatId, { topic, targetAudience, tone }) {
-  bot.sendMessage(chatId, `🚀 [Director Agent] 기획 시작...\n- 주제: ${topic}\n- 타겟: ${targetAudience}\n- 팩폭 수위: ${tone}\n(매트릭스 설계 중, 약 30초 소요)`);
-
   try {
-    // 주제에 맞는 유연한 성향(Type)과 문항을 허용하는 Zod 스키마
-    const TestSchema = z.object({
-      testId: z.string().describe("camelCase 영문 고유 ID (예: blindLoveTest)"),
-      category: z.enum(["HOT", "LOVE", "PERSONALITY", "FUN", "CAREER"]),
-      title: z.string().describe("클릭을 유발하는 어그로성 바이럴 제목"),
-      subtitle: z.string().describe("호기심을 자극하는 부제목"),
-      description: z.string().describe("테스트 한줄 소개 (MZ 구어체)"),
-      emoji: z.string().describe("대표 이모지 1개"),
-      seoArticle: z.string().describe("SEO 최적화를 위한 500자 이상의 심리학적 칼럼 텍스트 (단락 구분 포함)"),
-      promotionalCopy: z.string().describe("인스타 피드용 홍보 복붙 멘트 (찰진 팩폭 멘트)"),
-      
-      // 주제에 맞게 4~8개의 결과 유형
-      results: z.array(z.object({
-        typeCode: z.string().describe("영문 대문자 스네이크 케이스 (예: MONEY_WASTER)"),
-        title: z.string().describe("유형 이름 (예: 통장파괴자)"),
-        emoji: z.string(),
-        subtitle: z.string().describe("한줄 요약"),
-        description: z.string().describe("장단점 및 뼈때리는 팩폭을 담은 300자 이상의 상세 설명"),
-        characteristics: z.array(z.string()).length(4).describe("이 유형의 핵심 특징 4가지 (짧고 강렬하게)"),
-        coupangKeyword: z.string().describe("이 유형의 사람이 살 법한 실제 쿠팡 실물 상품 키워드 (예: '호신용 스프레이', '게이밍 의자', '숙취해소제' 등. 성향 이름 자체를 넣으면 절대 안 됨)"),
-        coupangHook: z.string().describe("이 상품을 사야 하는 이유를 담은 찰진 후킹 멘트 (20자 내외)")
-      })).min(4).max(8).describe("주제에 맞게 4~8개의 서로 다른 고유한 결과 유형을 생성해야 함"),
+    const safeTopic = assertSafeTopic(topic);
+    await bot.sendMessage(
+      chatId,
+      `🚀 [Director Agent v2] 신규 테스트 초안 기획 시작...\n` +
+        `• 주제: ${safeTopic}\n` +
+        `• 타겟: ${targetAudience}\n` +
+        `• 분위기: ${tone}\n` +
+        `(기존 테스트 중복 확인 → gpt-4o 설계 → Critic 검수 → 4,000회 통계 검증 순으로 진행, 약 40초 소요)`
+    );
 
-      // 주제에 맞게 8~12개의 문항
-      questions: z.array(z.object({
-        question: z.string().describe("구체적인 상황이 묘사된 질문 (예: 밤 11시 갑자기 친구가 나오라고 할 때)"),
-        options: z.array(z.object({
-          text: z.string().describe("자연스러운 구어체 선택지 (예: 귀찮아 안 나가)"),
-          typeCode: z.string().describe("선택 시 매핑될 결과 유형의 typeCode (results에 정의된 유형 중 하나)")
-        })).length(4).describe("반드시 4지선다형")
-      })).min(8).max(12).describe("주제에 맞게 8~12개의 질문을 생성해야 함")
-    });
+    const existingTests = await listExistingTests();
 
-    // Director & Creator 통합 프롬프트
-    const completion = await openai.beta.chat.completions.parse({
-      model: "gpt-4o", // gpt-4o for highest quality
-      temperature: 0.9,
-      messages: [
-        {
-          role: "system",
-          content: `너는 10~30대 한국 여성 대상 바이럴 테스트 제작 전문 'Multi-Agent 팀(디렉터+메인작가)'이야.
+    let saved = null;
+    let finalAiData = null;
+    let lastError = null;
 
-[디렉터의 룰 - 매트릭스 설계]
-1. 주제에 가장 적합한 고유한 결과 유형(typeCode)을 4~8개 사이로 설계해라.
-2. 위 결과를 정확히 판별해낼 수 있는 핵심 질문을 8~12개 사이로 설계해라.
-3. 각 문항은 4지선다(options 4개)로 구성되며, 각 option은 위에서 설계한 결과 유형(typeCode) 중 하나를 지목해야 한다.
-4. 옵션(typeCode) 매핑 시 특정 유형에 치우치지 않고 전체 질문을 통틀어 각 결과 유형이 골고루 분배되도록 논리적인 매트릭스를 구성해라.
+    // 자동 품질 게이트 통과까지 최대 2회 시도
+    for (let attempt = 1; attempt <= 2; attempt++) {
+      try {
+        const parsedData = await generateAndCritiqueDraft(openai, {
+          topic: safeTopic,
+          targetAudience,
+          tone,
+          existingTests,
+          retryFeedback: lastError ? lastError.message : '',
+        });
 
-[메인 작가의 룰 - 콘텐츠 톤앤매너]
-1. 타겟 연령대: ${targetAudience}
-2. 팩폭 수위: ${tone}
-3. 말투: 딱딱한 존댓말 금지. 찐친이 카톡으로 묻는 듯한 자연스러운 구어체.
-4. 질문: "이런 상황이라면?" 같은 모호한 지시어 절대 금지. 극단적이고 구체적인 시나리오 부여.
-5. 옵션: "A라고 말한다" 식의 번역체 금지. "아 쫌 조용히 해봐 ㅡㅡ" 처럼 생생한 대사/속마음체 사용.
-6. 결과(results): 밈과 유행어를 적극 활용하되, ${tone} 수위에 맞춰 뼈를 때리는 팩폭을 날려라.`
-        },
-        {
-          role: "user",
-          content: `테스트 주제: "${topic}"\n위 주제와 타겟, 톤앤매너에 완벽하게 부합하는 바이럴 테스트 JSON을 생성해줘.`
+        finalAiData = toDeveloperPayload(parsedData);
+        saved = await saveTestDraft(finalAiData, { allowOverwrite: false, strictQuality: true });
+        lastError = null;
+        break;
+      } catch (err) {
+        lastError = err;
+        console.warn(`[TestGenerator] Attempt ${attempt} failed validation:`, err.message);
+        if (attempt < 2) {
+          await bot.sendMessage(
+            chatId,
+            `⚠️ [품질 게이트 보완] 1차 초안 검증 이슈 감지 (${err.message})\n자동으로 보완 재설계 중...`
+          );
         }
-      ],
-      response_format: zodResponseFormat(TestSchema, "test_schema")
-    });
+      }
+    }
 
-    let parsedData = completion.choices[0].message.parsed;
+    if (!saved || lastError) {
+      throw new Error(`품질 게이트를 통과한 초안 생성에 실패했습니다: ${lastError?.message}`);
+    }
 
-    bot.sendMessage(chatId, `🔍 [Critic Agent] 1차 기획안 도출 완료. 논리적 오류 검수 및 문맥 교정 중... (약 20초 소요)`);
-
-    // 2차 검수 (Critic Agent)
-    const qaCompletion = await openai.beta.chat.completions.parse({
-      model: "gpt-4o",
-      temperature: 0.3, // 낮은 온도로 보수적이고 논리적인 판단 유도
-      messages: [
-        {
-          role: "system",
-          content: `너는 한국어로 작성된 심리테스트를 검수하는 'QA 메인 검수자(Critic Agent)'야.
-주어진 테스트 JSON 데이터를 읽고 다음을 엄격히 수정해서 동일한 JSON 형식으로 반환해.
-
-[검수 가이드라인]
-1. 문맥의 논리적 오류: 앞뒤가 안 맞는 상황 (예: 누군가 나를 따라오는데, 내가 그를 천천히 따라간다 등)을 찾아내어 논리적으로 자연스럽게 수정해.
-2. 어색한 번역투/기계투: 너무 딱딱하거나 번역기 같은 말투를 한국 10~30대가 쓰는 자연스러운 구어체로 다듬어.
-3. 쿠팡 추천 키워드(coupangKeyword)가 추상적인 성향 이름(예: '전사', '평화주의자')으로 되어있다면, 반드시 실존하는 구체적인 실물 상품명(예: '샌드백', '인센스 스틱')으로 수정해.
-4. 설계된 typeCode 개수 및 선택지 개수 등 전체적인 JSON 구조는 절대 변경하지 말고 오직 텍스트 내용만 교정해.`
-        },
-        {
-          role: "user",
-          content: JSON.stringify(parsedData)
-        }
-      ],
-      response_format: zodResponseFormat(TestSchema, "test_schema")
-    });
-
-    parsedData = qaCompletion.choices[0].message.parsed;
-    bot.sendMessage(chatId, `✨ [Critic Agent] 논리적 오류 검수 및 교정 완료! 스키마 무결성 검증 통과!\n- 제목: ${parsedData.title}\n(이제 DB 주입용 포맷으로 변환 및 배포를 준비합니다...)`);
-
-    // developerAgent.js가 예상하는 포맷으로 변환
-    // developerAgent.js는 results를 Object(Record<string, any>)로 기대함
-    const formattedResults = {};
-    parsedData.results.forEach(r => {
-      formattedResults[r.typeCode] = {
-        title: r.title,
-        emoji: r.emoji,
-        subtitle: r.subtitle,
-        description: r.description,
-        characteristics: r.characteristics,
-        coupangKeyword: r.coupangKeyword,
-        coupangHook: r.coupangHook
-      };
-    });
-
-    // questions 배열 내의 옵션도 score 대신 type으로 변경
-    const formattedQuestions = parsedData.questions.map(q => ({
-      question: q.question,
-      options: q.options.map(o => ({
-        text: o.text,
-        type: o.typeCode
-      }))
-    }));
-
-    const finalAiData = {
-      testId: parsedData.testId,
-      category: parsedData.category,
-      title: parsedData.title,
-      subtitle: parsedData.subtitle,
-      description: parsedData.description,
-      emoji: parsedData.emoji,
-      seoArticle: parsedData.seoArticle,
-      promotionalCopy: parsedData.promotionalCopy,
-      questions: formattedQuestions,
-      results: formattedResults
+    const draftId = crypto.randomBytes(4).toString('hex');
+    pendingTestDrafts[draftId] = {
+      draftId,
+      testId: saved.testId,
+      title: saved.payload.test.title,
+      description: saved.payload.test.description,
+      emoji: saved.payload.test.emoji,
+      category: saved.payload.test.category,
+      results: saved.payload.results.map((r) => ({ code: r.code, title: r.title, emoji: r.emoji })),
+      promotionalCopy: finalAiData.promotionalCopy || '',
+      topic: safeTopic,
+      targetAudience,
+      tone,
+      createdAt: new Date().toISOString(),
     };
+    savePendingDrafts(pendingTestDrafts);
 
-    // DB 및 소스코드 주입
-    await injectCode(finalAiData);
-
-    bot.sendMessage(chatId, `
-✅ **[신규 테스트 즉시 배포 완료]** ${finalAiData.title}
-
-👇 **즉시 복붙 가능한 인스타 업로드용 멘트:**
-"${finalAiData.promotionalCopy}"
-
-📸 **홍보용 이미지 다운로드 링크:**
-- [인스타 스토리용 (9:16)](https://mbtifinder.com/api/og?testId=${finalAiData.testId}&type=story)
-- [인스타 피드용 (1:1)](https://mbtifinder.com/api/og?testId=${finalAiData.testId}&type=feed)
-- [카톡 공유용 (16:9)](https://mbtifinder.com/api/og?testId=${finalAiData.testId}&type=share)
-
-🔗 **테스트 바로가기:** https://mbtifinder.com/${finalAiData.testId}`);
-
+    const previewText = formatApprovalPreview(draftId, saved, finalAiData);
+    await bot.sendMessage(chatId, previewText, {
+      reply_markup: {
+        inline_keyboard: [
+          [
+            { text: '✅ 라이브 발행 승인', callback_data: `test_approve_${draftId}` },
+            { text: '🗑️ 초안 삭제', callback_data: `test_discard_${draftId}` },
+          ],
+          [{ text: '🔄 같은 주제로 다시 기획하기', callback_data: `test_regen_${draftId}` }],
+        ],
+      },
+    });
   } catch (error) {
-    console.error(error);
-    bot.sendMessage(chatId, `❌ 에러 발생: ${error.message}`);
+    console.error('[generateViralTest error]', error);
+    await bot.sendMessage(chatId, `❌ 테스트 초안 생성 중단: ${error.message}`);
   }
+}
+
+export async function sendPendingTestDrafts(bot, chatId) {
+  const drafts = Object.values(pendingTestDrafts);
+  if (!drafts.length) {
+    return bot.sendMessage(chatId, '📭 현재 승인 대기 중인 신규 테스트 초안이 없습니다.\n`/newtest [주제]`로 새 초안을 만들어보세요.');
+  }
+
+  const lines = drafts.map(
+    (d, idx) => `${idx + 1}. ${d.emoji || '✨'} ${d.title} (${d.testId}) — ID: ${d.draftId}`
+  );
+  const buttons = drafts.slice(0, 5).map((d) => [
+    { text: `✅ 발행: ${d.title.slice(0, 14)}`, callback_data: `test_approve_${d.draftId}` },
+    { text: `🗑️ 삭제`, callback_data: `test_discard_${d.draftId}` },
+  ]);
+
+  return bot.sendMessage(
+    chatId,
+    `🗂️ 승인 대기 중인 테스트 초안 (${drafts.length}건)\n\n${lines.join('\n')}`,
+    { reply_markup: { inline_keyboard: buttons } }
+  );
+}
+
+export async function handleTestDraftCallback(bot, openai, query, generateBridgeBlogDraft) {
+  const data = query.data || '';
+  if (
+    !data.startsWith('test_approve_') &&
+    !data.startsWith('test_discard_') &&
+    !data.startsWith('test_regen_') &&
+    !data.startsWith('test_blog_')
+  ) {
+    return false;
+  }
+
+  const chatId = query.message.chat.id;
+  await bot.answerCallbackQuery(query.id).catch(() => {});
+
+  // 1. 연계 브릿지 칼럼 초안 바로 쓰기
+  if (data.startsWith('test_blog_')) {
+    const testId = data.replace('test_blog_', '');
+    if (typeof generateBridgeBlogDraft === 'function') {
+      const existing = await listExistingTests().catch(() => []);
+      const found = existing.find((t) => t.id === testId);
+      const bridgeTopic = found
+        ? `${found.title} 결과 유형별 특징과 일상 활용 가이드 (/${found.id} 테스트 연계)`
+        : `${testId} 성향 테스트 결과 해석 및 자기이해 가이드`;
+      await generateBridgeBlogDraft(bot, openai, chatId, bridgeTopic);
+    }
+    return true;
+  }
+
+  const draftId = data.replace(/^test_(approve|discard|regen)_/, '');
+  const draft = pendingTestDrafts[draftId];
+  if (!draft) {
+    await bot.sendMessage(chatId, `⚠️ 해당 초안(${draftId})은 이미 처리되었거나 만료되었습니다.`);
+    return true;
+  }
+
+  // 2. 승인 → 라이브 발행 + 홍보 패키지 생성
+  if (data.startsWith('test_approve_')) {
+    try {
+      const pub = await publishTestDraft(draft.testId);
+      delete pendingTestDrafts[draftId];
+      savePendingDrafts(pendingTestDrafts);
+
+      const promo = await generateThreadsPromoForNewTest(openai, draft, draft.results || []);
+
+      await bot.sendMessage(
+        chatId,
+        `🎉 [신규 테스트 라이브 발행 완료]\n` +
+          `━━━━━━━━━━━━━━━\n` +
+          `📌 제목: ${pub.title}\n` +
+          `🔗 라이브 URL: https://mbtifinder.com/${pub.testId}\n` +
+          `(홈페이지 최대 60초, 사이트맵 최대 1시간 내 자동 반영)\n\n` +
+          `🧵 [스레드 복붙 홍보글]\n${promo.threadsPost}\n\n` +
+          `🎬 [릴스/스토리 3초 훅]\n"${promo.reelsHook}"\n\n` +
+          `📸 [OG 홍보 이미지]\n` +
+          `• 스토리(9:16): https://mbtifinder.com/api/og?testId=${pub.testId}&type=story\n` +
+          `• 피드(1:1): https://mbtifinder.com/api/og?testId=${pub.testId}&type=feed\n` +
+          `• 공유(16:9): https://mbtifinder.com/api/og?testId=${pub.testId}&type=share`,
+        {
+          reply_markup: {
+            inline_keyboard: [
+              [
+                {
+                  text: '✍️ 이 테스트 연계 브릿지 칼럼 초안 쓰기',
+                  callback_data: `test_blog_${pub.testId}`,
+                },
+              ],
+            ],
+          },
+        }
+      );
+    } catch (err) {
+      console.error('[test_approve error]', err);
+      await bot.sendMessage(chatId, `❌ 라이브 발행 실패: ${err.message}`);
+    }
+    return true;
+  }
+
+  // 3. 초안 삭제
+  if (data.startsWith('test_discard_')) {
+    try {
+      await deleteTestDraft(draft.testId);
+      delete pendingTestDrafts[draftId];
+      savePendingDrafts(pendingTestDrafts);
+      await bot.sendMessage(chatId, `🗑️ 초안 "${draft.title}" (${draft.testId})을 DB에서 깔끔하게 삭제했습니다.`);
+    } catch (err) {
+      await bot.sendMessage(chatId, `❌ 초안 삭제 실패: ${err.message}`);
+    }
+    return true;
+  }
+
+  // 4. 재생성
+  if (data.startsWith('test_regen_')) {
+    try {
+      await deleteTestDraft(draft.testId).catch(() => {});
+      delete pendingTestDrafts[draftId];
+      savePendingDrafts(pendingTestDrafts);
+      await generateViralTest(openai, bot, chatId, {
+        topic: draft.topic,
+        targetAudience: draft.targetAudience,
+        tone: draft.tone,
+      });
+    } catch (err) {
+      await bot.sendMessage(chatId, `❌ 재생성 실패: ${err.message}`);
+    }
+    return true;
+  }
+
+  return false;
 }
