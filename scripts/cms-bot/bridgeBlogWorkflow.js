@@ -5,11 +5,12 @@ import { fileURLToPath } from 'url';
 import { createClient } from '@supabase/supabase-js';
 import { injectBlogPost } from './blogAgent.js';
 import {
-  pickNextBridgeTopic,
+  pickBestTopicByGA4,
   getRemainingBridgeTopics,
   validateBlogDraft,
   isDuplicateAgainstExisting,
 } from './bridgeBlogTopics.js';
+import { fetchGA4Summary } from './ga4Reporter.js';
 
 const scriptDir = path.dirname(fileURLToPath(import.meta.url));
 const pendingDraftsPath = path.join(scriptDir, '.pending-blog-drafts.json');
@@ -147,6 +148,7 @@ export async function generateBridgeBlogDraft(bot, openai, chatId, manualTopic =
     const existingPosts = await fetchAllExistingPosts();
 
     let topicItem = forcedTopicItem;
+    let ga4MatchedPage = null;
     if (!topicItem) {
       if (manualTopic) {
         const dup = isDuplicateAgainstExisting(manualTopic, existingPosts);
@@ -168,7 +170,10 @@ export async function generateBridgeBlogDraft(bot, openai, chatId, manualTopic =
           ],
         };
       } else {
-        topicItem = pickNextBridgeTopic(existingPosts, usedSlugs);
+        const ga4Data = await fetchGA4Summary(14).catch(() => null);
+        const picked = pickBestTopicByGA4(existingPosts, usedSlugs, ga4Data?.topPages || []);
+        topicItem = picked.topic;
+        ga4MatchedPage = picked.matchedPage;
         if (!topicItem) {
           await bot.sendMessage(
             chatId,
@@ -181,7 +186,9 @@ export async function generateBridgeBlogDraft(bot, openai, chatId, manualTopic =
 
     await bot.sendMessage(
       chatId,
-      `✍️ **[브릿지 칼럼 초안 작성 중]** (gpt-4o · 승인 전까지 DB에 발행되지 않습니다)\n\n🎯 선정 주제: ${topicItem.keyword}\n🔗 연결 대상: ${(topicItem.bridgeLinks || []).map((l) => l.href).join(', ')}`,
+      `✍️ **[브릿지 칼럼 초안 작성 중]** (gpt-4o · 승인 전까지 DB에 발행되지 않습니다)\n\n🎯 선정 주제: ${topicItem.keyword}${
+        ga4MatchedPage ? `\n📈 선정 근거: 최근 14일 GA4 인기 페이지(${ga4MatchedPage}) 기반 우선 선정` : ''
+      }\n🔗 연결 대상: ${(topicItem.bridgeLinks || []).map((l) => l.href).join(', ')}`,
       { parse_mode: 'Markdown' }
     );
 

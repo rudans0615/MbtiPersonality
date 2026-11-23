@@ -390,6 +390,42 @@ export function getRemainingBridgeTopics(existingPosts, usedSlugs = []) {
 }
 
 /**
+ * GA4 인기 페이지 데이터를 반영해 가장 트래픽 전환 효과가 큰 미발행 브릿지 주제를 우선 선별합니다.
+ */
+export function pickBestTopicByGA4(existingPosts, usedSlugs = [], topPages = []) {
+  const remaining = getRemainingBridgeTopics(existingPosts, usedSlugs);
+  if (remaining.length === 0) return { topic: null, matchedPage: null };
+
+  const ignored = new Set(['/', '/blog', '/results', '/about', '/privacy', '/terms', '/contact']);
+  const candidatePaths = (topPages || [])
+    .map((p) => (p.path || '').split('?')[0].replace(/\/$/, '') || '/')
+    .filter((p) => !ignored.has(p) && !p.endsWith('/results'));
+
+  for (const pagePath of candidatePaths) {
+    const lower = pagePath.toLowerCase();
+    // 1순위: bridgeLinks에 해당 경로가 정확히 포함되거나 접두 일치하는 주제
+    const exact = remaining.find((t) =>
+      (t.bridgeLinks || []).some((l) => {
+        const lh = (l.href || '').toLowerCase();
+        return lh === lower || (lower.startsWith('/compatibility/') && lh === '/compatibility');
+      })
+    );
+    if (exact) return { topic: exact, matchedPage: pagePath };
+
+    // 2순위: 경로 내 MBTI 코드(예: /type/INFP)나 테스트 ID가 키워드에 포함된 주제
+    const token = lower.split('/').filter(Boolean).pop() || '';
+    if (token.length >= 4) {
+      const byToken = remaining.find(
+        (t) => t.keyword.toLowerCase().includes(token) || t.slug.toLowerCase().includes(token)
+      );
+      if (byToken) return { topic: byToken, matchedPage: pagePath };
+    }
+  }
+
+  return { topic: remaining[0], matchedPage: null };
+}
+
+/**
  * 생성된 칼럼 초안의 애드센스 품질 기준 검수
  */
 export function validateBlogDraft(aiData, existingPosts) {

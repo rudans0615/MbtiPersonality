@@ -246,11 +246,162 @@ export async function sendGA4Report(bot, openai, chatId, days = 7) {
       }
     }
 
-    await bot.sendMessage(chatId, reportLines.join('\n'));
+    await bot.sendMessage(chatId, reportLines.join('\n'), {
+      reply_markup: {
+        inline_keyboard: [
+          [{ text: '✍️ 인기 페이지 기반 브릿지 칼럼 초안 만들기', callback_data: 'ga4_draft_top' }],
+          [{ text: '🧵 인기 페이지 스레드·릴스 홍보글 만들기', callback_data: 'ga4_promo_top' }],
+        ],
+      },
+    });
   } catch (err) {
     console.error('sendGA4Report error:', err);
     await bot.sendMessage(chatId, `❌ GA4 리포트 조회 실패: ${err.message}`);
   }
+}
+
+function pickPromotablePath(topPages = []) {
+  const ignored = new Set(['/', '/results', '/privacy', '/terms', '/contact', '/about']);
+  for (const p of topPages) {
+    const clean = (p.path || '').split('?')[0].replace(/\/$/, '') || '/';
+    if (!ignored.has(clean) && !clean.endsWith('/results')) return clean;
+  }
+  return '/compatibility';
+}
+
+function buildOgPreviewForPath(targetPath) {
+  const clean = (targetPath || '/compatibility').replace(/\/$/, '');
+  if (clean.startsWith('/compatibility/')) {
+    const pair = clean.split('/')[2] || 'ENFJ-INFP';
+    const [a, b] = pair.split('-');
+    if (a && b) {
+      return `https://mbtifinder.com/api/og?mode=compatibility&a=${a}&b=${b}&score=95&tier=${encodeURIComponent('인기 궁합 분석')}`;
+    }
+  }
+  if (clean === '/compatibility') {
+    return `https://mbtifinder.com/api/og?mode=compatibility&a=ENFJ&b=INFP&score=95&tier=${encodeURIComponent('16x16 MBTI 궁합표')}`;
+  }
+  if (clean === '/test') {
+    return `https://mbtifinder.com/api/og?mode=invite&from=INFP`;
+  }
+  if (clean.startsWith('/type/')) {
+    const code = (clean.split('/')[2] || 'INFP').toUpperCase();
+    return `https://mbtifinder.com/api/og?mode=result&testTitle=${encodeURIComponent('MBTI 16유형 백과')}&resultTitle=${encodeURIComponent(code + ' 완벽 분석')}&subtitle=${encodeURIComponent('연애 · 직장 · 궁합 총정리')}`;
+  }
+  const seg = clean.split('/').filter(Boolean)[0];
+  if (seg && !['blog', 'type', 'compatibility'].includes(seg)) {
+    return `https://mbtifinder.com/api/og?testId=${encodeURIComponent(seg)}`;
+  }
+  return `https://mbtifinder.com/api/og?mode=invite&from=ENFP`;
+}
+
+/**
+ * 스레드(Threads) + 릴스/쇼츠 15초 홍보글 생성 (GA4 인기 페이지 또는 지정 경로 기반)
+ */
+export async function sendThreadsPromoForPath(bot, openai, chatId, customPath = null) {
+  try {
+    let targetPath = customPath ? customPath.trim() : null;
+    let sourceLabel = '직접 지정';
+
+    if (!targetPath) {
+      const ga4 = await fetchGA4Summary(14).catch(() => null);
+      targetPath = pickPromotablePath(ga4?.topPages || []);
+      sourceLabel = ga4?.topPages?.length ? '최근 14일 GA4 인기 페이지 기반' : '대표 인기 기능 추천';
+    }
+    if (!targetPath.startsWith('/')) targetPath = `/${targetPath}`;
+
+    const fullUrl = `https://mbtifinder.com${targetPath}`;
+    const ogImageUrl = buildOgPreviewForPath(targetPath);
+
+    await bot.sendMessage(chatId, `🧵 [${targetPath}] 스레드·릴스 홍보글을 작성 중입니다... (${sourceLabel})`);
+
+    const res = await openai.chat.completions.create({
+      model: 'gpt-4o-mini',
+      temperature: 0.9,
+      messages: [
+        {
+          role: 'system',
+          content: `너는 스레드(Threads)와 인스타 릴스에서 심리테스트·MBTI 계정으로 월 100만 조회수를 뽑는 바이럴 마케터야.
+광고 냄새 전혀 없이, 사람들이 댓글로 자기 MBTI나 친구를 태그하게 만드는 홍보 패키지를 작성해.
+
+[출력 형식 — 그대로 복붙 가능하게]
+🧵 [스레드 본문]
+(3~5줄, 첫 줄 강력한 공감/팩폭 훅, 마지막 줄은 "링크는 첫 댓글에!" 또는 "너는 뭐 나왔어?" 참여 유도)
+
+💬 [스레드 첫 댓글 복붙용]
+(자연스러운 링크 안내 + URL)
+
+🎬 [릴스/쇼츠 15초 자막 대본]
+- 0~3초(훅): ...
+- 3~10초(공감): ...
+- 10~15초(행동유도): ...`,
+        },
+        {
+          role: 'user',
+          content: `홍보할 사이트 경로: ${targetPath}\n전체 링크: ${fullUrl}\n특징: 무료 심리테스트, 16유형 MBTI 백과, 16x16 궁합표, 친구와 2인 궁합 비교 기능 제공`,
+        },
+      ],
+    });
+
+    const copy = res.choices[0]?.message?.content?.trim() || '';
+    await bot.sendMessage(
+      chatId,
+      `🚀 [스레드 · 릴스 홍보 패키지 완성]\n📌 대상: ${fullUrl}\n📊 기준: ${sourceLabel}\n\n${copy}\n\n🖼️ 첨부용 카드 이미지:\n${ogImageUrl}`
+    );
+  } catch (err) {
+    console.error('sendThreadsPromoForPath error:', err);
+    await bot.sendMessage(chatId, `❌ 홍보글 생성 실패: ${err.message}`);
+  }
+}
+
+/**
+ * GA4 리포트 하단 인라인 버튼 콜백 처리
+ */
+export async function handleGA4Callback(bot, openai, query, triggerDraftFn) {
+  const data = query.data || '';
+  if (!data.startsWith('ga4_')) return false;
+
+  const chatId = query.message.chat.id;
+  await bot.answerCallbackQuery(query.id).catch(() => {});
+
+  if (data === 'ga4_draft_top') {
+    await triggerDraftFn(bot, openai, chatId, null);
+    return true;
+  }
+  if (data === 'ga4_promo_top') {
+    await sendThreadsPromoForPath(bot, openai, chatId, null);
+    return true;
+  }
+  return false;
+}
+
+/**
+ * 매주 월(1)·수(3)·금(5) 오전 09:00 KST에 스레드·릴스 홍보 패키지 자동 배달
+ */
+export function scheduleThreadsPromo(bot, openai) {
+  const PROMO_DAYS = new Set([1, 3, 5]);
+  let lastSentKey = null;
+
+  console.log('🧵 스레드·릴스 홍보 패키지 스케줄러 가동 완료 (매주 월·수·금 오전 09:00 KST)');
+
+  setInterval(() => {
+    const adminChatId = process.env.ADMIN_CHAT_ID;
+    if (!adminChatId) return;
+
+    const kst = new Date(Date.now() + 9 * 60 * 60 * 1000);
+    const day = kst.getUTCDay();
+    const hour = kst.getUTCHours();
+    const minute = kst.getUTCMinutes();
+    const dateKey = `${kst.getUTCFullYear()}-${String(kst.getUTCMonth() + 1).padStart(2, '0')}-${String(
+      kst.getUTCDate()
+    ).padStart(2, '0')}`;
+
+    if (PROMO_DAYS.has(day) && hour === 9 && minute === 0 && lastSentKey !== dateKey) {
+      lastSentKey = dateKey;
+      console.log(`⏰ [KST ${dateKey} 09:00] 스레드·릴스 홍보 패키지 자동 배달 시작`);
+      sendThreadsPromoForPath(bot, openai, adminChatId, null);
+    }
+  }, 30 * 1000);
 }
 
 /**

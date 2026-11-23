@@ -7,7 +7,7 @@ import dotenv from 'dotenv';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { generateBridgeBlogDraft, handleBridgeBlogCallback, sendBlogQueueStatus, scheduleTwiceWeeklyBridgeBlog } from './bridgeBlogWorkflow.js';
-import { sendGA4Report, scheduleWeeklyGA4Report } from './ga4Reporter.js';
+import { sendGA4Report, scheduleWeeklyGA4Report, handleGA4Callback, sendThreadsPromoForPath, scheduleThreadsPromo } from './ga4Reporter.js';
 
 dotenv.config();
 
@@ -40,6 +40,7 @@ bot.setMyCommands([
   { command: 'newblog', description: '고품질 브릿지 칼럼 초안 작성 (승인 후 발행)' },
   { command: 'blogqueue', description: '남은 브릿지 칼럼 주제 큐 및 스케줄 확인' },
   { command: 'ga4', description: 'GA4 방문자·인기페이지·완료율 리포트 조회 (예: /ga4 또는 /ga4 30)' },
+  { command: 'promo', description: 'GA4 인기 페이지 기반 스레드·릴스 홍보글 생성 (예: /promo 또는 /promo /teto-egen)' },
   { command: 'market', description: '마케팅 에이전시 파이프라인 가동 (예: /market hogu)' },
 ]);
 
@@ -150,6 +151,9 @@ bot.onText(/\/(newtest|newtes)(?:\s+(.+))?/, async (msg, match) => {
 bot.on('callback_query', async (query) => {
   const chatId = query.message.chat.id;
   const data = query.data;
+  if (await handleBridgeBlogCallback(bot, openai, query)) return;
+  if (await handleGA4Callback(bot, openai, query, generateBridgeBlogDraft)) return;
+
   const state = testBuilderState[chatId];
 
   if (!state) return;
@@ -539,4 +543,11 @@ bot.onText(/\/(ga4)(?:\s+(\d+))?/, async (msg, match) => {
 });
 
 scheduleTwiceWeeklyBridgeBlog(bot, openai);
+// /promo 명령어 핸들러 (스레드·릴스 홍보 패키지 즉시 생성)
+bot.onText(/\/(promo)(?:\s+(.+))?/, async (msg, match) => {
+  const targetPath = match[2] ? match[2].trim() : null;
+  await sendThreadsPromoForPath(bot, openai, msg.chat.id, targetPath);
+});
+
 scheduleWeeklyGA4Report(bot, openai);
+scheduleThreadsPromo(bot, openai);
