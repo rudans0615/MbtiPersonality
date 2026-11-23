@@ -5,6 +5,7 @@ import { fileURLToPath } from 'node:url';
 import { z } from 'zod';
 import { zodResponseFormat } from 'openai/helpers/zod';
 import { assertSafeTopic } from './validateTestData.js';
+import { generateJson } from './llmClient.js';
 import {
   saveTestDraft,
   publishTestDraft,
@@ -228,27 +229,18 @@ function formatApprovalPreview(draftId, saved, aiData) {
 async function generateThreadsPromoForNewTest(openai, testInfo, results) {
   const url = `https://mbtifinder.com/${testInfo.id}`;
   try {
-    const res = await openai.chat.completions.create({
-      model: 'gpt-4o-mini',
+    const { data } = await generateJson(openai, {
+      role: 'promo',
       temperature: 0.85,
-      response_format: { type: 'json_object' },
-      messages: [
-        {
-          role: 'system',
-          content: `너는 한국 스레드(Threads)·인스타 릴스 바이럴 에디터야.
+      system: `너는 한국 스레드(Threads)·인스타 릴스 바이럴 에디터야.
 신규 심리테스트 런칭 홍보 패키지를 JSON으로 작성해.
 규칙:
 - threadsPost: 220~350자, 1~2줄 훅 + 공감 질문 + 테스트 링크(${url}) 포함, 해시태그 3~4개
 - reelsHook: 3초 안에 시선을 잡는 짧은 릴스/스토리 첫 문장 (25자 이내)
 JSON만 출력: { "threadsPost": "...", "reelsHook": "..." }`,
-        },
-        {
-          role: 'user',
-          content: `테스트 제목: ${testInfo.title}\n설명: ${testInfo.description}\n유형: ${results.map((r) => r.title).join(', ')}`,
-        },
-      ],
+      user: `테스트 제목: ${testInfo.title}\n설명: ${testInfo.description}\n유형: ${results.map((r) => r.title).join(', ')}`,
     });
-    return JSON.parse(res.choices[0].message.content);
+    return data;
   } catch {
     return {
       threadsPost: `${testInfo.emoji || '✨'} ${testInfo.title}\n\n친구랑 결과 비교해보면 은근 소름 돋는 테스트!\n👉 ${url}\n\n#심리테스트 #성향테스트 #MBTI`,

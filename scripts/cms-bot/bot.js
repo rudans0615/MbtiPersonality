@@ -266,15 +266,14 @@ bot.onText(/\/(market)\s+(.+)/, async (msg, match) => {
       process.env.SUPABASE_SERVICE_ROLE_KEY
     );
 
-    const { data: dbTests, error: fetchError } = await supabase
-      .from('tests')
-      .select('id, title, description, category')
-      .eq('id', testId)
-      .single();
+    const [{ data: dbTests, error: fetchError }, { data: dbResults }] = await Promise.all([
+      supabase.from('tests').select('id, title, description, category').eq('id', testId).single(),
+      supabase.from('result_types').select('title, emoji').eq('test_id', testId),
+    ]);
 
-    let testData = { id: testId, title: testId, description: '알 수 없는 테스트', category: '기타' };
+    let testData = { id: testId, title: testId, description: '알 수 없는 테스트', category: '기타', results: [] };
     if (dbTests && !fetchError) {
-      testData = dbTests;
+      testData = { ...dbTests, results: dbResults || [] };
     } else {
       bot.sendMessage(chatId, `⚠️ DB에서 '${testId}'를 찾지 못해 기본 데이터로 진행합니다.`);
     }

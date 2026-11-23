@@ -30,7 +30,7 @@ export const BRIDGE_TOPIC_QUEUE = [
     category: '관계심리',
     bridgeLinks: [
       { href: '/hogu', label: '연애 호구력 테스트' },
-      { href: '/test', label: '무료 60문항 MBTI 검사' },
+      { href: '/test', label: '무료 64문항 MBTI 검사' },
     ],
   },
   {
@@ -140,7 +140,7 @@ export const BRIDGE_TOPIC_QUEUE = [
     category: '커리어',
     bridgeLinks: [
       { href: '/type', label: 'MBTI 16유형 직무 백과' },
-      { href: '/test', label: '60문항 MBTI 검사' },
+      { href: '/test', label: '64문항 MBTI 검사' },
     ],
   },
   {
@@ -232,7 +232,7 @@ export const BRIDGE_TOPIC_QUEUE = [
     category: '심층분석',
     bridgeLinks: [
       { href: '/dopamine', label: '도파민 중독 테스트' },
-      { href: '/test', label: '무료 60문항 MBTI 검사' },
+      { href: '/test', label: '무료 64문항 MBTI 검사' },
     ],
   },
   {
@@ -250,7 +250,7 @@ export const BRIDGE_TOPIC_QUEUE = [
     category: '성격분석',
     bridgeLinks: [
       { href: '/drunk', label: '나 술 취했나? 자가진단' },
-      { href: '/test', label: '60문항 MBTI 검사' },
+      { href: '/test', label: '64문항 MBTI 검사' },
     ],
   },
   {
@@ -259,7 +259,7 @@ export const BRIDGE_TOPIC_QUEUE = [
     category: '성격분석',
     bridgeLinks: [
       { href: '/petPersonalityPreference', label: '반려동물 성향 테스트' },
-      { href: '/test', label: '무료 60문항 MBTI 검사' },
+      { href: '/test', label: '무료 64문항 MBTI 검사' },
     ],
   },
   {
@@ -277,7 +277,7 @@ export const BRIDGE_TOPIC_QUEUE = [
     category: '심층분석',
     bridgeLinks: [
       { href: '/dopamine', label: '도파민 중독 테스트' },
-      { href: '/test', label: '60문항 MBTI 검사' },
+      { href: '/test', label: '64문항 MBTI 검사' },
     ],
   },
   {
@@ -425,17 +425,51 @@ export function pickBestTopicByGA4(existingPosts, usedSlugs = [], topPages = [])
   return { topic: remaining[0], matchedPage: null };
 }
 
+const BLOCKED_BLOG_REGEX =
+  /(스토킹|스토커|자살|자해|음주\s*운전|안전\s*운전\s*가능|불법\s*도박|마약|성범죄|우울증\s*확진|정신병\s*확진|의학적\s*처방)/i;
+
+const ALIEN_SCRIPT_REGEX = /[\u0400-\u04FF\u0600-\u06FF\u0900-\u0E7F]/;
+
 /**
- * 생성된 칼럼 초안의 애드센스 품질 기준 검수
+ * 칼럼 본문 HTML 정제:
+ * - 위험 태그(<script>, <iframe>, <style>, <form>, on*=, javascript:) 제거
+ * - 본문 내 중복 <h1> → <h2> 강등 (페이지 H1 1개 원칙 준수)
+ * - <table> 모바일 가로 스크롤 래퍼 보강
  */
-export function validateBlogDraft(aiData, existingPosts) {
+export function sanitizeBlogHtml(rawHtml = '') {
+  let html = String(rawHtml || '').trim();
+  html = html.replace(/<(script|style|iframe|object|embed|form)\b[^>]*>[\s\S]*?<\/\1>/gi, '');
+  html = html.replace(/<(script|iframe|object|embed)\b[^>]*\/?>/gi, '');
+  html = html.replace(/\s+on[a-z]+\s*=\s*(?:"[^"]*"|'[^']*'|[^\s>]+)/gi, '');
+  html = html.replace(/href\s*=\s*(["'])\s*javascript:[^"']*\1/gi, 'href="#"');
+  html = html.replace(/<h1(\b[^>]*)>/gi, '<h2$1>').replace(/<\/h1>/gi, '</h2>');
+  // 테이블이 overflow 래퍼 없이 노출되면 모바일에서 깨지므로 안전하게 감싸기
+  if (/<table\b/i.test(html) && !/overflow-x-auto/i.test(html)) {
+    html = html.replace(/<table\b/gi, '<div class="overflow-x-auto my-6"><table').replace(/<\/table>/gi, '</table></div>');
+  }
+  return html;
+}
+
+export function extractInternalLinks(html = '') {
+  const matches = [...String(html).matchAll(/href=["'](\/[^"'#?]+)["']/gi)];
+  return Array.from(new Set(matches.map((m) => m[1].replace(/\/$/, '') || '/')));
+}
+
+/**
+ * 생성된 칼럼 초안의 애드센스·SEO·보안·내부링크 종합 품질 검수
+ */
+export function validateBlogDraft(aiData, existingPosts, validInternalPaths = null) {
   const issues = [];
   const title = (aiData?.title || '').trim();
-  const html = (aiData?.content || '').trim();
+  const excerpt = (aiData?.excerpt || '').trim();
+  const html = sanitizeBlogHtml(aiData?.content || '');
   const plain = html.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
   const charCount = plain.length;
 
-  if (!title || title.length < 10) issues.push('제목이 너무 짧습니다.');
+  if (!title || title.length < 10) issues.push('제목이 너무 짧습니다 (최소 10자).');
+  if (title.length > 68) issues.push(`제목이 너무 깁니다 (${title.length}자 / 68자 이내 권장).`);
+  if (!excerpt || excerpt.length < 50) issues.push('요약(excerpt)이 너무 짧습니다 (최소 50자).');
+
   const dup = isDuplicateAgainstExisting(title, existingPosts);
   if (dup.isDup) issues.push(`기존 글과 중복 유사(${Math.round(dup.ratio * 100)}%): "${dup.matchedTitle}"`);
   if (charCount < 1800) issues.push(`본문 분량 부족 (${charCount}자 / 권장 1,800자 이상)`);
@@ -446,11 +480,40 @@ export function validateBlogDraft(aiData, existingPosts) {
   const hasStructuredBlock = /<table\b/i.test(html) || /<ul\b|<ol\b/i.test(html);
   if (!hasStructuredBlock) issues.push('비교표(table) 또는 리스트(ul/ol) 누락');
 
-  const hasBridgeLink = /href=["']\/[a-z0-9/_-]+["']/i.test(html);
+  const internalLinks = extractInternalLinks(html);
+  const hasBridgeLink = internalLinks.length > 0;
   if (!hasBridgeLink) issues.push('사이트 내부 테스트/백과 브릿지 링크 누락');
 
-  if (/^(<[^>]+>)*\s*(안녕하세요|이 글에서는)/i.test(html)) {
+  // 실존하는 내부 경로인지 교차 검증 (허위 /blog/999 등 차단)
+  const deadLinks = [];
+  if (validInternalPaths instanceof Set && validInternalPaths.size > 0) {
+    for (const href of internalLinks) {
+      const lower = href.toLowerCase();
+      const isCompatibilityPair = /^\/compatibility\/[a-z]{4}-[a-z]{4}$/i.test(href);
+      const isMbtiType = /^\/type\/(intj|intp|entj|entp|infj|infp|enfj|enfp|istj|isfj|estj|esfj|istp|isfp|estp|esfp)$/i.test(href);
+      if (!validInternalPaths.has(lower) && !isCompatibilityPair && !isMbtiType) {
+        deadLinks.push(href);
+      }
+    }
+    if (deadLinks.length > 0) {
+      issues.push(`존재하지 않는 내부 링크 감지: ${deadLinks.join(', ')}`);
+    }
+  }
+
+  if (/^(<[^>]+>)*\s*(안녕하세요|이 글에서는|오늘은\s)/i.test(html)) {
     issues.push('AI 상투적 서론 감지');
+  }
+
+  if (BLOCKED_BLOG_REGEX.test(title) || BLOCKED_BLOG_REGEX.test(plain)) {
+    issues.push('애드센스·의료 단정 금지 표현 감지');
+  }
+
+  if (ALIEN_SCRIPT_REGEX.test(title) || ALIEN_SCRIPT_REGEX.test(plain)) {
+    issues.push('AI 환각 외계어 문자 감지');
+  }
+
+  if (/60문항/.test(plain) || /60문항/.test(title)) {
+    issues.push('구버전 "60문항" 표기 감지 ("64문항"으로 수정 필요)');
   }
 
   return {
@@ -459,6 +522,9 @@ export function validateBlogDraft(aiData, existingPosts) {
     h2Count,
     hasTable: /<table\b/i.test(html),
     hasBridgeLink,
+    internalLinks,
+    deadLinks,
+    sanitizedHtml: html,
     issues,
   };
 }

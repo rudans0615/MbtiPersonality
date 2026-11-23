@@ -43,6 +43,13 @@ export async function generateMetadata({
     return { title: '게시글을 찾을 수 없습니다', robots: { index: false, follow: false } };
   }
 
+  const ogImage = `/api/og?${new URLSearchParams({
+    mode: 'result',
+    testTitle: `MBTI Finder · ${post.category || '심리 칼럼'}`,
+    resultTitle: post.title,
+    subtitle: (post.excerpt || '성격분석 심리 칼럼').slice(0, 48),
+  }).toString()}`;
+
   return {
     title: post.title,
     description: post.excerpt || `${post.title} - MBTI Finder 성격분석 심리 칼럼`,
@@ -56,6 +63,13 @@ export async function generateMetadata({
       url: `https://mbtifinder.com/blog/${numId}`,
       authors: ['MBTI Finder 편집팀'],
       tags: post.tags || [],
+      images: [{ url: ogImage, width: 1200, height: 630, alt: post.title }],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: `${post.title} | MBTI Finder`,
+      description: post.excerpt || '',
+      images: [ogImage],
     },
   };
 }
@@ -85,11 +99,19 @@ export default async function BlogPostPage({
     ...allPosts.filter((p) => p.category !== post.category && p.id !== post.id),
   ].slice(0, 3);
 
+  const ogImageAbs = `https://mbtifinder.com/api/og?${new URLSearchParams({
+    mode: 'result',
+    testTitle: `MBTI Finder · ${post.category || '심리 칼럼'}`,
+    resultTitle: post.title,
+    subtitle: (post.excerpt || '성격분석 심리 칼럼').slice(0, 48),
+  }).toString()}`;
+
   const jsonLdArticle = {
     '@context': 'https://schema.org',
     '@type': 'Article',
     headline: post.title,
     description: post.excerpt,
+    image: [ogImageAbs],
     author: {
       '@type': 'Organization',
       name: 'MBTI Finder 편집팀',
@@ -187,7 +209,7 @@ export default async function BlogPostPage({
               <Sparkles size={16} className="mr-1.5" /> 나의 성향 직접 확인해보기
             </div>
             <p className="text-sm text-neutral-600">
-              칼럼에서 다룬 성격 특성을 60문항 MBTI 검사와 16유형 백과에서 자세히 살펴보세요.
+              칼럼에서 다룬 성격 특성을 64문항 MBTI 검사와 16유형 백과에서 자세히 살펴보세요.
             </p>
           </div>
           <div className="flex gap-2 shrink-0">

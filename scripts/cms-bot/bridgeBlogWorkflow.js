@@ -1,14 +1,16 @@
-import fs from 'fs';
-import path from 'path';
-import crypto from 'crypto';
-import { fileURLToPath } from 'url';
+import fs from 'node:fs';
+import path from 'node:path';
+import crypto from 'node:crypto';
+import { fileURLToPath } from 'node:url';
 import { createClient } from '@supabase/supabase-js';
 import { injectBlogPost } from './blogAgent.js';
+import { generateJson, generateText } from './llmClient.js';
 import {
   pickBestTopicByGA4,
   getRemainingBridgeTopics,
   validateBlogDraft,
   isDuplicateAgainstExisting,
+  sanitizeBlogHtml,
 } from './bridgeBlogTopics.js';
 import { fetchGA4Summary } from './ga4Reporter.js';
 
@@ -43,14 +45,28 @@ function getSupabase() {
   return createClient(url, key, { auth: { persistSession: false, autoRefreshToken: false } });
 }
 
-async function fetchAllExistingPosts() {
+async function fetchSiteContext() {
   const supabase = getSupabase();
-  const { data, error } = await supabase
-    .from('blog_posts')
-    .select('id, title, category, date')
-    .order('id', { ascending: false });
-  if (error) throw error;
-  return data || [];
+  const [{ data: posts, error: pErr }, { data: tests, error: tErr }] = await Promise.all([
+    supabase.from('blog_posts').select('id, title, category, date').order('id', { ascending: false }),
+    supabase.from('tests').select('id, title, href, is_available').eq('is_available', true),
+  ]);
+  if (pErr) throw pErr;
+  if (tErr) throw tErr;
+
+  const existingPosts = posts || [];
+  const activeTests = tests || [];
+
+  const validPaths = new Set(['/', '/test', '/type', '/compatibility', '/blog', '/teto-egen', '/drunk', '/about', '/contact']);
+  for (const t of activeTests) {
+    if (t.href) validPaths.add(t.href.toLowerCase());
+    if (t.id) validPaths.add(`/${t.id}`.toLowerCase());
+  }
+  for (const p of existingPosts) {
+    validPaths.add(`/blog/${p.id}`);
+  }
+
+  return { existingPosts, activeTests, validPaths };
 }
 
 function extractH2Headings(html) {
@@ -59,7 +75,10 @@ function extractH2Headings(html) {
     .filter(Boolean);
 }
 
-async function callGptForBridgeColumn(openai, topicItem, existingPosts, expandFeedback = '') {
+/**
+ * 1단계 Writer Agent: 고품질 브릿지 칼럼 초안 작성
+ */
+async function runWriterAgent(openai, topicItem, existingPosts, expandFeedback = '') {
   const existingTitlesList = existingPosts
     .slice(0, 40)
     .map((p) => `- [${p.id}] ${p.title}`)
@@ -69,26 +88,20 @@ async function callGptForBridgeColumn(openai, topicItem, existingPosts, expandFe
     .map((l) => `- <a href="${l.href}" class="text-pink-600 font-bold hover:underline">${l.label}</a>`)
     .join('\n');
 
-  const completion = await openai.chat.completions.create({
-    model: 'gpt-4o',
-    temperature: 0.75,
-    response_format: { type: 'json_object' },
-    messages: [
-      {
-        role: 'system',
-        content: `너는 한국어 성격심리·MBTI·관계·커리어 분야의 수석 에디터이자 Google 애드센스 고품질 콘텐츠 전략가야.
+  const system = `너는 한국어 성격심리·MBTI·관계·커리어 분야의 수석 에디터이자 Google 애드센스 고품질 콘텐츠 전략가야.
 독자가 끝까지 읽고 저장·공유하고 싶어지는 깊이 있는 '브릿지 칼럼'을 HTML 형식으로 작성해야 한다.
 
 [절대 품질 규칙 — Google 애드센스 정책 준수]
-1. 순수 텍스트 분량 최소 2,000~2,800자 이상으로 풍부하고 구체적으로 작성할 것.
-2. "안녕하세요", "이 글에서는 ~을 알아보겠습니다" 같은 AI 상투적 서론 절대 금지. 독자가 바로 공감하는 구체적 상황이나 질문으로 시작할 것.
-3. <h2> 소제목 3~4개와 <h3> 소제목, 비교표(<table><thead>...<tbody>...), 실천 체크리스트(<ul> 또는 <ol>), 구체적인 한국 일상/카톡/직장 대화 예시를 반드시 포함할 것.
-4. 아래 [필수 브릿지 링크] 중 최소 2개를 본문 맥락에 자연스럽게 녹여 삽입할 것 (억지 광고 톤 금지, 독자의 자기이해를 돕는 흐름으로 연결).
-5. 아래 [기존 발행 글 목록]과 제목이나 핵심 내용이 중복되지 않도록 완전히 새로운 각도로 작성할 것.
-6. 의학적·임상적 단정 표현 금지 ("~하는 경향이 있습니다", "참고 기준" 등 균형 잡힌 어조 사용).
+1. 순수 텍스트 분량 최소 2,100~2,800자 이상으로 풍부하고 구체적으로 작성할 것.
+2. "안녕하세요", "이 글에서는", "오늘은 ~을 알아보겠습니다" 같은 AI 상투적 서론 절대 금지. 독자가 바로 공감하는 구체적 장면이나 질문으로 시작할 것.
+3. <h2> 소제목 3~4개와 <h3> 소제목, 비교표(<table><thead>...<tbody>...), 실천 체크리스트(<ul> 또는 <ol>), 구체적인 한국 일상/카톡/직장 대화 예시를 반드시 포함할 것. (본문에 <h1> 태그 절대 금지!)
+4. 아래 [필수 브릿지 링크] 중 최소 2개를 본문 맥락에 자연스럽게 녹여 삽입할 것. 목록에 없는 임의의 /blog/999 같은 가짜 URL은 절대 지어내지 말 것.
+5. MBTI 검사를 언급할 때는 반드시 "64문항 MBTI 검사"로 표기할 것 ("60문항" 금지).
+6. 아래 [기존 발행 글 목록]과 제목이나 핵심 내용이 중복되지 않도록 완전히 새로운 각도로 작성할 것.
+7. 의학적·임상적 단정 표현("확진", "치료제", "처방", "우울증 진단") 절대 금지. "~하는 경향이 있습니다", "참고 기준" 등 균형 잡힌 어조 사용.
 
-[필수 브릿지 링크]
-${bridgeLinksText || '- <a href="/test" class="text-pink-600 font-bold hover:underline">무료 60문항 MBTI 검사</a>\n- <a href="/compatibility" class="text-pink-600 font-bold hover:underline">MBTI 16×16 궁합표</a>'}
+[필수 브릿지 링크 — 이 경로들만 사용]
+${bridgeLinksText || '- <a href="/test" class="text-pink-600 font-bold hover:underline">무료 64문항 MBTI 검사</a>\n- <a href="/compatibility" class="text-pink-600 font-bold hover:underline">MBTI 16×16 궁합표</a>'}
 
 [기존 발행 글 목록 (중복 금지)]
 ${existingTitlesList}
@@ -96,33 +109,48 @@ ${existingTitlesList}
 [JSON 출력 형식]
 {
   "title": "검색 클릭을 부르는 명확하고 구체적인 제목 (48자 이내)",
-  "excerpt": "검색결과 요약용 핵심 설명 (95~120자)",
+  "excerpt": "검색결과 요약용 핵심 설명 (95~130자)",
   "category": "${topicItem.category || '심층분석'}",
   "tags": ["키워드1", "키워드2", "키워드3", "키워드4"],
-  "content": "<h2>...</h2><p>...</p><table>...</table>... (HTML 본문, 백틱 금지)"
-}`,
-      },
-      {
-        role: 'user',
-        content: `다음 주제로 깊이 있는 한국어 브릿지 칼럼을 작성해줘.\n주제: ${topicItem.keyword}${
-          expandFeedback ? `\n\n[이전 초안 보완 요청]\n${expandFeedback}` : ''
-        }`,
-      },
-    ],
-  });
+  "content": "<h2>...</h2><p>...</p><table>...</table>... (HTML 본문, 백틱 금지, h1/script 금지)"
+}`;
 
-  return JSON.parse(completion.choices[0].message.content);
+  const user = `다음 주제로 깊이 있는 한국어 브릿지 칼럼을 작성해줘.\n주제: ${topicItem.keyword}${
+    expandFeedback ? `\n\n[이전 초안 검증 미달 — 반드시 해결할 것]\n${expandFeedback}` : ''
+  }`;
+
+  return generateJson(openai, { system, user, role: 'writer', temperature: 0.72 });
+}
+
+/**
+ * 2단계 Critic Editor Agent: AI 번역투 제거, 사실/링크/정책/분량 교정
+ */
+async function runCriticAgent(openai, draftData, topicItem) {
+  const allowedLinks = (topicItem.bridgeLinks || []).map((l) => `${l.href} (${l.label})`).join(', ');
+  const system = `너는 한국어 매거진의 수석 교정 에디터(Critic Agent)야.
+제출된 칼럼 JSON을 엄격히 검수하고 아래 결함을 모두 고쳐 동일한 JSON 스키마로 반환해.
+
+[교정 체크리스트]
+1. 문장 자연스러움: AI 특유의 어색한 번역투·반복 어미·상투적 서론("안녕하세요", "이 글에서는", "오늘은")을 완전히 제거하고 사람이 쓴 잡지 칼럼처럼 다듬어라.
+2. 분량 유지·보강: 순수 텍스트 최소 2,000자 이상이 되도록 추상적 문장을 구체적 상황·대화 예시로 보강하라. (절대 분량을 줄이지 말 것!)
+3. HTML·링크 무결성: <h1>/<script>/<iframe> 금지. 내부 링크는 반드시 허용된 경로(${allowedLinks || '/test, /compatibility, /type'})만 사용하고, "60문항"이 있으면 "64문항"으로 고쳐라.
+4. 정책 안전성: 의학적 단정("확진/치료/처방/진단"), 혐오·비하, 외계어·오타를 완전히 제거하라.
+5. JSON 키("title", "excerpt", "category", "tags", "content") 구조를 그대로 유지하라.`;
+
+  return generateJson(openai, {
+    system,
+    user: JSON.stringify(draftData),
+    role: 'critic',
+    temperature: 0.25,
+  });
 }
 
 async function generateThreadsPromo(openai, postTitle, postExcerpt, postId) {
   const url = `https://mbtifinder.com/blog/${postId}`;
-  const res = await openai.chat.completions.create({
-    model: 'gpt-4o-mini',
+  const { text } = await generateText(openai, {
+    role: 'promo',
     temperature: 0.85,
-    messages: [
-      {
-        role: 'system',
-        content: `너는 스레드(Threads)에서 조회수 터지는 심리·MBTI 계정 운영자야.
+    system: `너는 스레드(Threads)에서 조회수 터지는 심리·MBTI 계정 운영자야.
 광고 느낌 0%, 친구에게 말 거는 듯한 짧은 공감/팩폭 훅으로 스레드 본문(180자 이내)과 첫 댓글용 링크 안내(1줄)를 작성해.
 출력 형식:
 [스레드 본문]
@@ -130,22 +158,53 @@ async function generateThreadsPromo(openai, postTitle, postExcerpt, postId) {
 
 [첫 댓글 복붙용]
 (링크 포함 1줄)`,
-      },
-      {
-        role: 'user',
-        content: `글 제목: ${postTitle}\n요약: ${postExcerpt}\nURL: ${url}`,
-      },
-    ],
+    user: `글 제목: ${postTitle}\n요약: ${postExcerpt}\nURL: ${url}`,
   });
-  return res.choices[0].message.content;
+  return text;
+}
+
+function buildManualTopicItem(manualTopic, activeTests) {
+  const bridgeLinks = [];
+  // 수동 주제에 /testId 가 포함되어 있거나 활성 테스트 제목/ID와 매칭되면 1순위 브릿지 링크로 자동 추가
+  const pathMatch = manualTopic.match(/\/([a-zA-Z0-9-]{2,60})/);
+  if (pathMatch) {
+    const matchedTest = activeTests.find(
+      (t) => t.id.toLowerCase() === pathMatch[1].toLowerCase() || (t.href || '').toLowerCase() === `/${pathMatch[1].toLowerCase()}`
+    );
+    if (matchedTest) {
+      bridgeLinks.push({ href: matchedTest.href || `/${matchedTest.id}`, label: matchedTest.title });
+    }
+  }
+  bridgeLinks.push(
+    { href: '/test', label: '무료 64문항 MBTI 검사' },
+    { href: '/compatibility', label: 'MBTI 16×16 궁합표' },
+    { href: '/type', label: 'MBTI 16유형 백과' }
+  );
+
+  // 중복 href 제거
+  const uniqueLinks = [];
+  const seen = new Set();
+  for (const l of bridgeLinks) {
+    if (!seen.has(l.href)) {
+      seen.add(l.href);
+      uniqueLinks.push(l);
+    }
+  }
+
+  return {
+    slug: null,
+    keyword: manualTopic,
+    category: '심층분석',
+    bridgeLinks: uniqueLinks,
+  };
 }
 
 /**
- * 브릿지 칼럼 초안 생성 → 텔레그램 승인 카드 발송 (DB 자동 발행 금지!)
+ * 브릿지 칼럼 초안 생성 (Writer → Critic → 하드 품질 게이트) → 텔레그램 승인 카드 발송
  */
 export async function generateBridgeBlogDraft(bot, openai, chatId, manualTopic = null, forcedTopicItem = null) {
   try {
-    const existingPosts = await fetchAllExistingPosts();
+    const { existingPosts, activeTests, validPaths } = await fetchSiteContext();
 
     let topicItem = forcedTopicItem;
     let ga4MatchedPage = null;
@@ -159,16 +218,7 @@ export async function generateBridgeBlogDraft(bot, openai, chatId, manualTopic =
           );
           return;
         }
-        topicItem = {
-          slug: null,
-          keyword: manualTopic,
-          category: '심층분석',
-          bridgeLinks: [
-            { href: '/test', label: '무료 60문항 MBTI 검사' },
-            { href: '/compatibility', label: 'MBTI 16×16 궁합표' },
-            { href: '/type', label: 'MBTI 16유형 백과' },
-          ],
-        };
+        topicItem = buildManualTopicItem(manualTopic, activeTests);
       } else {
         const ga4Data = await fetchGA4Summary(14).catch(() => null);
         const picked = pickBestTopicByGA4(existingPosts, usedSlugs, ga4Data?.topPages || []);
@@ -186,20 +236,27 @@ export async function generateBridgeBlogDraft(bot, openai, chatId, manualTopic =
 
     await bot.sendMessage(
       chatId,
-      `✍️ **[브릿지 칼럼 초안 작성 중]** (gpt-4o · 승인 전까지 DB에 발행되지 않습니다)\n\n🎯 선정 주제: ${topicItem.keyword}${
-        ga4MatchedPage ? `\n📈 선정 근거: 최근 14일 GA4 인기 페이지(${ga4MatchedPage}) 기반 우선 선정` : ''
-      }\n🔗 연결 대상: ${(topicItem.bridgeLinks || []).map((l) => l.href).join(', ')}`,
-      { parse_mode: 'Markdown' }
+      `✍️ [브릿지 칼럼 v2 작성 중] (Writer → Critic 2단계 검수 · 승인 전 비공개)\n\n` +
+        `🎯 선정 주제: ${topicItem.keyword}${
+          ga4MatchedPage ? `\n📈 선정 근거: 최근 14일 GA4 인기 페이지(${ga4MatchedPage}) 기반 우선 선정` : ''
+        }\n🔗 연결 대상: ${(topicItem.bridgeLinks || []).map((l) => l.href).join(', ')}`
     );
 
-    let aiData = await callGptForBridgeColumn(openai, topicItem, existingPosts);
-    let check = validateBlogDraft(aiData, existingPosts);
+    // 1차 Writer → 2차 Critic
+    let writerRes = await runWriterAgent(openai, topicItem, existingPosts);
+    let criticRes = await runCriticAgent(openai, writerRes.data, topicItem).catch(() => writerRes);
+    let aiData = criticRes.data;
+    aiData.content = sanitizeBlogHtml(aiData.content || '');
+    let check = validateBlogDraft(aiData, existingPosts, validPaths);
 
-    // 품질 기준 미달 시 1회 자동 보강 재시도
+    // 품질 기준 미달 시 정확한 피드백으로 1회 자동 보강 재작성
     if (!check.ok) {
-      const feedback = `아래 미달 항목을 반드시 해결해 본문을 더 구체적으로 확장해줘:\n- ${check.issues.join('\n- ')}`;
-      aiData = await callGptForBridgeColumn(openai, topicItem, existingPosts, feedback);
-      check = validateBlogDraft(aiData, existingPosts);
+      const feedback = `아래 검증 실패 항목을 반드시 모두 해결해 다시 작성해줘:\n- ${check.issues.join('\n- ')}`;
+      writerRes = await runWriterAgent(openai, topicItem, existingPosts, feedback);
+      criticRes = await runCriticAgent(openai, writerRes.data, topicItem).catch(() => writerRes);
+      aiData = criticRes.data;
+      aiData.content = sanitizeBlogHtml(aiData.content || '');
+      check = validateBlogDraft(aiData, existingPosts, validPaths);
     }
 
     const draftId = crypto.randomBytes(4).toString('hex');
@@ -209,6 +266,7 @@ export async function generateBridgeBlogDraft(bot, openai, chatId, manualTopic =
       topicItem,
       aiData,
       check,
+      modelUsed: `${writerRes.model} + ${criticRes.model}`,
       status: 'pending',
     };
     saveJson(pendingDraftsPath, pendingDrafts);
@@ -218,14 +276,16 @@ export async function generateBridgeBlogDraft(bot, openai, chatId, manualTopic =
       .join('\n');
 
     const qualitySummary = check.ok
-      ? `✅ 품질 검수 통과 (${check.charCount.toLocaleString()}자 · H2 ${check.h2Count}개 · 표 ${check.hasTable ? '포함' : '리스트'} · 내부링크 포함)`
-      : `⚠️ 보완 참고: ${check.issues.join(' / ')} (${check.charCount.toLocaleString()}자)`;
+      ? `✅ 품질 게이트 통과 (${check.charCount.toLocaleString()}자 · H2 ${check.h2Count}개 · ${
+          check.hasTable ? '비교표 포함' : '리스트 포함'
+        } · 유효 내부링크 ${check.internalLinks.length}개)`
+      : `⛔ 품질 게이트 미달 — 발행 차단됨:\n  • ${check.issues.join('\n  • ')}`;
 
     const cardText = [
       `📝 [브릿지 칼럼 발행 승인 대기]`,
       ``,
       `📌 제목: ${aiData.title}`,
-      `📂 카테고리: ${aiData.category || '심층분석'}`,
+      `📂 카테고리: ${aiData.category || '심층분석'} | 🤖 모델: ${writerRes.model}`,
       `🏷️ 태그: ${(aiData.tags || []).map((t) => `#${t}`).join(' ')}`,
       `📊 검수: ${qualitySummary}`,
       ``,
@@ -235,20 +295,30 @@ export async function generateBridgeBlogDraft(bot, openai, chatId, manualTopic =
       `📑 소제목 목차:`,
       h2List || '  (목차 없음)',
       ``,
-      `아래 버튼을 눌러야 실제 사이트(Supabase)에 발행됩니다.`,
+      check.ok
+        ? `아래 버튼을 눌러야 실제 사이트(Supabase)에 발행됩니다.`
+        : `품질 기준 미달로 발행 버튼이 잠겼습니다. [🔄 다시 작성] 또는 [❌ 폐기]를 선택해 주세요.`,
     ].join('\n');
 
-    await bot.sendMessage(chatId, cardText, {
-      reply_markup: {
-        inline_keyboard: [
+    const keyboard = check.ok
+      ? [
           [{ text: '✅ 블로그 발행 + 스레드 홍보글 생성', callback_data: `blog_approve_${draftId}` }],
           [
             { text: '📄 본문 미리보기', callback_data: `blog_preview_${draftId}` },
             { text: '🔄 다시 작성', callback_data: `blog_regen_${draftId}` },
           ],
           [{ text: '❌ 폐기 (발행 안 함)', callback_data: `blog_reject_${draftId}` }],
-        ],
-      },
+        ]
+      : [
+          [
+            { text: '📄 본문 미리보기', callback_data: `blog_preview_${draftId}` },
+            { text: '🔄 다시 작성', callback_data: `blog_regen_${draftId}` },
+          ],
+          [{ text: '❌ 폐기 (발행 안 함)', callback_data: `blog_reject_${draftId}` }],
+        ];
+
+    await bot.sendMessage(chatId, cardText, {
+      reply_markup: { inline_keyboard: keyboard },
     });
   } catch (error) {
     console.error('generateBridgeBlogDraft error:', error);
@@ -258,7 +328,6 @@ export async function generateBridgeBlogDraft(bot, openai, chatId, manualTopic =
 
 /**
  * 텔레그램 인라인 버튼 콜백 처리 (blog_approve_ / blog_preview_ / blog_regen_ / blog_reject_)
- * 처리한 경우 true 반환
  */
 export async function handleBridgeBlogCallback(bot, openai, query) {
   const data = query.data || '';
@@ -314,15 +383,26 @@ export async function handleBridgeBlogCallback(bot, openai, query) {
   }
 
   if (action === 'approve') {
-    if (draft.status === 'published') {
-      await bot.sendMessage(chatId, 'ℹ️ 이미 발행 완료된 초안입니다.');
+    if (draft.status === 'publishing' || draft.status === 'published') {
+      await bot.sendMessage(chatId, 'ℹ️ 이미 발행 처리 중이거나 완료된 초안입니다.');
       return true;
     }
 
+    if (!draft.check?.ok) {
+      await bot.sendMessage(chatId, '⛔ 품질 게이트 미달 초안은 발행할 수 없습니다. 다시 작성해 주세요.');
+      return true;
+    }
+
+    // 중복 클릭 레이스 컨디션 차단 락
+    draft.status = 'publishing';
+    saveJson(pendingDraftsPath, pendingDrafts);
+
     try {
-      const existingPosts = await fetchAllExistingPosts();
+      const { existingPosts } = await fetchSiteContext();
       const dup = isDuplicateAgainstExisting(draft.aiData.title, existingPosts);
       if (dup.isDup) {
+        draft.status = 'pending';
+        saveJson(pendingDraftsPath, pendingDrafts);
         await bot.sendMessage(
           chatId,
           `⚠️ 발행 중단: 기존 글 "${dup.matchedTitle}"과 중복됩니다. 재생성 또는 폐기해 주세요.`
@@ -342,12 +422,14 @@ export async function handleBridgeBlogCallback(bot, openai, query) {
       await bot.editMessageReplyMarkup({ inline_keyboard: [] }, { chat_id: chatId, message_id: msgId }).catch(() => {});
       await bot.sendMessage(
         chatId,
-        `🎉 [브릿지 칼럼 발행 완료!]\n\n📌 제목: ${draft.aiData.title}\n🔗 링크: https://mbtifinder.com/blog/${newId}\n\n이어서 스레드(Threads) 홍보 카피를 생성합니다...`
+        `🎉 [브릿지 칼럼 발행 완료!]\n\n📌 제목: ${draft.aiData.title}\n🔗 링크: https://mbtifinder.com/blog/${newId}\n(목록 최대 5분, 사이트맵 최대 1시간 내 자동 반영)\n\n이어서 스레드(Threads) 홍보 카피를 생성합니다...`
       );
 
       const promo = await generateThreadsPromo(openai, draft.aiData.title, draft.aiData.excerpt, newId);
       await bot.sendMessage(chatId, `🧵 [방금 발행한 칼럼 스레드 홍보 복붙용]\n\n${promo}`);
     } catch (err) {
+      draft.status = 'pending';
+      saveJson(pendingDraftsPath, pendingDrafts);
       console.error('Approve publish error:', err);
       await bot.sendMessage(chatId, `❌ 발행 중 오류 발생: ${err.message}`);
     }
@@ -362,7 +444,7 @@ export async function handleBridgeBlogCallback(bot, openai, query) {
  */
 export async function sendBlogQueueStatus(bot, chatId) {
   try {
-    const existingPosts = await fetchAllExistingPosts();
+    const { existingPosts } = await fetchSiteContext();
     const remaining = getRemainingBridgeTopics(existingPosts, usedSlugs);
     const preview = remaining
       .slice(0, 6)
@@ -380,17 +462,14 @@ export async function sendBlogQueueStatus(bot, chatId) {
 
 /**
  * 매주 화요일(2) · 목요일(4) 오전 10:00 KST (UTC+9)에 승인용 초안 자동 배달
- * - 서버 타임존(UTC 등)과 무관하게 KST 기준으로 정확히 동작
- * - 절대 DB에 무인 발행하지 않고 텔레그램 승인 카드만 전송
  */
 export function scheduleTwiceWeeklyBridgeBlog(bot, openai) {
-  const TARGET_DAYS = new Set([2, 4]); // 0=일, 1=월, 2=화, 3=수, 4=목, 5=금, 6=토
+  const TARGET_DAYS = new Set([2, 4]);
   const TARGET_HOUR_KST = 10;
   let lastTriggeredDateKey = null;
 
   function getKstNow() {
-    const utcMs = Date.now();
-    const kst = new Date(utcMs + 9 * 60 * 60 * 1000);
+    const kst = new Date(Date.now() + 9 * 60 * 60 * 1000);
     return {
       day: kst.getUTCDay(),
       hour: kst.getUTCHours(),

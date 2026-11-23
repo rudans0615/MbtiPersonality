@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import { getBlogPosts } from '@/lib/queries';
 import BlogClient from './BlogClient';
 
-export const revalidate = 3600;
+export const revalidate = 300;
 
 export const metadata: Metadata = {
   title: '성격분석 심리 칼럼',

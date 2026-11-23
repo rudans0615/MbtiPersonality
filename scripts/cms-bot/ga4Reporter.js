@@ -2,6 +2,8 @@ import fs from 'fs';
 import path from 'path';
 import crypto from 'crypto';
 import { fileURLToPath } from 'url';
+import { createClient } from '@supabase/supabase-js';
+import { generateText } from './llmClient.js';
 
 const scriptDir = path.dirname(fileURLToPath(import.meta.url));
 const DEFAULT_KEY_PATH = path.join(scriptDir, 'ga4-service-account.json');
@@ -135,9 +137,15 @@ export async function fetchGA4Summary(days = 7) {
     };
   };
 
-  // dateRanges가 2개일 때 GA4는 dateRange dimension으로 두 행을 반환
-  const current = parseMetricRow(overviewRes.rows?.[0]);
-  const previous = parseMetricRow(overviewRes.rows?.[1]);
+  // dateRanges가 2개일 때 GA4 dateRange dimension("date_range_0" / "date_range_1")을 명시적으로 매칭
+  const overviewRows = overviewRes.rows || [];
+  const currentRow =
+    overviewRows.find((r) => r.dimensionValues?.[0]?.value === 'date_range_0') || overviewRows[0];
+  const previousRow =
+    overviewRows.find((r) => r.dimensionValues?.[0]?.value === 'date_range_1') ||
+    (overviewRows.length > 1 ? overviewRows[1] : null);
+  const current = parseMetricRow(currentRow);
+  const previous = parseMetricRow(previousRow);
 
   const topPages = (pagesRes.rows || []).map((r) => ({
     path: r.dimensionValues?.[0]?.value || '/',
@@ -222,22 +230,13 @@ export async function sendGA4Report(bot, openai, chatId, days = 7) {
     // 데이터가 10 PV 이상 쌓였을 때 AI 액션 제안 2줄 추가
     if (openai && current.views >= 10) {
       try {
-        const aiRes = await openai.chat.completions.create({
-          model: 'gpt-4o-mini',
+        const { text: insight } = await generateText(openai, {
+          role: 'analyst',
           temperature: 0.6,
-          messages: [
-            {
-              role: 'system',
-              content:
-                '너는 한국어 웹 수익화(애드센스·바이럴 테스트) 데이터 분석가야. 제공된 GA4 수치를 보고 이번 주 실행할 핵심 액션 2가지만 각 1문장으로 간결하게 제안해.',
-            },
-            {
-              role: 'user',
-              content: JSON.stringify({ current, topPages: topPages.slice(0, 5), channels, events }),
-            },
-          ],
+          system:
+            '너는 한국어 웹 수익화(애드센스·바이럴 테스트) 데이터 분석가야. 제공된 GA4 수치를 보고 이번 주 실행할 핵심 액션 2가지만 각 1문장으로 간결하게 제안해.',
+          user: JSON.stringify({ current, topPages: topPages.slice(0, 5), channels, events }),
         });
-        const insight = aiRes.choices[0]?.message?.content?.trim();
         if (insight) {
           reportLines.push('', '💡 이번 주 추천 액션:', insight);
         }
@@ -295,8 +294,76 @@ function buildOgPreviewForPath(targetPath) {
   return `https://mbtifinder.com/api/og?mode=invite&from=ENFP`;
 }
 
+async function fetchPromoPageContext(targetPath) {
+  const clean = (targetPath || '').replace(/\/$/, '');
+  const url = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const key = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  const supabase = url && key ? createClient(url, key, { auth: { persistSession: false, autoRefreshToken: false } }) : null;
+
+  // 1. 블로그 칼럼 (/blog/224)
+  const blogMatch = clean.match(/^\/blog\/(\d+)$/);
+  if (blogMatch && supabase) {
+    const { data: post } = await supabase
+      .from('blog_posts')
+      .select('id, title, excerpt, category, tags')
+      .eq('id', Number(blogMatch[1]))
+      .maybeSingle();
+    if (post) {
+      return {
+        kind: 'blog',
+        title: post.title,
+        summary: post.excerpt || '',
+        detail: `카테고리: ${post.category || '심리 칼럼'} | 태그: ${(post.tags || []).join(', ')}`,
+        ogImageUrl: `https://mbtifinder.com/api/og?${new URLSearchParams({
+          mode: 'result',
+          testTitle: `MBTI Finder · ${post.category || '심리 칼럼'}`,
+          resultTitle: post.title,
+          subtitle: (post.excerpt || '성격분석 심리 칼럼 읽어보기').slice(0, 48),
+        }).toString()}`,
+      };
+    }
+  }
+
+  // 2. 개별 심리테스트 (/[testId])
+  const seg = clean.split('/').filter(Boolean)[0];
+  if (seg && !['blog', 'type', 'compatibility', 'test'].includes(seg) && supabase) {
+    const [{ data: test }, { data: results }] = await Promise.all([
+      supabase.from('tests').select('id, title, subtitle, description, category').eq('id', seg).maybeSingle(),
+      supabase.from('result_types').select('title').eq('test_id', seg),
+    ]);
+    if (test) {
+      const rTitles = (results || []).map((r) => r.title).slice(0, 6).join(', ');
+      return {
+        kind: 'test',
+        title: test.title,
+        summary: test.subtitle || test.description || '',
+        detail: `카테고리: ${test.category}${rTitles ? ` | 결과 유형: ${rTitles}` : ''}`,
+        ogImageUrl: `https://mbtifinder.com/api/og?testId=${encodeURIComponent(seg)}`,
+      };
+    }
+  }
+
+  // 3. 대표 기능 페이지 (/test, /type/..., /compatibility/...)
+  if (clean === '/test') {
+    return {
+      kind: 'mbti',
+      title: '무료 64문항 정밀 MBTI 성격유형 검사',
+      summary: '4축 밸런스 차트와 친구 2인 궁합 초대까지 한 번에 확인하는 무료 MBTI 검사',
+      detail: '64문항 균형 설계, 4지표 백분율 분석, 결과 이미지 저장',
+      ogImageUrl: buildOgPreviewForPath(clean),
+    };
+  }
+  return {
+    kind: 'page',
+    title: clean,
+    summary: '무료 64문항 MBTI 검사, 16유형 백과, 16×16 궁합표, 친구 2인 궁합 비교 제공',
+    detail: `대상 경로: ${clean}`,
+    ogImageUrl: buildOgPreviewForPath(clean),
+  };
+}
+
 /**
- * 스레드(Threads) + 릴스/쇼츠 15초 홍보글 생성 (GA4 인기 페이지 또는 지정 경로 기반)
+ * 스레드(Threads) + 릴스/쇼츠 15초 홍보글 생성 (실제 DB 제목·요약·유형 컨텍스트 기반)
  */
 export async function sendThreadsPromoForPath(bot, openai, chatId, customPath = null) {
   try {
@@ -311,42 +378,37 @@ export async function sendThreadsPromoForPath(bot, openai, chatId, customPath = 
     if (!targetPath.startsWith('/')) targetPath = `/${targetPath}`;
 
     const fullUrl = `https://mbtifinder.com${targetPath}`;
-    const ogImageUrl = buildOgPreviewForPath(targetPath);
+    const pageCtx = await fetchPromoPageContext(targetPath);
 
-    await bot.sendMessage(chatId, `🧵 [${targetPath}] 스레드·릴스 홍보글을 작성 중입니다... (${sourceLabel})`);
+    await bot.sendMessage(
+      chatId,
+      `🧵 [${pageCtx.title || targetPath}] 스레드·릴스 홍보글을 작성 중입니다... (${sourceLabel})`
+    );
 
-    const res = await openai.chat.completions.create({
-      model: 'gpt-4o-mini',
+    const { text: copy, model } = await generateText(openai, {
+      role: 'promo',
       temperature: 0.9,
-      messages: [
-        {
-          role: 'system',
-          content: `너는 스레드(Threads)와 인스타 릴스에서 심리테스트·MBTI 계정으로 월 100만 조회수를 뽑는 바이럴 마케터야.
-광고 냄새 전혀 없이, 사람들이 댓글로 자기 MBTI나 친구를 태그하게 만드는 홍보 패키지를 작성해.
+      system: `너는 스레드(Threads)와 인스타 릴스에서 심리테스트·MBTI 계정으로 조회수를 뽑는 바이럴 마케터야.
+광고 냄새 전혀 없이, 제공된 실제 페이지 제목과 내용을 바탕으로 사람들이 댓글로 자기 MBTI나 친구를 태그하게 만드는 홍보 패키지를 작성해.
+절대 제공되지 않은 사실이나 없는 기능을 지어내지 마라.
 
 [출력 형식 — 그대로 복붙 가능하게]
 🧵 [스레드 본문]
 (3~5줄, 첫 줄 강력한 공감/팩폭 훅, 마지막 줄은 "링크는 첫 댓글에!" 또는 "너는 뭐 나왔어?" 참여 유도)
 
 💬 [스레드 첫 댓글 복붙용]
-(자연스러운 링크 안내 + URL)
+(자연스러운 링크 안내 + ${fullUrl})
 
 🎬 [릴스/쇼츠 15초 자막 대본]
 - 0~3초(훅): ...
 - 3~10초(공감): ...
 - 10~15초(행동유도): ...`,
-        },
-        {
-          role: 'user',
-          content: `홍보할 사이트 경로: ${targetPath}\n전체 링크: ${fullUrl}\n특징: 무료 심리테스트, 16유형 MBTI 백과, 16x16 궁합표, 친구와 2인 궁합 비교 기능 제공`,
-        },
-      ],
+      user: `실제 페이지 제목: ${pageCtx.title}\n핵심 내용: ${pageCtx.summary}\n부가 정보: ${pageCtx.detail}\n링크: ${fullUrl}`,
     });
 
-    const copy = res.choices[0]?.message?.content?.trim() || '';
     await bot.sendMessage(
       chatId,
-      `🚀 [스레드 · 릴스 홍보 패키지 완성]\n📌 대상: ${fullUrl}\n📊 기준: ${sourceLabel}\n\n${copy}\n\n🖼️ 첨부용 카드 이미지:\n${ogImageUrl}`
+      `🚀 [스레드 · 릴스 홍보 패키지 완성] (${model})\n📌 대상: ${pageCtx.title}\n🔗 링크: ${fullUrl}\n📊 기준: ${sourceLabel}\n\n${copy}\n\n🖼️ 첨부용 카드 이미지:\n${pageCtx.ogImageUrl}`
     );
   } catch (err) {
     console.error('sendThreadsPromoForPath error:', err);
