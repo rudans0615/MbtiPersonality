@@ -76,7 +76,7 @@ function extractH2Headings(html) {
 }
 
 /**
- * 1단계 Writer Agent: 고품질 브릿지 칼럼 초안 작성
+ * 1단계 Writer Agent: 브런치·매거진 에디터 수준의 고품질 브릿지 칼럼 작성
  */
 async function runWriterAgent(openai, topicItem, existingPosts, expandFeedback = '') {
   const existingTitlesList = existingPosts
@@ -88,17 +88,24 @@ async function runWriterAgent(openai, topicItem, existingPosts, expandFeedback =
     .map((l) => `- <a href="${l.href}" class="text-pink-600 font-bold hover:underline">${l.label}</a>`)
     .join('\n');
 
-  const system = `너는 한국어 성격심리·MBTI·관계·커리어 분야의 수석 에디터이자 Google 애드센스 고품질 콘텐츠 전략가야.
-독자가 끝까지 읽고 저장·공유하고 싶어지는 깊이 있는 '브릿지 칼럼'을 HTML 형식으로 작성해야 한다.
+  const system = `너는 한국 2030 독자들에게 저장·공유 폭발을 일으키는 심리·MBTI 매거진의 수석 칼럼니스트야.
+AI가 쓴 티가 1%도 나지 않는, 실제 잡지·브런치 인기 에디터가 쓴 것처럼 생생하고 통찰력 있는 HTML 칼럼을 작성해.
 
-[절대 품질 규칙 — Google 애드센스 정책 준수]
-1. 순수 텍스트 분량 최소 2,100~2,800자 이상으로 풍부하고 구체적으로 작성할 것.
-2. "안녕하세요", "이 글에서는", "오늘은 ~을 알아보겠습니다" 같은 AI 상투적 서론 절대 금지. 독자가 바로 공감하는 구체적 장면이나 질문으로 시작할 것.
-3. <h2> 소제목 3~4개와 <h3> 소제목, 비교표(<table><thead>...<tbody>...), 실천 체크리스트(<ul> 또는 <ol>), 구체적인 한국 일상/카톡/직장 대화 예시를 반드시 포함할 것. (본문에 <h1> 태그 절대 금지!)
-4. 아래 [필수 브릿지 링크] 중 최소 2개를 본문 맥락에 자연스럽게 녹여 삽입할 것. 목록에 없는 임의의 /blog/999 같은 가짜 URL은 절대 지어내지 말 것.
-5. MBTI 검사를 언급할 때는 반드시 "64문항 MBTI 검사"로 표기할 것 ("60문항" 금지).
-6. 아래 [기존 발행 글 목록]과 제목이나 핵심 내용이 중복되지 않도록 완전히 새로운 각도로 작성할 것.
-7. 의학적·임상적 단정 표현("확진", "치료제", "처방", "우울증 진단") 절대 금지. "~하는 경향이 있습니다", "참고 기준" 등 균형 잡힌 어조 사용.
+[글쓰기 퀄리티 절대 규칙]
+1. 문체: 딱딱한 "~한다" 보고서체나 번역투 절대 금지. 따뜻하고 지적인 매거진 칼럼 톤("~해요 / ~합니다")을 일관되게 사용하라.
+2. 오프닝: "안녕하세요", "이 글에서는", "오늘은" 금지! 독자가 읽자마자 "내 얘기잖아!" 하고 멈추는 구체적인 현실 장면(예: 밤 11시 카톡 숫자 1이 3시간째 안 사라지는 순간)으로 첫 문단을 열어라.
+3. 심리적 깊이: "내향적이라서 그래요" 같은 얕은 설명 금지. MBTI 인지기능(예: 주기능 Si·부기능 Te·열등기능 Ne 등)이나 심리 메커니즘(애착, 인지부하, 매몰비용 등)을 쉽게 풀어 "아, 그래서 그랬구나!"라는 무릎 탁 치는 통찰을 줘라.
+4. 생생한 한국 현실 대화: "한 여성은~", "고마워. 네 말 듣고 힘이 나네." 같은 도덕 교과서·로봇 대사 절대 금지! 실제 한국 2030이 카톡/직장에서 쓰는 리얼한 말투로 "❌ 갈등을 키우는 말 vs ⭕ 바로 먹히는 말"을 대비해 보여줘라.
+5. AI 클리셰 금지: "~하는 것이 중요합니다", "~하는 데 큰 도움이 됩니다", "결론적으로", "마지막으로" 같은 뻔한 AI 마감 문구 반복 금지.
+6. HTML 구조 및 분량 필수 (순수 텍스트 **최소 2,200~2,900자**, 절대 1,800자 미만 금지!):
+   - <h2> 소제목 4개 (호기심을 끄는 구체적 소제목, **각 <h2> 섹션마다 450~650자 이상**으로 구체적 사례와 심리 해설을 충분히 전개할 것!)
+   - 필요 시 <h3> 소제목, <p> 문단 (한 문단은 3~4문장 이내로 호흡 짧게, 섹션당 2~3문단 이상!)
+   - 한눈에 비교되는 <table><thead>...<tbody>...</table> 1개 이상
+   - 바로 써먹을 수 있는 <ul> 또는 <ol> 실천 리스트 1개 이상
+   - 핵심 인사이트 1줄을 담은 <blockquote> 1개
+   - 본문에 <h1>, <script>, <iframe> 절대 금지!
+7. 내부 브릿지 링크: 아래 [필수 브릿지 링크] 중 최소 2개를 글 흐름 속에 자연스럽게 녹여라. 목록에 없는 /blog/999 같은 가짜 URL 생성 절대 금지.
+8. 정확성 & 정책: MBTI 검사는 반드시 "64문항 MBTI 검사"로 표기("60문항" 금지). 의학적·임상적 단정("확진", "치료", "처방", "우울증 진단") 금지.
 
 [필수 브릿지 링크 — 이 경로들만 사용]
 ${bridgeLinksText || '- <a href="/test" class="text-pink-600 font-bold hover:underline">무료 64문항 MBTI 검사</a>\n- <a href="/compatibility" class="text-pink-600 font-bold hover:underline">MBTI 16×16 궁합표</a>'}
@@ -108,40 +115,40 @@ ${existingTitlesList}
 
 [JSON 출력 형식]
 {
-  "title": "검색 클릭을 부르는 명확하고 구체적인 제목 (48자 이내)",
-  "excerpt": "검색결과 요약용 핵심 설명 (95~130자)",
+  "title": "클릭을 부르는 구체적이고 세련된 제목 (45자 이내)",
+  "excerpt": "검색결과에서 바로 눌러보고 싶은 핵심 요약 (95~130자, ~해요/~합니다체)",
   "category": "${topicItem.category || '심층분석'}",
   "tags": ["키워드1", "키워드2", "키워드3", "키워드4"],
-  "content": "<h2>...</h2><p>...</p><table>...</table>... (HTML 본문, 백틱 금지, h1/script 금지)"
+  "content": "<p>...</p><h2>...</h2><p>...</p><table><thead>...</thead><tbody>...</tbody></table><ul><li>...</li></ul><blockquote>...</blockquote>"
 }`;
 
-  const user = `다음 주제로 깊이 있는 한국어 브릿지 칼럼을 작성해줘.\n주제: ${topicItem.keyword}${
+  const user = `다음 주제로 독자가 저장하고 친구에게 공유하고 싶어지는 고품질 브릿지 칼럼을 HTML 형식으로 작성해줘.\n주제: ${topicItem.keyword}${
     expandFeedback ? `\n\n[이전 초안 검증 미달 — 반드시 해결할 것]\n${expandFeedback}` : ''
   }`;
 
-  return generateJson(openai, { system, user, role: 'writer', temperature: 0.72 });
+  return generateJson(openai, { system, user, role: 'writer', temperature: 0.78 });
 }
 
 /**
- * 2단계 Critic Editor Agent: AI 번역투 제거, 사실/링크/정책/분량 교정
+ * 2단계 Critic Editor Agent: HTML 구조 100% 보존하면서 AI체·로봇 대화·표현력 정밀 교정
  */
 async function runCriticAgent(openai, draftData, topicItem) {
   const allowedLinks = (topicItem.bridgeLinks || []).map((l) => `${l.href} (${l.label})`).join(', ');
-  const system = `너는 한국어 매거진의 수석 교정 에디터(Critic Agent)야.
-제출된 칼럼 JSON을 엄격히 검수하고 아래 결함을 모두 고쳐 동일한 JSON 스키마로 반환해.
+  const system = `너는 한국어 심리 매거진의 수석 교정 에디터(Critic Agent)야.
+제출된 JSON의 HTML 구조를 **절대 훼손하지 않으면서** 문장의 생동감과 설득력만 한 단계 끌어올려 동일한 JSON 스키마로 반환해.
 
-[교정 체크리스트]
-1. 문장 자연스러움: AI 특유의 어색한 번역투·반복 어미·상투적 서론("안녕하세요", "이 글에서는", "오늘은")을 완전히 제거하고 사람이 쓴 잡지 칼럼처럼 다듬어라.
-2. 분량 유지·보강: 순수 텍스트 최소 2,000자 이상이 되도록 추상적 문장을 구체적 상황·대화 예시로 보강하라. (절대 분량을 줄이지 말 것!)
-3. HTML·링크 무결성: <h1>/<script>/<iframe> 금지. 내부 링크는 반드시 허용된 경로(${allowedLinks || '/test, /compatibility, /type'})만 사용하고, "60문항"이 있으면 "64문항"으로 고쳐라.
-4. 정책 안전성: 의학적 단정("확진/치료/처방/진단"), 혐오·비하, 외계어·오타를 완전히 제거하라.
-5. JSON 키("title", "excerpt", "category", "tags", "content") 구조를 그대로 유지하라.`;
+[절대 준수 규칙]
+1. **HTML 태그 100% 보존 (최우선!):** content 안의 <h2>, <h3>, <p>, <table>, <thead>, <tbody>, <tr>, <th>, <td>, <ul>, <ol>, <li>, <blockquote>, <strong>, <a href="..."> 태그를 절대 삭제하거나 평문(\n\n)으로 풀지 마라! 오히려 HTML 구조가 빠진 부분이 있으면 채워 넣어라.
+2. **AI체·로봇 대화 박멸:** "한 여성은~", "~하는 것이 중요합니다", "~에 큰 도움이 됩니다", 어색한 교과서 대화를 실제 한국 2030의 자연스러운 말투와 매거진 문체("~해요/~합니다")로 교정하라.
+3. **분량 유지:** 순수 텍스트 2,100자 이상 유지 (절대 요약하거나 줄이지 말 것).
+4. **링크 & 정책 검증:** <h1>/<script>/<iframe> 금지, 내부 링크는 허용 경로(${allowedLinks || '/test, /compatibility, /type'})만 유지, "60문항"은 "64문항"으로 수정, 의학적 단정·외계어 제거.
+5. JSON 키("title", "excerpt", "category", "tags", "content") 그대로 유지.`;
 
   return generateJson(openai, {
     system,
     user: JSON.stringify(draftData),
     role: 'critic',
-    temperature: 0.25,
+    temperature: 0.3,
   });
 }
 
@@ -242,21 +249,26 @@ export async function generateBridgeBlogDraft(bot, openai, chatId, manualTopic =
         }\n🔗 연결 대상: ${(topicItem.bridgeLinks || []).map((l) => l.href).join(', ')}`
     );
 
-    // 1차 Writer → 2차 Critic
-    let writerRes = await runWriterAgent(openai, topicItem, existingPosts);
-    let criticRes = await runCriticAgent(openai, writerRes.data, topicItem).catch(() => writerRes);
-    let aiData = criticRes.data;
-    aiData.content = sanitizeBlogHtml(aiData.content || '');
-    let check = validateBlogDraft(aiData, existingPosts, validPaths);
+    // 1차 Writer → 2차 Critic (Critic이 HTML 태그를 실수로 손상시킨 경우 Writer 원본 보호)
+    const runPass = async (feedback = '') => {
+      const wRes = await runWriterAgent(openai, topicItem, existingPosts, feedback);
+      const cRes = await runCriticAgent(openai, wRes.data, topicItem).catch(() => wRes);
+      const wHtml = sanitizeBlogHtml(wRes.data?.content || '');
+      const cHtml = sanitizeBlogHtml(cRes.data?.content || '');
+      const cCheck = validateBlogDraft({ ...cRes.data, content: cHtml }, existingPosts, validPaths);
+      const wCheck = validateBlogDraft({ ...wRes.data, content: wHtml }, existingPosts, validPaths);
+      if (!cCheck.ok && wCheck.ok) {
+        return { writerRes: wRes, criticRes: wRes, aiData: { ...wRes.data, content: wHtml }, check: wCheck };
+      }
+      return { writerRes: wRes, criticRes: cRes, aiData: { ...cRes.data, content: cHtml }, check: cCheck };
+    };
+
+    let { writerRes, criticRes, aiData, check } = await runPass();
 
     // 품질 기준 미달 시 정확한 피드백으로 1회 자동 보강 재작성
     if (!check.ok) {
       const feedback = `아래 검증 실패 항목을 반드시 모두 해결해 다시 작성해줘:\n- ${check.issues.join('\n- ')}`;
-      writerRes = await runWriterAgent(openai, topicItem, existingPosts, feedback);
-      criticRes = await runCriticAgent(openai, writerRes.data, topicItem).catch(() => writerRes);
-      aiData = criticRes.data;
-      aiData.content = sanitizeBlogHtml(aiData.content || '');
-      check = validateBlogDraft(aiData, existingPosts, validPaths);
+      ({ writerRes, criticRes, aiData, check } = await runPass(feedback));
     }
 
     const draftId = crypto.randomBytes(4).toString('hex');
