@@ -20,7 +20,7 @@ const ROLE_MODELS = {
   },
   promo: {
     gemini: process.env.GEMINI_PROMO_MODEL || 'gemini-2.5-flash',
-    openai: process.env.OPENAI_PROMO_MODEL || 'gpt-4o-mini',
+    openai: process.env.OPENAI_PROMO_MODEL || 'gpt-4o',
   },
   analyst: {
     gemini: process.env.GEMINI_ANALYST_MODEL || 'gemini-2.5-flash',

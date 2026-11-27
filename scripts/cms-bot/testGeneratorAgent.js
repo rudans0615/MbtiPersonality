@@ -231,20 +231,22 @@ async function generateThreadsPromoForNewTest(openai, testInfo, results) {
   try {
     const { data } = await generateJson(openai, {
       role: 'promo',
-      temperature: 0.85,
-      system: `너는 한국 스레드(Threads)·인스타 릴스 바이럴 에디터야.
-신규 심리테스트 런칭 홍보 패키지를 JSON으로 작성해.
-규칙:
-- threadsPost: 220~350자, 1~2줄 훅 + 공감 질문 + 테스트 링크(${url}) 포함, 해시태그 3~4개
-- reelsHook: 3초 안에 시선을 잡는 짧은 릴스/스토리 첫 문장 (25자 이내)
-JSON만 출력: { "threadsPost": "...", "reelsHook": "..." }`,
-      user: `테스트 제목: ${testInfo.title}\n설명: ${testInfo.description}\n유형: ${results.map((r) => r.title).join(', ')}`,
+      temperature: 0.92,
+      system: `너는 한국 스레드(Threads)에서 조회수 터지는 2030 심리·일상 계정 운영자야.
+절대 "~한 적 있지?", "~를 알아보자!", 해시태그 도배, 이모지 남발 같은 AI 광고 봇 말투를 쓰지 마라.
+진짜 사람이 친구랑 떠들듯 툭 던져서 댓글과 클릭이 터지는 홍보 문구를 JSON으로 작성해.
+- threadsPost: 3~4줄, 본문에 URL 넣지 말고 "결과 제일 팩폭인 거 공유해봐" 같은 자연스러운 참여 유도 (해시태그 금지, 이모지 0~1개)
+- firstComment: 첫 댓글에 붙일 호기심 1줄 + ${url}
+- reelsHook: 3초 안에 멈추는 릴스/스토리 첫 문장 (22자 이내, 구어체)
+JSON만 출력: { "threadsPost": "...", "firstComment": "...", "reelsHook": "..." }`,
+      user: `테스트 제목: ${testInfo.title}\n설명: ${testInfo.description}\n결과 유형: ${results.map((r) => r.title).join(', ')}`,
     });
     return data;
   } catch {
     return {
-      threadsPost: `${testInfo.emoji || '✨'} ${testInfo.title}\n\n친구랑 결과 비교해보면 은근 소름 돋는 테스트!\n👉 ${url}\n\n#심리테스트 #성향테스트 #MBTI`,
-      reelsHook: `${testInfo.title}, 너는 어떤 유형?`,
+      threadsPost: `방금 ${testInfo.title} 해봤는데 결과가 너무 내 얘기라 소름 돋음.\n주변 애들한테도 돌렸더니 다들 찔린대ㅋㅋ\n너네는 뭐 나오는지 댓글에 써봐`,
+      firstComment: `링크 여기 👇 ${url}`,
+      reelsHook: `${testInfo.title}, 진짜 소름 돋는 결과`,
     };
   }
 }
@@ -405,7 +407,8 @@ export async function handleTestDraftCallback(bot, openai, query, generateBridge
           `📌 제목: ${pub.title}\n` +
           `🔗 라이브 URL: https://mbtifinder.com/${pub.testId}\n` +
           `(홈페이지 최대 60초, 사이트맵 최대 1시간 내 자동 반영)\n\n` +
-          `🧵 [스레드 복붙 홍보글]\n${promo.threadsPost}\n\n` +
+          `🧵 [스레드 본문 복붙용]\n${promo.threadsPost}\n\n` +
+          `💬 [스레드 첫 댓글]\n${promo.firstComment || `링크 여기 👉 https://mbtifinder.com/${pub.testId}`}\n\n` +
           `🎬 [릴스/스토리 3초 훅]\n"${promo.reelsHook}"\n\n` +
           `📸 [OG 홍보 이미지]\n` +
           `• 스토리(9:16): https://mbtifinder.com/api/og?testId=${pub.testId}&type=story\n` +
