@@ -300,20 +300,31 @@ async function fetchPromoPageContext(targetPath) {
   const key = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
   const supabase = url && key ? createClient(url, key, { auth: { persistSession: false, autoRefreshToken: false } }) : null;
 
-  // 1. 블로그 칼럼 (/blog/224)
+  // 1. 블로그 칼럼 (/blog/226) — 실제 소제목·핵심 내용·연계 테스트 링크까지 추출
   const blogMatch = clean.match(/^\/blog\/(\d+)$/);
   if (blogMatch && supabase) {
     const { data: post } = await supabase
       .from('blog_posts')
-      .select('id, title, excerpt, category, tags')
+      .select('id, title, excerpt, category, tags, content')
       .eq('id', Number(blogMatch[1]))
       .maybeSingle();
     if (post) {
+      const html = post.content || '';
+      const h2s = [...html.matchAll(/<h2\b[^>]*>([\s\S]*?)<\/h2>/gi)]
+        .map((m) => m[1].replace(/<[^>]*>/g, '').trim())
+        .filter(Boolean);
+      const plainExcerpt = html.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim().slice(0, 700);
+      const linkedTests = [...html.matchAll(/href=["'](\/[a-zA-Z0-9-]+)["']/g)]
+        .map((m) => m[1])
+        .filter((h) => !['/blog', '/about', '/contact'].includes(h));
       return {
         kind: 'blog',
         title: post.title,
         summary: post.excerpt || '',
-        detail: `카테고리: ${post.category || '심리 칼럼'} | 태그: ${(post.tags || []).join(', ')}`,
+        detail: `카테고리: ${post.category || '심리 칼럼'} | 소제목: ${h2s.join(' / ')}`,
+        realHooks: `본문 핵심 발췌:\n${plainExcerpt}${
+          linkedTests.length ? `\n연계 테스트 경로: https://mbtifinder.com${linkedTests[0]}` : ''
+        }`,
         ogImageUrl: `https://mbtifinder.com/api/og?${new URLSearchParams({
           mode: 'result',
           testTitle: `MBTI Finder · ${post.category || '심리 칼럼'}`,
@@ -324,46 +335,88 @@ async function fetchPromoPageContext(targetPath) {
     }
   }
 
-  // 2. 개별 심리테스트 (/[testId])
+  // 2. DB 기반 개별 심리테스트 (/[testId]) — 실제 문항 3개 + 선택지 + 결과 유형명 조회!
   const seg = clean.split('/').filter(Boolean)[0];
-  if (seg && !['blog', 'type', 'compatibility', 'test'].includes(seg) && supabase) {
-    const [{ data: test }, { data: results }] = await Promise.all([
-      supabase.from('tests').select('id, title, subtitle, description, category').eq('id', seg).maybeSingle(),
-      supabase.from('result_types').select('title').eq('test_id', seg),
+  if (seg && !['blog', 'type', 'compatibility', 'test', 'teto-egen', 'drunk'].includes(seg) && supabase) {
+    const [{ data: test }, { data: results }, { data: questions }] = await Promise.all([
+      supabase.from('tests').select('id, title, subtitle, description, category, question_count').eq('id', seg).maybeSingle(),
+      supabase.from('result_types').select('title, emoji, subtitle').eq('test_id', seg),
+      supabase
+        .from('questions')
+        .select('question_number, text, options(option_index, text)')
+        .eq('test_id', seg)
+        .order('question_number')
+        .limit(4),
     ]);
     if (test) {
-      const rTitles = (results || []).map((r) => r.title).slice(0, 6).join(', ');
+      const rTitles = (results || []).map((r) => `${r.emoji || ''} ${r.title}`.trim()).slice(0, 8).join(', ');
+      const sampleQs = (questions || [])
+        .map((q) => {
+          const opts = (q.options || [])
+            .sort((a, b) => a.option_index - b.option_index)
+            .slice(0, 4)
+            .map((o, idx) => `  ${idx + 1}) ${o.text}`)
+            .join('\n');
+          return `Q${q.question_number}. ${q.text}\n${opts}`;
+        })
+        .join('\n\n');
       return {
         kind: 'test',
         title: test.title,
         summary: test.subtitle || test.description || '',
-        detail: `카테고리: ${test.category}${rTitles ? ` | 결과 유형: ${rTitles}` : ''}`,
+        detail: `총 ${test.question_count || 12}문항 | 결과 유형: ${rTitles}`,
+        realHooks: sampleQs ? `실제 테스트 문항 샘플 (그대로 논쟁/썰 소재로 활용):\n${sampleQs}` : '',
         ogImageUrl: `https://mbtifinder.com/api/og?testId=${encodeURIComponent(seg)}`,
       };
     }
   }
 
-  // 3. 대표 기능 페이지 (/test, /type/..., /compatibility/...)
+  // 3. 커스텀 핵심 페이지 (/test, /teto-egen, /drunk, /compatibility, /type/...)
+  if (clean === '/teto-egen') {
+    return {
+      kind: 'test',
+      title: '테토 vs 에겐 호르몬 성향 진단',
+      summary: '테토남·테토녀·에겐남·에겐녀 중 나의 호르몬 비율(%)과 찰떡 연애 궁합 확인',
+      detail: '총 21문항 | 결과 유형: 테토남, 테토녀, 에겐남, 에겐녀',
+      realHooks:
+        '실제 문항 예시:\n- 갈등 상황: 1) 정면으로 맞서서 해결한다 vs 2) 갈등을 피하고 시간이 해결해주길 기다린다\n- 연애에서 중요한 것: 열정적이고 강렬한 사랑 vs 따뜻하고 안정적인 관계',
+      ogImageUrl: buildOgPreviewForPath(clean),
+    };
+  }
+  if (clean === '/drunk') {
+    return {
+      kind: 'test',
+      title: '나 지금 취했나? 음주 자가진단 테스트',
+      summary: '술자리 10문항으로 현재 상태(완전 멀쩡 / 귀엽게 올라옴 / 헛소리 시작 / 내일 후회 확정) 확인',
+      detail: '총 10문항 | 결과 유형: 완전 멀쩡한 상태, 술기운 살짝 올라옴, 헛소리 시작됨(주의), 기억이 없다면 이미 늦었다',
+      realHooks:
+        '실제 문항 예시:\n- ex한테 연락하고 싶은 충동은? 1) 전혀 없음 vs 2) 지금 당장 하고 싶음 vs 3) 이미 보냈고 후회 중\n- 지금 거울 속 내 모습은? 1) 평소와 똑같음 vs 2) 완전 여신/남신 등극',
+      ogImageUrl: buildOgPreviewForPath(clean),
+    };
+  }
   if (clean === '/test') {
     return {
       kind: 'mbti',
       title: '무료 64문항 정밀 MBTI 성격유형 검사',
-      summary: '4축 밸런스 차트와 친구 2인 궁합 초대까지 한 번에 확인하는 무료 MBTI 검사',
-      detail: '64문항 균형 설계, 4지표 백분율 분석, 결과 이미지 저장',
+      summary: '4축 밸런스 차트(E/I·S/N·T/F·J/P)와 친구 2인 궁합 초대장까지 한 번에 확인',
+      detail: '64문항 균형 설계, 경계선 성향 감지, 결과 이미지 저장, 친구 궁합 비교',
+      realHooks:
+        '포인트: 매번 검사할 때마다 I랑 E 왔다 갔다 하는 사람들 위해 4축 백분율(%)과 경계선 여부까지 바로 보여줌 + 친구한테 링크 보내면 2인 궁합 점수 자동 계산',
       ogImageUrl: buildOgPreviewForPath(clean),
     };
   }
   return {
     kind: 'page',
-    title: clean,
-    summary: '무료 64문항 MBTI 검사, 16유형 백과, 16×16 궁합표, 친구 2인 궁합 비교 제공',
+    title: clean.startsWith('/compatibility') ? 'MBTI 16×16 궁합표 & 2인 궁합 분석' : clean,
+    summary: '연애·직장·갈등 대화법까지 한 번에 보는 MBTI 16×16 궁합표와 16유형 백과',
     detail: `대상 경로: ${clean}`,
+    realHooks: '포인트: 연인·썸남썸녀·직장 동료 MBTI 조합 점수랑 갈등 시 먹히는 현실 대화법 비교',
     ogImageUrl: buildOgPreviewForPath(clean),
   };
 }
 
 /**
- * 스레드(Threads) + 릴스/쇼츠 15초 홍보글 생성 (실제 DB 제목·요약·유형 컨텍스트 기반)
+ * 상위 1% 스레드 그로스 공식 기반 스레드(A/B/C) + 릴스 15초 홍보 패키지 생성
  */
 export async function sendThreadsPromoForPath(bot, openai, chatId, customPath = null) {
   try {
@@ -382,45 +435,47 @@ export async function sendThreadsPromoForPath(bot, openai, chatId, customPath = 
 
     await bot.sendMessage(
       chatId,
-      `🧵 [${pageCtx.title || targetPath}] 스레드·릴스 홍보글을 작성 중입니다... (${sourceLabel})`
+      `🧵 [${pageCtx.title || targetPath}] 상위 1% 스레드·릴스 홍보글을 작성 중입니다... (${sourceLabel})`
     );
 
     const { text: copy, model } = await generateText(openai, {
       role: 'promo',
       temperature: 0.92,
-      system: `너는 한국 스레드(Threads)와 릴스에서 조회수 10만+ 터뜨리는 2030 심리·관계 계정 운영자야.
-진짜 사람이 자기 얘기하듯 툭 던지는 자연스러운 한국어 스레드 문체로 작성해. 제공되지 않은 기능이나 사실은 절대 지어내지 마라.
+      system: `너는 한국 스레드(Threads)에서 댓글 200개+, 링크 클릭률 5%+ 뽑는 상위 1% 바이럴 그로스 마케터야.
+AI가 남의 글 요약하듯 쓰는 정보 계정이 아니라, **실제 한국 2030 사람이 방금 겪은 썰·논쟁 질문·결과 인증을 툭 던지는 말투**로 작성해.
+제공되지 않은 기능이나 거짓 수치는 절대 지어내지 마라.
 
-[절대 금지 — 쓰면 즉시 탈락]
-- "~한 적 있지?", "~를 알아보자!", "~는 필수야", "궁금하지?", "'이것' 때문에", "지금 바로 해봐!", "꿀팁 공개!"
-- 이모지 남발 (버전당 0~1개 이하), 본문 내 #해시태그 도배 절대 금지
-- 어색한 번역투·교훈조 마무리
-
-[좋은 스레드 톤 참고 (말투·리듬만 참고하고 대상 페이지에 맞게 새로 작성)]
-"퇴근하고 침대 누워서 쇼츠 5분만 본다는 사람 치고 2시간 안 넘기는 꼴을 못 봄.
-근데 그게 의지가 약해서가 아니라 하루 종일 결정 피로 쌓여서 뇌가 멍 때릴 자극 찾는 거더라.
-어제 스크린타임 보고 현타 와서 바로 체크해봄..."
-↳ 첫 댓글: 나처럼 폰 못 내려놓는 사람 여기 정리 잘 돼있음 (링크)
+[상위 1% 스레드 4대 법칙 — 하나라도 어기면 실패]
+1. **본문에 결론 다 풀지 마라 (Open Loop 필수):** 본문에서 답을 다 주면 좋아요만 누르고 링크 안 누른다. 궁금증·비교 욕구·결과 호기심을 남긴 채 끝내라.
+2. **구체적 문항·장면 1개를 통째로 던져라:** 추상적 요약 대신 제공된 [실제 문항/핵심 발췌] 중 가장 찔리는 상황 1개를 그대로 꺼내서 써라.
+3. **댓글 강제 장치:** 뻔한 "손 들어봐", "공감하면 좋아요" 금지! "너네는 1번임 2번임?", "나만 이럼?", "반박 받음"처럼 댓글 안 달고 못 배기게 만들어라.
+4. **AI·광고 봇 금지어 전면 차단:** "~한 적 있지?", "~를 알아보자!", "~는 필수야", "궁금하지?", "'이것' 때문에", "지금 바로 확인해봐!", "#해시태그 도배", 이모지 남발(버전당 0~1개), 상담소 교과서 대사 절대 금지!
 
 [출력 형식 — 그대로 복붙 가능하게]
-🅰️ [스레드 A안 — 관찰·반전형 (클릭률 최강)]
-(3~5줄, 통념을 깨는 첫 문장 + 공감 디테일, 해시태그·광고톤 0%)
-↳ 첫 댓글: (누를 이유 1줄) ${fullUrl}
+🔥 [포맷 1 — A vs B 밸런스 논쟁형 (댓글 폭발 → 알고리즘 1위)]
+(실제 문항/상황 1개를 1) vs 2) 선택지로 던지고 "너네는 1번임 2번임?"으로 끝내는 4~5줄)
+↳ 첫 댓글: (본인 선택 + 결과/글이 궁금해지는 Open Loop 1줄) ${fullUrl}
 
-🅱️ [스레드 B안 — 유형 저격·댓글 폭발형]
-(3~5줄, 특정 유형이나 습관을 콕 짚어 "이거 나임" 댓글 유도)
-↳ 첫 댓글: (누를 이유 1줄) ${fullUrl}
+🔥 [포맷 2 — 1인칭 결과 인증·썰형 (링크 클릭률 1위)]
+("방금 이거 해보다가 N번 문항에서 멈춤..." / "읽다가 뼈 맞고 3분 멍 때림..." 식의 1인칭 실화 톤 4~5줄, 구체적 결과명이나 장면 언급)
+↳ 첫 댓글: (자기 결과/해당 여부 비교하게 만드는 1줄) ${fullUrl}
+
+🔥 [포맷 3 — 약한 도발·불편한 진실형 (반박+공감 동시 폭발)]
+(흔한 착각을 한 문장으로 깨는 묵직한 관찰 3~4줄, 해결책은 숨기고 첫 댓글로 유도)
+↳ 첫 댓글: (구체적 해결 포인트 1줄 예고) ${fullUrl}
 
 🎬 [릴스/쇼츠 15초 자막 대본]
-- 0~3초(시선 고정): (짧고 세게 찌르는 1문장)
+- 0~3초(시선 고정): (스크롤 멈추는 1줄)
 - 3~10초(현실 팩폭): (구체적 장면 2줄)
-- 10~15초(프로필 링크 유도): (자연스러운 1줄)`,
-      user: `실제 페이지 제목: ${pageCtx.title}\n핵심 내용: ${pageCtx.summary}\n부가 정보: ${pageCtx.detail}\n링크: ${fullUrl}`,
+- 10~15초(행동 유도): (자연스러운 1줄)`,
+      user: `실제 페이지 제목: ${pageCtx.title}\n핵심 요약: ${pageCtx.summary}\n세부 정보: ${pageCtx.detail}\n${
+        pageCtx.realHooks ? `\n${pageCtx.realHooks}\n` : ''
+      }링크: ${fullUrl}`,
     });
 
     await bot.sendMessage(
       chatId,
-      `🚀 [스레드 · 릴스 홍보 패키지 완성] (${model})\n📌 대상: ${pageCtx.title}\n🔗 링크: ${fullUrl}\n📊 기준: ${sourceLabel}\n\n${copy}\n\n🖼️ 첨부용 카드 이미지:\n${pageCtx.ogImageUrl}`
+      `🚀 [상위 1% 스레드 · 릴스 홍보 패키지] (${model})\n📌 대상: ${pageCtx.title}\n🔗 링크: ${fullUrl}\n📊 기준: ${sourceLabel}\n\n${copy}\n\n🖼️ 첨부용 카드 이미지:\n${pageCtx.ogImageUrl}`
     );
   } catch (err) {
     console.error('sendThreadsPromoForPath error:', err);

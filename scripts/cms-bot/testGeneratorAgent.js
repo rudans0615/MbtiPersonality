@@ -226,26 +226,40 @@ function formatApprovalPreview(draftId, saved, aiData) {
   );
 }
 
-async function generateThreadsPromoForNewTest(openai, testInfo, results) {
+async function generateThreadsPromoForNewTest(openai, testInfo, results, sampleQuestions = []) {
   const url = `https://mbtifinder.com/${testInfo.id}`;
+  const sampleText = sampleQuestions
+    .slice(0, 3)
+    .map(
+      (q, i) =>
+        `Q${i + 1}. ${q.text}\n` +
+        (q.options || []).slice(0, 4).map((o, j) => `  ${j + 1}) ${o.text}`).join('\n')
+    )
+    .join('\n\n');
+
   try {
     const { data } = await generateJson(openai, {
       role: 'promo',
       temperature: 0.92,
-      system: `너는 한국 스레드(Threads)에서 조회수 터지는 2030 심리·일상 계정 운영자야.
-절대 "~한 적 있지?", "~를 알아보자!", 해시태그 도배, 이모지 남발 같은 AI 광고 봇 말투를 쓰지 마라.
-진짜 사람이 친구랑 떠들듯 툭 던져서 댓글과 클릭이 터지는 홍보 문구를 JSON으로 작성해.
-- threadsPost: 3~4줄, 본문에 URL 넣지 말고 "결과 제일 팩폭인 거 공유해봐" 같은 자연스러운 참여 유도 (해시태그 금지, 이모지 0~1개)
-- firstComment: 첫 댓글에 붙일 호기심 1줄 + ${url}
-- reelsHook: 3초 안에 멈추는 릴스/스토리 첫 문장 (22자 이내, 구어체)
-JSON만 출력: { "threadsPost": "...", "firstComment": "...", "reelsHook": "..." }`,
-      user: `테스트 제목: ${testInfo.title}\n설명: ${testInfo.description}\n결과 유형: ${results.map((r) => r.title).join(', ')}`,
+      system: `너는 한국 스레드(Threads)에서 댓글 200개+, 링크 클릭률 5%+ 뽑는 상위 1% 바이럴 그로스 마케터야.
+AI 광고 봇 말투("~한 적 있지?", "알아보자!", "손 들어봐", 해시태그 도배, 이모지 남발)는 절대 쓰지 마라.
+제공된 [실제 테스트 문항]과 [결과 유형명]을 그대로 활용해 진짜 사람이 방금 해보고 올린 것처럼 JSON으로 작성해.
+
+- balancePost: [포맷 1 — A vs B 논쟁형] 실제 문항 1개에서 제일 갈리는 보기 2개를 꺼내 "1) ... 2) ... 너네는 1번임 2번임?" 4~5줄 (URL 넣지 말 것)
+- storyPost: [포맷 2 — 1인칭 결과 인증형] "방금 이거 해보다가 N번 문항에서 멈춤... 결과 'OOO' 나왔는데 나만 이럼?" 4~5줄 (실제 결과 유형명 언급, URL 넣지 말 것)
+- firstComment: 첫 댓글에 붙일 호기심/비교 유도 1줄 + ${url}
+- reelsHook: 3초 안에 스크롤 멈추는 릴스 첫 문장 (22자 이내)
+JSON만 출력: { "balancePost": "...", "storyPost": "...", "firstComment": "...", "reelsHook": "..." }`,
+      user: `테스트 제목: ${testInfo.title}\n설명: ${testInfo.description}\n결과 유형: ${results
+        .map((r) => r.title)
+        .join(', ')}${sampleText ? `\n\n[실제 테스트 문항]\n${sampleText}` : ''}`,
     });
     return data;
   } catch {
     return {
-      threadsPost: `방금 ${testInfo.title} 해봤는데 결과가 너무 내 얘기라 소름 돋음.\n주변 애들한테도 돌렸더니 다들 찔린대ㅋㅋ\n너네는 뭐 나오는지 댓글에 써봐`,
-      firstComment: `링크 여기 👇 ${url}`,
+      balancePost: `방금 ${testInfo.title} 해봤는데 결과가 너무 내 얘기라 소름 돋음.\n주변 애들한테도 돌렸더니 다들 찔린대ㅋㅋ\n너네는 뭐 나오는지 댓글에 써봐`,
+      storyPost: `${testInfo.title} 해봤더니 '${results[0]?.title || '의외의 유형'}' 뜸... 나만 이럼?`,
+      firstComment: `1분 컷이라 심심할 때 해보셈 ${url}`,
       reelsHook: `${testInfo.title}, 진짜 소름 돋는 결과`,
     };
   }
@@ -309,6 +323,10 @@ export async function generateViralTest(openai, bot, chatId, { topic, targetAudi
       emoji: saved.payload.test.emoji,
       category: saved.payload.test.category,
       results: saved.payload.results.map((r) => ({ code: r.code, title: r.title, emoji: r.emoji })),
+      sampleQuestions: saved.payload.questions.slice(0, 3).map((q) => ({
+        text: q.text,
+        options: q.options.map((o) => ({ text: o.text })),
+      })),
       promotionalCopy: finalAiData.promotionalCopy || '',
       topic: safeTopic,
       targetAudience,
@@ -398,7 +416,12 @@ export async function handleTestDraftCallback(bot, openai, query, generateBridge
       delete pendingTestDrafts[draftId];
       savePendingDrafts(pendingTestDrafts);
 
-      const promo = await generateThreadsPromoForNewTest(openai, draft, draft.results || []);
+      const promo = await generateThreadsPromoForNewTest(
+        openai,
+        draft,
+        draft.results || [],
+        draft.sampleQuestions || []
+      );
 
       await bot.sendMessage(
         chatId,
@@ -407,7 +430,8 @@ export async function handleTestDraftCallback(bot, openai, query, generateBridge
           `📌 제목: ${pub.title}\n` +
           `🔗 라이브 URL: https://mbtifinder.com/${pub.testId}\n` +
           `(홈페이지 최대 60초, 사이트맵 최대 1시간 내 자동 반영)\n\n` +
-          `🧵 [스레드 본문 복붙용]\n${promo.threadsPost}\n\n` +
+          `🔥 [스레드 포맷 1 — A vs B 논쟁형]\n${promo.balancePost || promo.threadsPost}\n\n` +
+          `🔥 [스레드 포맷 2 — 1인칭 결과 인증형]\n${promo.storyPost || ''}\n\n` +
           `💬 [스레드 첫 댓글]\n${promo.firstComment || `링크 여기 👉 https://mbtifinder.com/${pub.testId}`}\n\n` +
           `🎬 [릴스/스토리 3초 훅]\n"${promo.reelsHook}"\n\n` +
           `📸 [OG 홍보 이미지]\n` +

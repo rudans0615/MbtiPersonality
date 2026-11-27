@@ -152,57 +152,43 @@ async function runCriticAgent(openai, draftData, topicItem) {
   });
 }
 
-export async function generateThreadsPromo(openai, postTitle, postExcerpt, postId) {
+export async function generateThreadsPromo(openai, postTitle, postExcerpt, postId, postContent = '') {
   const url = `https://mbtifinder.com/blog/${postId}`;
+  const h2s = extractH2Headings(postContent).join(' / ');
+  const linkedTests = [...String(postContent || '').matchAll(/href=["'](\/[a-zA-Z0-9-]+)["']/g)]
+    .map((m) => m[1])
+    .filter((h) => !['/blog', '/about', '/contact'].includes(h));
+  const relatedTestUrl = linkedTests[0] ? `https://mbtifinder.com${linkedTests[0]}` : '';
+
   const { text } = await generateText(openai, {
     role: 'promo',
     temperature: 0.92,
-    system: `너는 한국 스레드(Threads)에서 조회수 10만~50만 찍는 2030 일상·심리 계정 운영자야.
-절대 AI가 쓴 티나 광고 봇 냄새가 나면 안 된다. 진짜 사람이 스마트폰으로 툭 쓴 것처럼 읽혀야 한다.
+    system: `너는 한국 스레드(Threads)에서 댓글 200개+, 링크 클릭률 5%+ 뽑는 상위 1% 바이럴 그로스 마케터야.
+AI가 남의 글 요약하듯 쓰는 정보 계정이 아니라, 실제 한국 2030 사람이 툭 던져서 논쟁·공감·클릭을 폭발시키는 문구 3종을 작성해.
 
-[절대 금지 표현 — 하나라도 쓰면 실패]
-- "~한 적 있지?", "~를 알아보자!", "~는 필수야", "궁금하지?", "'이것' 때문에", "지금 바로 확인해봐!"
-- 억지 이모지 남발 (전체 통틀어 0~1개 이하), #해시태그 도배 절대 금지
-- 어색한 번역투·교훈조 마무리
-
-[좋은 스레드 톤 참고 (주제는 다르지만 이 말투·리듬을 따를 것 — 문장 그대로 복사 금지)]
-참고1:
-"퇴근하고 침대 누워서 쇼츠 5분만 본다는 사람 치고 2시간 안 넘기는 꼴을 못 봄.
-근데 그게 의지가 약해서가 아니라 뇌가 하루 종일 결정 피로 쌓여서 멍 때릴 자극 찾는 거더라.
-어제 스크린타임 보고 현타 와서 7일 루틴 찾아봄..."
-↳ 첫 댓글: 나처럼 폰 못 내려놓는 사람 여기 정리 잘 돼있음 (링크)
-
-참고2:
-"솔직히 ENTP랑 썸 탈 때 제일 헷갈리는 순간.
-분명 나를 좋아하는 것 같은데 자꾸 장난치고 시비 걸 때.
-이거 호감 표현 맞냐고ㅋㅋ 겪어본 사람 댓글로 알려줘"
-↳ 첫 댓글: ENTP가 관심 있을 때만 나오는 행동 패턴 정리 (링크)
-
-[진짜 스레드에서 클릭·댓글이 터지는 3가지 버전 작성]
-반드시 아래 A/B/C 3가지 스타일을 모두 작성해라. 각 본문은 3~5줄, 모바일 가독성 좋게 줄바꿈할 것.
-
-A. [관찰·반전형 — 클릭률 최강]
-- 통념을 깨는 첫 문장 ("~하는 사람들 특징이 착해서가 아니더라.") + 구체적 현실 디테일 + 찔리는 마무리
-
-B. [유형 저격·댓글 폭발형 — 알고리즘 확산 최강]
-- 구체적인 MBTI 유형이나 행동 패턴을 콕 짚어 사람들이 "이거 완전 나인데" 댓글 달게 유도
-
-C. [짧은 대화/썰형 — 저장·공유 최강]
-- 실제 카톡/대화 한 줄 대비 ("이렇게 말하면 싸우는데, 저렇게 말하면 바로 통하더라")
+[상위 1% 스레드 4대 법칙 — 위반 시 실패]
+1. **본문에서 결론을 다 풀지 마라 (Open Loop):** 본문에 정답을 다 쓰면 좋아요만 누르고 링크 안 누른다. 해결책·말투·진단 결과는 첫 댓글로 남겨라.
+2. **뻔한 "손 들어봐" 금지:** "너네는 1번임 2번임?", "나만 이럼?", "반박 받음"처럼 댓글을 참을 수 없게 만들어라.
+3. **금지어 전면 차단:** "~한 적 있지?", "~를 알아보자!", "~는 필수야", "궁금하지?", "'이것' 때문에", "지금 바로 확인해봐!", "#해시태그 도배", 이모지 남발(버전당 0~1개), 상담소 교과서 대사 절대 금지!
+4. **연계 테스트 퍼널 활용:** 연계 테스트 링크가 있으면 포맷 1이나 2에서 테스트를 미끼로 쓰고 2차 댓글에 칼럼 링크를 붙이는 실전 퍼널도 제시하라.
 
 [출력 형식 — 그대로 복붙 가능하게]
-🅰️ [관찰·반전형]
-(본문 3~5줄)
-↳ 첫 댓글: (왜 눌러야 하는지 호기심 1줄) ${url}
+🔥 [포맷 1 — A vs B 밸런스 논쟁형 (댓글 폭발 1위)]
+(글 주제와 맞닿은 현실 상황 1개를 1) vs 2) 선택지로 던지고 "너네는 1번임 2번임?"으로 끝내는 4~5줄)
+↳ 첫 댓글: (본인 선택 + 클릭할 이유 1줄) ${relatedTestUrl || url}${
+      relatedTestUrl ? `\n↳ 2번째 댓글(대댓글): (칼럼의 구체적 해결책 예고 1줄) ${url}` : ''
+    }
 
-🅱️ [유형 저격·댓글형]
-(본문 3~5줄)
-↳ 첫 댓글: (호기심 1줄) ${url}
+🔥 [포맷 2 — 약한 도발·불편한 진실형 (반박+공감 동시 폭발)]
+(흔한 착각을 정면으로 깨는 묵직한 3~4줄, 해결책은 숨길 것)
+↳ 첫 댓글: (구체적 해결/정리 포인트 예고 1줄) ${url}
 
-🅲️ [짧은 대화·썰형]
-(본문 3~4줄)
-↳ 첫 댓글: (호기심 1줄) ${url}`,
-    user: `글 제목: ${postTitle}\n핵심 요약: ${postExcerpt}\n링크: ${url}`,
+🔥 [포맷 3 — 1인칭 찔림·경험담형 (클릭률 최강)]
+("방금 이 글 읽다가 3번에서 멈춤..." / "내 얘기 누가 써놨냐..." 식의 1인칭 실화 톤 3~4줄)
+↳ 첫 댓글: (누를 이유 1줄) ${url}`,
+    user: `글 제목: ${postTitle}\n핵심 요약: ${postExcerpt}${h2s ? `\n소제목: ${h2s}` : ''}${
+      relatedTestUrl ? `\n연계 테스트 URL: ${relatedTestUrl}` : ''
+    }\n칼럼 URL: ${url}`,
   });
   return text;
 }
@@ -474,7 +460,7 @@ export async function handleBridgeBlogCallback(bot, openai, query) {
         `🎉 [브릿지 칼럼 발행 완료!]\n\n📌 제목: ${draft.aiData.title}\n🔗 링크: https://mbtifinder.com/blog/${newId}\n(목록 최대 5분, 사이트맵 최대 1시간 내 자동 반영)\n\n이어서 스레드(Threads) 홍보 카피를 생성합니다...`
       );
 
-      const promo = await generateThreadsPromo(openai, draft.aiData.title, draft.aiData.excerpt, newId);
+      const promo = await generateThreadsPromo(openai, draft.aiData.title, draft.aiData.excerpt, newId, draft.aiData.content);
       await bot.sendMessage(chatId, `🧵 [방금 발행한 칼럼 스레드 홍보 복붙용]\n\n${promo}`);
     } catch (err) {
       draft.status = 'pending';
